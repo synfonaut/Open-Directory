@@ -1,0 +1,99 @@
+<html>
+  <body>
+    <pre>loading...</pre>
+    <script>
+      var query = {
+        "v": 3,
+        "q": {
+        "find": { "out.s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi" },
+        "limit": 100
+      }
+      };
+        var b64 = btoa(JSON.stringify(query));
+        //var url = "https://bitgraph.network/q/" + b64;
+        var url = "https://genesis.bitdb.network/q/1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN/" + b64;
+
+
+        var header = {
+        headers: { key: "1PaG83ScnLXRhtvNSZQFiRvK8eEZBVfkio" }
+      };
+
+      function Category(data) {
+        this.data = data;
+        if (this.data.name) {
+          this.name = this.data.name;
+        }
+
+        if (this.data.txid) {
+          this.txid = this.data.txid;
+        }
+
+
+        if (this.data.description) {
+          this.description = this.data.description;
+        }
+      }
+
+      function processResults(results) {
+        console.log(results);
+        const confirmed = results.c;
+        const processed = [];
+        for (const result of confirmed) {
+          const opendir_protocol = result.out[0].s1;
+          const opendir_action = result.out[0].s2;
+          const map_protocol = result.out[0].s3;
+          const map_action = result.out[0].s4;
+
+          if (map_action == "SET") {
+            var metadata = {}, key = null, name = null, value = null, tmp = null, idx = 5;
+            key = "s" + idx;
+
+            while (tmp = result.out[0][key]) {
+              if (name) {
+                value = tmp;
+              } else {
+                name = tmp;
+              }
+
+              if (name && value) {
+                metadata[name] = value;
+                name = null;
+                value = null;
+              }
+
+              idx++;
+              key = "s" + idx;
+            }
+
+            metadata["txid"] = result.tx.h;
+
+            if (metadata.name || metadata.description) {
+              processed.push(new Category(metadata));
+            } else {
+              console.log("Error initializing metadata");
+            }
+          } else if (map_action == "DEL") {
+            console.log("delete...");
+          }
+        }
+
+        return processed;
+      }
+
+      function displayResults(results) {
+        console.log("displayed results");
+        const output = [];
+        for (const result of results) {
+          console.log(result);
+          output.push("<a href=\"bit://1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi/" + result.txid + "\">" + result.name + " - " + result.description + "</a>");
+        }
+        document.write("<pre>" + output.join("\n"));
+      }
+
+      fetch(url, header).then(function(r) {
+        return r.json()
+      }).then(processResults).then(displayResults);
+
+    </script>
+  </body>
+</html>

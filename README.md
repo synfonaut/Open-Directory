@@ -1,0 +1,86 @@
+open questions
+
+* what is best way to create specific protocol from generic MAP protocol? just want to bake in specific keys on top of an action (CRUD)
+ - 💡 need a protocol schema!
+
+* should we use vanity addresses for protocols? helps with UX, downside is people might assume it's safe without actually checking
+
+* how to do ownership? want collaboration but maybe need some kind of approval system. don't like my resource? 1-click fork
+
+suggestions
+
+* bitdb would be nice to just say "give me OP_RETURN string array" in addition to s1,s2,s3,s4,s5—useful for variable length protocols like MAP
+
+-----
+
+create a vanity protocol url 1dir…..
+
+can it be it's own protocol but layer existing protocols? like map and then predefine what the keys are?
+
+The Open Directory Protocol (ODP)
+
+* category
+  * name
+  * description (markdown)
+  * parent_category (nullable)
+  * MAP extra key/pairs
+
+* entry
+  * category_id
+  * name
+  * description
+  * link (b://, c://, d://, txid)
+  * priority/order
+  * tags
+  * MAP extra key/pairs
+
+
+
+
+
+
+
+1dir1234567890abcxyz create.category |
+1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5
+SET
+name "BSVDEVS"
+description "All the best blockchain dev resources"
+parent <txid://category>
+
+1dir1234567890abcxyz category.update <txid://category> |
+1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5
+SET
+name "BSV DEVS"
+description "The best Bitcoin BSV blockchain developer resources"
+DELETE
+parent
+
+1dir1234567890abcxyz entry.add |
+1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5
+SET
+category <txid://category>
+name "Planaria"
+link http://planaria.network
+description "Infinite API over Bitcoin"
+priority 10
+
+1dir1234567890abcxyz tag.add <txid://entry> |
+1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5
+SET
+name "development"
+description "Development that's happening 
+
+
+
+
+
+
+
+// good way to store tags?
+
+// how to edit an entry?
+
+// how to change an entry's category_id?
+
+
+

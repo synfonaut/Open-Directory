@@ -1,0 +1,53 @@
+<html>
+  <body>
+    <div id="button"></div>
+    <script src="https://www.moneybutton.com/moneybutton.js"></script>
+    <script src='https://unpkg.com/datapay'></script>
+    <script src='https://unpkg.com/databutton'></script>
+    <script>
+/*
+      databutton.build({
+        data: [
+          "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi",
+          "category.create",
+          "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5",
+          "SET",
+          "name",
+          "hello world",
+          "description",
+          "this is the first open directory category ever created",
+        ],
+        button: {
+          $el: document.querySelector("#button"),
+          onPayment: function(msg) {
+            console.log(msg)
+          }
+        }
+      })
+*/
+
+      databutton.build({
+        data: [
+          "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi",
+          "entry.create",
+          "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5",
+          "SET",
+          "category",
+          "21c347c8d6e6e014a986a5106793470c07f2c8523a5dff961e4e9305b4764aba", // category txid
+          "name",
+          "Planaria",
+          "link",
+          "https://planaria.network/",
+          "description",
+          "Infinite API over Bitcoin",
+        ],
+        button: {
+          $el: document.querySelector("#button"),
+          onPayment: function(msg) {
+            console.log(msg)
+          }
+        }
+      })
+    </script>
+  </body>
+</html>
