@@ -11,6 +11,14 @@ suggestions
 
 * bitdb would be nice to just say "give me OP_RETURN string array" in addition to s1,s2,s3,s4,s5—useful for variable length protocols like MAP
 
+* on-chain planaria... end up doing similar "state processing" code to bring "objects" up to date, planarium.js?
+
+* bitdb would be nice to have easy way to debug jq/re-run query over and over (ctrl+enter)
+
+* moneybutton should allow donating above additional output amount, so dev can easily earn more baked right in or user can take tip down to $0
+
+* enable regex in jq for more advanced filtering
+
 -----
 
 create a vanity protocol url 1dir…..

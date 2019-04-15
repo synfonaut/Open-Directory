@@ -4,8 +4,6 @@ class OpenDirectoryApp extends React.Component {
         this.state = { items: [], text: '' };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.processResults = this.processResults.bind(this);
-        this.processResult = this.processResult.bind(this);
     }
 
     render() {
@@ -26,19 +24,23 @@ class OpenDirectoryApp extends React.Component {
         var query = {
             "v": 3,
             "q": {
-                "find": { "out.s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi" },
-                "limit": 100
+                "find": { "out.s1": OPENDIR_PROTOCOL }
+            },
+            "r": {
+                "f": "[.[] | {\"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}]"
             }
         };
 
-        var url = "https://genesis.bitdb.network/q/1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN/" + btoa(JSON.stringify(query));
-        var header = { headers: { key: "1PaG83ScnLXRhtvNSZQFiRvK8eEZBVfkio" } };
+        var url = "https://bitomation.com/q/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + btoa(JSON.stringify(query));
+        var header = { headers: { key: "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z" } };
 
         fetch(url, header).then(function(r) {
             return r.json()
-        }).then(this.processResults).then(function(results) {
-            console.log(results);
-            //this.setState({results: results});
+        }).then(function(results) {
+            return processOpenDirectoryTransactions(results.c)
+                .concat(processOpenDirectoryTransactions(results.u));
+        }).then(function(result) {
+            console.log(result);
         });
     }
 
@@ -62,59 +64,6 @@ class OpenDirectoryApp extends React.Component {
         }));
     }
 
-    processResult(result) {
-        const opendir_protocol = result.out[0].s1;
-        const opendir_action = result.out[0].s2;
-        const map_protocol = result.out[0].s3;
-        const map_action = result.out[0].s4;
-
-        var metadata = {};
-
-        if (map_action == "SET") {
-            var key = null, name = null, value = null, tmp = null, idx = 5;
-            key = "s" + idx;
-
-            while (tmp = result.out[0][key]) {
-                if (name) {
-                    value = tmp;
-                } else {
-                    name = tmp;
-                }
-
-                if (name && value) {
-                    metadata[name] = value;
-                    name = null;
-                    value = null;
-                }
-
-                idx++;
-                key = "s" + idx;
-            }
-
-            metadata["txid"] = result.tx.h;
-        } else if (map_action == "DEL") {
-            console.log("delete...");
-        }
-
-        return metadata;
-    }
-
-    processResults(results) {
-        const confirmed = results.c;
-        const processed = [];
-        for (const result of confirmed) {
-            const metadata = this.processResult(result);
-            if (metadata) {
-                processed.push(metadata);
-            } else {
-                console.log("Error initializing metadata");
-            }
-        }
-
-        return processed;
-    }
-
-
 
 }
 
@@ -130,10 +79,69 @@ class TodoList extends React.Component {
     }
 }
 
-const app = <OpenDirectoryApp />;
-ReactDOM.render(
-    app,
-    document.getElementById("app")
-);
+ReactDOM.render(<OpenDirectoryApp />, document.getElementById("app"));
 
+/*
+console.log(processOpenDirectoryTransaction({
+    "txid": "21c347c8d6e6e014a986a5106793470c07f2c8523a5dff961e4e9305b4764aba",
+    data: {
+        "s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi",
+        "s2": "category.create",
+        "s3": "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5",
+        "s4": "SET",
+        "s5": "name",
+        "s6": "hello world",
+        "s7": "description",
+        "s8": "this is the first open directory category ever created",
+    },
+}));
 
+console.log(processOpenDirectoryTransaction({
+    data: {
+        "s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi",
+        "s2": "entry.create",
+        "s3": "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5",
+        "s4": "SET",
+        "s5": "category",
+        "s6": "21c347c8d6e6e014a986a5106793470c07f2c8523a5dff961e4e9305b4764aba",
+        "s7": "name",
+        "s8": "Planaria",
+        "s9": "link",
+        "s10": "https://planaria.network/",
+        "s11": "description",
+        "s12": "Infinite API over Bitcoin",
+    },
+    txid: "c42bc6f4d17b4f2997d14560c3b8ec9f1c2c6db6854e2b59c3fc7101f1739eb3",
+}));
+
+console.log(processOpenDirectoryTransaction({
+    data: {
+        "s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi",
+        "s2": "entry.update",
+        "s3": "c42bc6f4d17b4f2997d14560c3b8ec9f1c2c6db6854e2b59c3fc7101f1739eb3", // entry_id
+        "s3": "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5",
+        "s4": "SET",
+        "s5": "category",
+        "s6": "12345-new", // new category_id
+    },
+    txid: "c42bc6f4d17b4f2997d14560c3b8ec9f1c2c6db6854e2b59c3fc7101f1739eb3",
+}));
+
+console.log(processOpenDirectoryTransaction({
+    data: {
+        "s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi",
+        "s2": "entry.delete",
+        "s3": "c42bc6f4d17b4f2997d14560c3b8ec9f1c2c6db6854e2b59c3fc7101f1739eb3", // entry_id
+    },
+    txid: "...",
+}));
+
+console.log(processOpenDirectoryTransaction({
+    data: {
+        "s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi",
+        "s2": "category.delete",
+        "s3": "21c347c8d6e6e014a986a5106793470c07f2c8523a5dff961e4e9305b4764aba", // category_id
+    },
+    txid: "...",
+}));
+*/
