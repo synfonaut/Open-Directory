@@ -1,0 +1,16 @@
+.open-directory {
+    margin-top: 50px;
+}
+
+.open-directory h3 {
+    margin-bottom: 0;
+}
+
+.open-directory p {
+    margin-bottom: 0;
+}
+
+ul.list {
+    margin-top: 15px;
+    list-style: none;
+}

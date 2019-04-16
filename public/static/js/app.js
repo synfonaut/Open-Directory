@@ -1,26 +1,26 @@
 class OpenDirectoryApp extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { items: [], text: '' };
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.state = { items: [] };
     }
 
     render() {
         return (
-            <div>
-                <h3>TODO</h3>
-                <TodoList items={this.state.items} />
-                <form onSubmit={this.handleSubmit}>
-                    <label htmlFor="new-todo">What needs to be done?</label>
-                    <input id="new-todo" onChange={this.handleChange} value={this.state.text} />
-                    <button>Add #{this.state.items.length + 1}</button>
-                </form>
+            <div className="open-directory">
+                <h1>Open Directory</h1>
+                <p>DMOZ on Bitcoin SV</p>
+                <hr />
+                <List items={this.state.items} />
+                <AddEntryForm />
             </div>
         );
     }
 
     componentDidMount() {
+        this.networkAPIFetch();
+    }
+
+    networkAPIFetch() {
         var query = {
             "v": 3,
             "q": {
@@ -39,43 +39,163 @@ class OpenDirectoryApp extends React.Component {
         }).then(function(results) {
             return processOpenDirectoryTransactions(results.c)
                 .concat(processOpenDirectoryTransactions(results.u));
-        }).then(function(result) {
-            console.log(result);
+        }).then((results) => {
+            var final = []
+            for (const result of results) { final = this.processResult(result, final) }
+            return final;
+        }).then((results) => {
+            this.setState({
+                items: results.reverse()
+            });
         });
     }
 
-
-    handleChange(e) {
-        this.setState({ text: e.target.value });
-    }
-
-    handleSubmit(e) {
-        e.preventDefault();
-        if (!this.state.text.length) {
-            return;
+    processResult(result, existing) {
+        if (result.action == "create" && result.change.action == "SET") {
+            const obj = result.change.value;
+            obj.type = result.type;
+            obj.txid = result.txid;
+            existing.push(obj);
+        } else {
+            console.log("Error processing result", result);
         }
-        const newItem = {
-            text: this.state.text,
-            id: Date.now()
-        };
-        this.setState(state => ({
-            items: state.items.concat(newItem),
-            text: ''
-        }));
+        return existing;
     }
 
 
 }
 
-class TodoList extends React.Component {
+class List extends React.Component {
+
     render() {
         return (
-            <ul>
-            {this.props.items.map(item => (
-                <li key={item.id}>{item.text}</li>
-            ))}
+            <ul className="list">
+                {this.props.items.map(item => (
+                    <Item key={item.txid} item={item} />
+                ))}
             </ul>
         );
+    }
+}
+
+class Item extends React.Component {
+
+    categoryStyle() {
+        return {
+        }
+    }
+
+    render() {
+        if (this.props.item.type == "category") {
+            return (
+                <li className="category">
+                    <h3>{this.props.item.name}</h3>
+                    <p>{this.props.item.description}</p>
+                </li>
+            )
+        } else if (this.props.item.type == "entry") {
+            return (
+                <li>
+                <p><a href={this.props.item.link}>{this.props.item.name}</a></p>
+                <p>{this.props.item.description}</p>
+                </li>
+            )
+        } 
+    }
+}
+
+class AddEntryForm extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            title: "",
+            link: "",
+            description: ""
+        };
+
+        this.handleTitleChange = this.handleTitleChange.bind(this);
+        this.handleLinkChange = this.handleLinkChange.bind(this);
+        this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    render() {
+        return (
+            <div className="row">
+                <div className="column column-40">
+                    <h3>Add new entry</h3>
+                    <form onSubmit={this.handleSubmit}>
+                        <fieldset>
+                            <label>
+                                Title:
+                                <input type="text" value={this.state.title} onChange={this.handleTitleChange} />
+                            </label>
+                            <label>
+                                Link:
+                                <input type="text" value={this.state.link} onChange={this.handleLinkChange} />
+                            </label>
+                            <label>
+                                Description:
+                                <textarea onChange={this.handleDescriptionChange} defaultValue={this.state.description}></textarea>
+                            </label>
+                            <input type="submit" value="Save" />
+                            <div className="money-button"></div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        )
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        console.log(e);
+
+        alert("submit");
+        const data = [
+            "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi",
+            "entry.create",
+            "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5",
+            "SET",
+            "category",
+            "21c347c8d6e6e014a986a5106793470c07f2c8523a5dff961e4e9305b4764aba", // category txid
+            "name",
+            this.state.title,
+            "link",
+            this.state.link,
+            "description",
+            this.state.description,
+        ];
+
+        console.log(data);
+
+        // VALIDATE FIRST
+
+        databutton.build({
+            data: data,
+            button: {
+                $el: document.querySelector(".money-button"),
+                onPayment: function(msg) {
+                    console.log(msg)
+                }
+            }
+        })
+
+    }
+
+
+
+    handleTitleChange(e) {
+        this.setState({title: e.target.value});
+    }
+
+    handleLinkChange(e) {
+        this.setState({link: e.target.value});
+    }
+
+    handleDescriptionChange(e) {
+        this.setState({description: e.target.value});
     }
 }
 

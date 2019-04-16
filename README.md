@@ -7,6 +7,8 @@ open questions
 
 * how to do ownership? want collaboration but maybe need some kind of approval system. don't like my resource? 1-click fork
 
+* MAP isn't a perfect fit for api because create shouldn't be able to DELETE a key
+
 suggestions
 
 * bitdb would be nice to just say "give me OP_RETURN string array" in addition to s1,s2,s3,s4,s5—useful for variable length protocols like MAP

@@ -3,15 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <title>Open Directory</title>
+    <link rel="stylesheet" href="/static/css/milligram.min.css" />
+    <link rel="stylesheet" href="/static/css/app.css" />
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+    <script src="https://www.moneybutton.com/moneybutton.js"></script>
+    <script src='https://unpkg.com/datapay'></script>
+    <script src='https://unpkg.com/databutton'></script>
     
     <!-- remove this in production: -->
     <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
     <script src="/static/js/helpers.js"></script>
     <script type="text/babel" src="/static/js/app.js"></script>
   </head>
   <body>
-    <div id="app"></div>
+    <div class="container">
+      <div class="row">
+        <div class="column">
+          <div id="app"></div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
