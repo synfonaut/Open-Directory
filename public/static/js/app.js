@@ -13,15 +13,29 @@ class OpenDirectoryApp extends React.Component {
     render() {
         const hash = this.state.location[0];
 
+        var body;
+        var shouldShowAddNewCategoryForm = false,
+            shouldShowAddNewEntryForm = false;
+
         if (hash == "about") {
-            return (
-                <div className="open-directory">
-                <h1>About Open Directory</h1>
-                <p>✌️</p>
+            body = (
+                <div>
+                    <h1>About Open Directory</h1>
+                    <p>✌️</p>
                 </div>
             );
         } else {
-            var body = <List items={this.state.items} category={this.state.category} />;
+
+            if (!this.state.isLoading && !this.state.isError) {
+                shouldShowAddNewCategoryForm = true;
+
+                if (this.state.category) {
+                    shouldShowAddNewEntryForm = true;
+                }
+            }
+
+            body = <List items={this.state.items} category={this.state.category} />;
+
             if (this.state.isLoading) {
                 body = <div className="loading">
                         <div className="lds-circle"><div></div></div>
@@ -38,25 +52,48 @@ class OpenDirectoryApp extends React.Component {
                </div>
             }
 
-            return (
-                <div className="open-directory">
-                    <h1>Open Directory v0.1</h1>
-                    <p>DMOZ on Bitcoin SV</p>
-                    <hr />
-                    {body}
-                    {(!this.state.isLoading && !this.state.isError) && <AddEntryForm category={this.state.category} onAddEntry={this.onEntryHandler.bind(this)}/>}
-                    {(!this.state.isLoading && !this.state.isError) && <div><hr /><AddCategoryForm category={this.state.category} onAddCategory={this.onCategoryHandler.bind(this)} /></div>}
-                </div>
-            );
         }
+
+        return (
+            <div>
+                <div className="open-directory">
+                    {hash == "" && 
+                      <div>
+                        <h1>Open Directory <code>v0.1</code></h1>
+                        <p>Open Directory let's anyone create a collection of resources, like Awesome Lists, BSVDEVs and more. It's hosted 100% on Bitcoin (SV) and works with Bitcoin native protocols like b://, c://, bit:// and more</p>
+                        <p>Check out some of the on-chain resources below, or create your own!</p>
+                        <hr />
+                      </div>}
+                    {body}
+                    <hr />
+                    <div className="row">
+                        {(shouldShowAddNewEntryForm ? <div className="column"><AddEntryForm category={this.state.category} onAddEntry={this.onEntryHandler.bind(this)}/></div> : null )}
+                        <div className="column">
+                        {(shouldShowAddNewCategoryForm ? <div><AddCategoryForm category={this.state.category} onAddCategory={this.onCategoryHandler.bind(this)} /></div> : null)}
+                        </div>
+                        {(shouldShowAddNewEntryForm ? null : <div className="column"></div> )}
+                    </div>
+                    <div className="row">
+                        <div className="column">
+                            <p align="center">made by <a href="https://twitter.com/synfonaut">@synfonaut</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
     }
 
     onEntryHandler() {
-        this.networkAPIFetch();
+        setTimeout(() => {
+            this.networkAPIFetch();
+        }, 2000);
     }
 
     onCategoryHandler() {
-        this.networkAPIFetch();
+        setTimeout(() => {
+            this.networkAPIFetch();
+        }, 2000);
     }
 
     findCategoryByTXID(txid) {
@@ -172,16 +209,25 @@ class List extends React.Component {
         return [];
     }
 
+    findCategoryByTXID(txid) {
+        return this.props.items.filter(i => { return i.type == "category" && i.txid == txid }).shift();
+    }
+
     render() {
         const categories = this.getCategories();
         const entries = this.getEntries();
 
-        var back = <a href="/#">Back</a>;
+        var parent;
+        if (this.props.category && this.props.category.category) {
+            parent = this.findCategoryByTXID(this.props.category.category);
+        }
+
+        var back = <div><a href="/#">&laquo; Back</a><hr /></div>;
 
         var heading;
         if (this.props.category) {
-            if (this.props.category.category) {
-                back = <a href={"/#" + this.props.category.category.txid}>MORE BACK</a>;
+            if (parent) {
+                back = <div><a href={"/#" + parent.txid}>&laquo; {parent.name}</a><hr /></div>;
             }
             heading = (<div>
                 {back}
@@ -197,6 +243,7 @@ class List extends React.Component {
                         <CategoryItem key={category.txid} item={category} />
                     ))}
                 </ul>
+                <br />
                 <ul className="list">
                     {entries.map(entry => (
                         <EntryItem key={entry.txid} item={entry} />
@@ -211,7 +258,7 @@ class EntryItem extends React.Component {
     render() {
         return (
             <li>
-            <p><a href={this.props.item.link}>{this.props.item.name}</a></p>
+            <h5><a href={this.props.item.link}>{this.props.item.name}</a></h5>
             <p>{this.props.item.description}</p>
             </li>
         )
@@ -248,28 +295,33 @@ class AddEntryForm extends React.Component {
 
     render() {
         return (
-            <div className="row">
-                <div className="column column-40">
-                    <h3>Add new entry</h3>
-                    <form onSubmit={this.handleSubmit}>
-                        <fieldset>
-                            <label>
-                                Title:
-                                <input type="text" value={this.state.title} onChange={this.handleTitleChange} />
-                            </label>
-                            <label>
-                                Link:
-                                <input type="text" value={this.state.link} onChange={this.handleLinkChange} />
-                            </label>
-                            <label>
-                                Description:
-                                <textarea onChange={this.handleDescriptionChange} defaultValue={this.state.description}></textarea>
-                            </label>
-                            <input type="submit" value="Save" />
+            <div className="column">
+                <h3>Add new entry</h3>
+                <form onSubmit={this.handleSubmit}>
+                    <fieldset>
+                        <div className="row">
+                            <div className="column">
+                                <label>
+                                    Title:
+                                    <input type="text" value={this.state.title} onChange={this.handleTitleChange} />
+                                </label>
+                            </div>
+                            <div className="column"></div>
+                        </div>
+                        <label>
+                            Link:
+                            <input type="text" value={this.state.link} onChange={this.handleLinkChange} placeholder="http://" />
+                        </label>
+                        <label>
+                            Description:
+                            <textarea onChange={this.handleDescriptionChange} defaultValue={this.state.description}></textarea>
+                        </label>
+                        <input type="submit" value="Add new entry" />
+                        <div>
                             <div className="add-entry-money-button"></div>
-                        </fieldset>
-                    </form>
-                </div>
+                        </div>
+                    </fieldset>
+                </form>
             </div>
         )
     }
@@ -277,8 +329,8 @@ class AddEntryForm extends React.Component {
     handleSubmit(e) {
         e.preventDefault();
 
-        if (!this.props.category.txid) {
-            alert("Invalid category transaction ID");
+        if (!this.props.category) {
+            alert("Invalid category");
             return;
         }
 
@@ -326,7 +378,7 @@ class AddEntryForm extends React.Component {
                 $el: document.querySelector(".add-entry-money-button"),
                 onPayment: (msg) => {
                     console.log(msg)
-                    this.props.onEntryHandler();
+                    this.props.onAddEntry();
                 }
             }
         })
@@ -365,25 +417,31 @@ class AddCategoryForm extends React.Component {
     }
 
     render() {
+
         return (
-            <div className="row">
-                <div className="column column-40">
-                    <h3>Add new category</h3>
-                    <form onSubmit={this.handleSubmit}>
-                        <fieldset>
-                            <label>
-                                Title:
-                                <input type="text" value={this.state.title} onChange={this.handleTitleChange} />
-                            </label>
-                            <label>
-                                Description:
-                                <textarea onChange={this.handleDescriptionChange} defaultValue={this.state.description}></textarea>
-                            </label>
-                            <input type="submit" value="Save" />
+            <div className="column">
+                <h3>Add new {this.props.category ? "subcategory under '" + this.props.category.name + "'" : "directory"}</h3>
+                <form onSubmit={this.handleSubmit}>
+                    <fieldset>
+                        <div className="row">
+                            <div className="column">
+                                <label>
+                                    Title:
+                                    <input type="text" value={this.state.title} onChange={this.handleTitleChange} />
+                                </label>
+                            </div>
+                            <div className="column"></div>
+                        </div>
+                        <label>
+                            Description:
+                            <textarea onChange={this.handleDescriptionChange} defaultValue={this.state.description}></textarea>
+                        </label>
+                        <input type="submit" value={this.props.category ? "Add new subcategory" : "Add new directory"} />
+                        <div>
                             <div className="add-category-money-button"></div>
-                        </fieldset>
-                    </form>
-                </div>
+                        </div>
+                    </fieldset>
+                </form>
             </div>
         )
     }
@@ -427,7 +485,7 @@ class AddCategoryForm extends React.Component {
                 $el: document.querySelector(".add-category-money-button"),
                 onPayment: (msg) => {
                     console.log(msg)
-                    location.reload();
+                    this.props.onAddCategory();
                 }
             }
         })

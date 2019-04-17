@@ -1,16 +1,30 @@
 ## TODO
+* check socket for new/incoming txs (keep track?)
+* better design
+* better header at top / smaller logo
+* description about what it is on home page with big blurb at top
+* show success, tell user what to expect. refresh page and if you don't see it it should appear soon
+* about with tip screen
 
-* group by categories
+* fork button!
+* let users tip someone who contributed a link
 
-* create new category form
-
-* navigate to category url
-
+* add statistics, how many categories, how many entries
+* changelog
 * collab with bsvdevs and put 'em on chain
+* good examples
+* api should have bulk-mode by default so replaying transactions (deep forking) is possible with minimal tx
 
-* let a user create a category and sign it...then they have control over that category?
 
-* put in fallback for network api partner being down....eventually need bit:// url
+# FUTURE
+* Use AIP to sign data by author
+* Let a user control a category controlled by their AIP
+* Plug into bit:// for bitdb so we don't have to hardcode it
+* Bottle bookmarklet for easily saving to a category
+
+
+* FAQ
+* can anyone edit my directory? for now! soon i'll add controls
 
 
 ------
