@@ -1,3 +1,20 @@
+## TODO
+
+* group by categories
+
+* create new category form
+
+* navigate to category url
+
+* collab with bsvdevs and put 'em on chain
+
+* let a user create a category and sign it...then they have control over that category?
+
+* put in fallback for network api partner being down....eventually need bit:// url
+
+
+------
+
 open questions
 
 * what is best way to create specific protocol from generic MAP protocol? just want to bake in specific keys on top of an action (CRUD)
@@ -7,13 +24,17 @@ open questions
 
 * how to do ownership? want collaboration but maybe need some kind of approval system. don't like my resource? 1-click fork
 
-* MAP isn't a perfect fit for api because create shouldn't be able to DELETE a key
+* MAP isn't a perfect fit for api because you shouldn't be able to DELETE a key on creation
+
+* will Bottle be able to handle including BCAT protocols in <script> tags for 100kb > javascript (like React)
 
 suggestions
 
 * bitdb would be nice to just say "give me OP_RETURN string array" in addition to s1,s2,s3,s4,s5—useful for variable length protocols like MAP
 
 * on-chain planaria... end up doing similar "state processing" code to bring "objects" up to date, planarium.js?
+ * could be like a planaria state machine transformer, but embedded in a bitcoin tx, so everything is still onchain
+ * in addition to {"r": {"f": ...}} could do bit:// protocol transformations? run it through MAP in-chain protocol to convert s1/s2/s3/s3 to key/values
 
 * bitdb would be nice to have easy way to debug jq/re-run query over and over (ctrl+enter)
 
