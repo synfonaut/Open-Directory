@@ -1,10 +1,21 @@
 ## TODO
+* votes via tipping
 * check socket for new/incoming txs (keep track?)
 * better design
+* give items their own page as well
 * better header at top / smaller logo
 * description about what it is on home page with big blurb at top
 * show success, tell user what to expect. refresh page and if you don't see it it should appear soon
 * about with tip screen
+* edit/delete category
+* edit/delete item
+* add sorting: by votes, date, submitter
+* hide create category by default
+* better iconography and graphics
+* find places to add more color
+* group sub-categories
+* show number of items in category listing
+* forms should clear between page refreshes
 
 * fork button!
 * let users tip someone who contributed a link
@@ -12,11 +23,17 @@
 * add statistics, how many categories, how many entries
 * changelog
 * collab with bsvdevs and put 'em on chain
-* good examples
+* create good examples (bsvdevs, onchain games)
+
+
+* could make entire app protocol generic by introducing schema protocol and voting protocol
+
 * api should have bulk-mode by default so replaying transactions (deep forking) is possible with minimal tx
+ * there's an assumption being made right now that tx identifiers uniquely identify categories/items...this breaks in bulk-mode
 
 
 # FUTURE
+
 * Use AIP to sign data by author
 * Let a user control a category controlled by their AIP
 * Plug into bit:// for bitdb so we don't have to hardcode it
@@ -42,6 +59,12 @@ open questions
 
 * will Bottle be able to handle including BCAT protocols in <script> tags for 100kb > javascript (like React)
 
+* need protocol processor that knows how to process on-chain, let bitcom protocol reference on-chain javascript to run to process OP_RETURN
+
+* easy way to crawl a graph as an api? for example, get all tips on bitstagram? usecase is currently moneybutton can't do editable tips + OP_RETURN, so direct payments is best, but indexing them is tricky, maybe need a planaria and register a bitcom endpoint?
+
+* how to hide a money button after purchase?
+
 suggestions
 
 * bitdb would be nice to just say "give me OP_RETURN string array" in addition to s1,s2,s3,s4,s5—useful for variable length protocols like MAP
@@ -52,7 +75,7 @@ suggestions
 
 * bitdb would be nice to have easy way to debug jq/re-run query over and over (ctrl+enter)
 
-* moneybutton should allow donating above additional output amount, so dev can easily earn more baked right in or user can take tip down to $0
+* "Editable buttons cannot have extra outputs" - moneybutton should allow donating above additional output amount, so dev can easily earn more baked right in or user can take tip down to $0
 
 * enable regex in jq for more advanced filtering
 
@@ -115,6 +138,7 @@ SET
 name "development"
 description "Development that's happening 
 
+1dir1234567890abcxyz vote <txid://entry>
 
 
 

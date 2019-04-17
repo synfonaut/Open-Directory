@@ -60,6 +60,7 @@ class OpenDirectoryApp extends React.Component {
                     {hash == "" && 
                       <div>
                         <h1>Open Directory <code>v0.1</code></h1>
+                        <blockquote>An Open Directory for Bitcoin</blockquote>
                         <p>Open Directory let's anyone create a collection of resources, like Awesome Lists, BSVDEVs and more. It's hosted 100% on Bitcoin (SV) and works with Bitcoin native protocols like b://, c://, bit:// and more</p>
                         <p>Check out some of the on-chain resources below, or create your own!</p>
                         <hr />
@@ -67,11 +68,11 @@ class OpenDirectoryApp extends React.Component {
                     {body}
                     <hr />
                     <div className="row">
-                        {(shouldShowAddNewEntryForm ? <div className="column"><AddEntryForm category={this.state.category} onAddEntry={this.onEntryHandler.bind(this)}/></div> : null )}
+                        {(shouldShowAddNewEntryForm ? <div className="column"><AddEntryForm category={this.state.category}/></div> : null )}
                         <div className="column">
-                        {(shouldShowAddNewCategoryForm ? <div><AddCategoryForm category={this.state.category} onAddCategory={this.onCategoryHandler.bind(this)} /></div> : null)}
+                        {(shouldShowAddNewCategoryForm ? <div><AddCategoryForm category={this.state.category} /></div> : null)}
                         </div>
-                        {(shouldShowAddNewEntryForm ? null : <div className="column"></div> )}
+                        {(shouldShowAddNewEntryForm ? null : <div className="column"></div>)}
                     </div>
                     <div className="row">
                         <div className="column">
@@ -84,20 +85,14 @@ class OpenDirectoryApp extends React.Component {
 
     }
 
-    onEntryHandler() {
-        setTimeout(() => {
-            this.networkAPIFetch();
-        }, 2000);
-    }
-
-    onCategoryHandler() {
-        setTimeout(() => {
-            this.networkAPIFetch();
-        }, 2000);
-    }
-
-    findCategoryByTXID(txid) {
-        return this.state.items.filter(i => { return i.type == "category" && i.txid == txid }).shift();
+    findObjectByTX(txid, results=null) {
+        if (!results) { results = this.state.items; }
+        for (const result of results) {
+            if (result.txid == txid) {
+                return result;
+            }
+        }
+        return null;
     }
 
     getLocation() {
@@ -110,7 +105,7 @@ class OpenDirectoryApp extends React.Component {
 
         var category = null;
         if (hash != "" && hash != "about") {
-            category = this.findCategoryByTXID(hash);
+            category = this.findObjectByTX(hash);
             if (!category) {
                 category = {"txid": hash, "needsdata": true};
             }
@@ -124,6 +119,7 @@ class OpenDirectoryApp extends React.Component {
 
     componentDidMount() {
         this.networkAPIFetch();
+        this.setupNetworkSocket();
         this.didUpdateLocation();
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
     }
@@ -132,10 +128,10 @@ class OpenDirectoryApp extends React.Component {
         var query = {
             "v": 3,
             "q": {
-                "find": { "out.s1": OPENDIR_PROTOCOL }
+                "find": { "out.s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi" }
             },
             "r": {
-                "f": "[.[] | {\"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}]"
+                "f": "[.[] | {\"height\": .blk.i, \"address\": .in[0].e.a, \"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}] | reverse"
             }
         };
 
@@ -144,13 +140,22 @@ class OpenDirectoryApp extends React.Component {
 
     networkAPIFetch() {
 
-        this.setState({isLoading: true});
+        console.log("Network fetching");
+
+        // only need to show loading when there are no items
+        if (this.state.items.length == 0) {
+            this.setState({isLoading: true});
+        }
 
         var query_url = "https://bitomation.com/q/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + this.getEncodedQuery();
         var header = { headers: { key: "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z" } };
         fetch(query_url, header).then(function(r) {
             return r.json()
         }).then(function(results) {
+            if (!results.c || !results.u) {
+                return [];
+            }
+
             return processOpenDirectoryTransactions(results.c)
                 .concat(processOpenDirectoryTransactions(results.u));
         }).then((results) => {
@@ -168,11 +173,12 @@ class OpenDirectoryApp extends React.Component {
             }
 
             this.setState({
-                items: results.reverse(),
+                items: results,
                 isLoading: false,
                 isError: false
             });
         }).catch((e) => {
+            console.log("error", e);
             this.setState({
                 items: [],
                 isLoading: false,
@@ -181,12 +187,37 @@ class OpenDirectoryApp extends React.Component {
         });
     }
 
+    setupNetworkSocket() {
+        const socket = new EventSource("https://bitomation.com/s/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + this.getEncodedQuery());
+        socket.onmessage = (e) => {
+            try {
+                const resp = JSON.parse(e.data);
+                console.log("socket received data", resp);
+                if ((resp.type == "c" || resp.type == "u") && (resp.data.length > 0)) {
+                    this.networkAPIFetch();
+                }
+            } catch (e) {
+                console.log("error handling network socket data", e.data);
+            }
+        }
+    }
+
     processResult(result, existing) {
         if (result.action == "create" && result.change.action == "SET") {
             const obj = result.change.value;
             obj.type = result.type;
             obj.txid = result.txid;
+            obj.address = result.address;
+            obj.height = result.height;
+            obj.votes = 0;
             existing.push(obj);
+        } else if (result.type == "vote") {
+            const obj = this.findObjectByTX(result.action_id, existing);
+            if (obj) {
+                obj.votes += 1;
+            } else {
+                console.log("Couldn't find object for vote", obj);
+            }
         } else {
             console.log("Error processing result", result);
         }
@@ -198,12 +229,26 @@ class List extends React.Component {
 
     getCategories() {
         const category_id = (this.props.category ? this.props.category.txid: null);
-        return this.props.items.filter(i => { return i.type == "category" && i.category == category_id });
+        const categories = this.props.items.filter(i => { return i.type == "category" && i.category == category_id });
+        return categories.sort((a, b) => {
+            if (a.votes < b.votes) { return 1; }
+            if (a.votes > b.votes) { return -1; }
+            if (a.height < b.height) { return 1; }
+            if (a.height > b.height) { return -1; }
+            return 0;
+        });
     }
 
     getEntries() {
         if (this.props.category) {
-            return this.props.items.filter(i => { return i.type == "entry" && i.category == this.props.category.txid });
+            const entries = this.props.items.filter(i => { return i.type == "entry" && i.category == this.props.category.txid });
+            return entries.sort((a, b) => {
+                if (a.votes < b.votes) { return 1; }
+                if (a.votes > b.votes) { return -1; }
+                if (a.height < b.height) { return 1; }
+                if (a.height > b.height) { return -1; }
+                return 0;
+            });
         }
 
         return [];
@@ -222,12 +267,11 @@ class List extends React.Component {
             parent = this.findCategoryByTXID(this.props.category.category);
         }
 
-        var back = <div><a href="/#">&laquo; Back</a><hr /></div>;
-
+        var back;
         var heading;
         if (this.props.category) {
             if (parent) {
-                back = <div><a href={"/#" + parent.txid}>&laquo; {parent.name}</a><hr /></div>;
+                back = <div className="back"><a href={"/#" + parent.txid}>&laquo; {parent.name}</a><hr /></div>;
             }
             heading = (<div>
                 {back}
@@ -255,11 +299,32 @@ class List extends React.Component {
 }
 
 class EntryItem extends React.Component {
+    handleUpvote(e) {
+        const OP_RETURN = [
+            OPENDIR_PROTOCOL,
+            "vote",
+            this.props.item.txid,
+        ];
+
+        const button = document.getElementById(this.props.item.txid).querySelector(".tip-money-button");
+        databutton.build({
+            data: OP_RETURN,
+            button: {
+                $el: button,
+                onPayment: (msg) => {
+                    console.log(msg);
+                }
+            }
+        });
+    }
+
     render() {
         return (
-            <li>
-            <h5><a href={this.props.item.link}>{this.props.item.name}</a></h5>
-            <p>{this.props.item.description}</p>
+            <li id={this.props.item.txid} className="entry">
+            <h5>{this.props.item.votes} <a onClick={this.handleUpvote.bind(this)}>▲</a> <a href={this.props.item.link}>{this.props.item.name}</a></h5>
+            <div className="tip-money-button"></div>
+            <p className="description">{this.props.item.description}</p>
+            <p className="url"><a href={this.props.item.link}>{this.props.item.link}</a></p>
             </li>
         )
     }
@@ -267,10 +332,30 @@ class EntryItem extends React.Component {
 
 class CategoryItem extends React.Component {
 
+    handleUpvote(e) {
+        const OP_RETURN = [
+            OPENDIR_PROTOCOL,
+            "vote",
+            this.props.item.txid,
+        ];
+
+        const button = document.getElementById(this.props.item.txid).querySelector(".tip-money-button");
+        databutton.build({
+            data: OP_RETURN,
+            button: {
+                $el: button,
+                onPayment: (msg) => {
+                    console.log(msg);
+                }
+            }
+        });
+    }
+
     render() {
         return (
-            <li className="category">
-            <h3><a href={"#" + this.props.item.txid}>{this.props.item.name}</a></h3>
+            <li id={this.props.item.txid} className="category">
+            <h3>{this.props.item.votes} <a onClick={this.handleUpvote.bind(this)}>▲</a> <a href={"#" + this.props.item.txid}>{this.props.item.name}</a></h3>
+            <div className="tip-money-button"></div>
             <p>{this.props.item.description}</p>
             </li>
         )
@@ -310,7 +395,7 @@ class AddEntryForm extends React.Component {
                         </div>
                         <label>
                             Link:
-                            <input type="text" value={this.state.link} onChange={this.handleLinkChange} placeholder="http://" />
+                            <input type="text" value={this.state.link} onChange={this.handleLinkChange} placeholder="bit://" />
                         </label>
                         <label>
                             Description:

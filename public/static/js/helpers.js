@@ -6,6 +6,7 @@ const OPENDIR_ACTIONS = [
     "entry.create",
     "entry.update",
     "entry.delete",
+    "vote",
 ];
 
 const MAP_PROTOCOL = "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5";
@@ -16,7 +17,13 @@ const MAP_ACTIONS = [
 
 function processOpenDirectoryTransaction(result) {
 
+    if (!result.txid || !result.data || !result.address || !result.height) {
+        return null;
+    }
+
     const txid = result.txid;
+    const address = result.address;
+    const height = result.height;
     var args = Object.values(result.data);
     const protocol_id = args.shift();
     const opendir_action = args.shift();
@@ -25,17 +32,23 @@ function processOpenDirectoryTransaction(result) {
     if (protocol_id !== OPENDIR_PROTOCOL) { return null; }
     if (OPENDIR_ACTIONS.indexOf(opendir_action) == -1) { return null; }
 
-    [item_type, item_action] = opendir_action.split(".");
+    if (opendir_action == "vote") {
+        item_type = item_action = "vote";
+    } else {
+        [item_type, item_action] = opendir_action.split(".");
+    }
 
     var obj = {
         type: item_type,
         action: item_action,
         txid: txid,
+        address: address,
+        height: height
     };
 
     if (item_action == "delete") {
         obj.action_id = args.shift();
-    } else {
+    } else if (item_action == "create" || item_action == "update") {
         if (item_action == "update") {
             obj.action_id = args.shift();
         }
@@ -44,8 +57,9 @@ function processOpenDirectoryTransaction(result) {
         if (data) {
             obj.change = data;
         }
+    } else if (item_action == "vote") {
+        obj.action_id = args.shift();
     }
-
 
     return obj;
 }

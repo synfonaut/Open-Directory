@@ -1,7 +1,7 @@
 
 .open-directory {
-    margin-top: 30px;
     font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    margin-top: 10px;
 }
 
 .open-directory h1,
@@ -25,6 +25,31 @@
 .open-directory .loading {
     text-align: center;
     padding: 30px;
+}
+
+.open-directory .back hr {
+    margin: 5px 0;
+}
+
+.open-directory .entry {
+    margin-bottom: 30px;
+}
+
+.open-directory .entry .description {
+    margin: 0;
+}
+
+.open-directory .entry .url {
+    font-size: 14px;
+    margin: 0;
+}
+
+.open-directory .entry .url a {
+    color: #AAA;
+}
+
+.open-directory .entry .url a:hover {
+    text-decoration: underline;
 }
 
 .navigation {
