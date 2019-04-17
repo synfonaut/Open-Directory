@@ -52,6 +52,27 @@
     text-decoration: underline;
 }
 
+.open-directory form {
+    margin: 10px 0;
+}
+
+.open-directory .upvote {
+    font-size: 13px;
+    float: left;
+    text-align: center;
+    padding: 3px 1px;
+}
+
+.open-directory .category-count {
+    font-size: 14px;
+    padding: 5px;
+    color: #AAA;
+}
+
+.open-directory .upvote a {
+    display: block;
+}
+
 .navigation {
     background: black;
     width: 100%;

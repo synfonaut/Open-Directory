@@ -1,11 +1,7 @@
 ## TODO
-* votes via tipping
-* check socket for new/incoming txs (keep track?)
 * better design
 * give items their own page as well
-* better header at top / smaller logo
-* description about what it is on home page with big blurb at top
-* show success, tell user what to expect. refresh page and if you don't see it it should appear soon
+* better homepage description
 * about with tip screen
 * edit/delete category
 * edit/delete item
@@ -14,8 +10,10 @@
 * better iconography and graphics
 * find places to add more color
 * group sub-categories
-* show number of items in category listing
 * forms should clear between page refreshes
+* add default state for no entries
+* success after submit, show a message
+* reset money button after submit
 
 * fork button!
 * let users tip someone who contributed a link

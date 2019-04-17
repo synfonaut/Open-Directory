@@ -17,13 +17,13 @@ const MAP_ACTIONS = [
 
 function processOpenDirectoryTransaction(result) {
 
-    if (!result.txid || !result.data || !result.address || !result.height) {
+    if (!result.txid || !result.data || !result.address) {
         return null;
     }
 
     const txid = result.txid;
     const address = result.address;
-    const height = result.height;
+    const height = (result.height ? result.height : Math.Infinity);
     var args = Object.values(result.data);
     const protocol_id = args.shift();
     const opendir_action = args.shift();

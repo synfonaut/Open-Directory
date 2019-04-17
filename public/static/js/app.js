@@ -160,7 +160,17 @@ class OpenDirectoryApp extends React.Component {
                 .concat(processOpenDirectoryTransactions(results.u));
         }).then((results) => {
             var final = []
-            for (const result of results) { final = this.processResult(result, final) }
+
+            // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
+            for (const result of results.filter(r => { return r.type == "category" })) {
+                final = this.processResult(result, final)
+            }
+            for (const result of results.filter(r => { return r.type == "entry" })) {
+                final = this.processResult(result, final)
+            }
+            for (const result of results.filter(r => { return r.type == "vote" })) {
+                final = this.processResult(result, final)
+            }
             return final;
         }).then((results) => {
             if (this.state.category && this.state.category.needsdata) { // hacky...better way?
@@ -210,6 +220,22 @@ class OpenDirectoryApp extends React.Component {
             obj.address = result.address;
             obj.height = result.height;
             obj.votes = 0;
+
+            if (obj.type == "entry") {
+                const category = this.findObjectByTX(obj.category, existing);
+                if (category) {
+                    category.entries += 1;
+                } else {
+                    console.log(obj, existing);
+                    console.log("Couldn't find categoryect for category", category);
+                }
+            } else if (obj.type == "category") {
+                if (!obj.entries) {
+                    obj.entries = 0;
+                }
+
+            }
+
             existing.push(obj);
         } else if (result.type == "vote") {
             const obj = this.findObjectByTX(result.action_id, existing);
@@ -233,6 +259,8 @@ class List extends React.Component {
         return categories.sort((a, b) => {
             if (a.votes < b.votes) { return 1; }
             if (a.votes > b.votes) { return -1; }
+            if (a.entries < b.entries) { return 1; }
+            if (a.entries > b.entries) { return -1; }
             if (a.height < b.height) { return 1; }
             if (a.height > b.height) { return -1; }
             return 0;
@@ -321,10 +349,17 @@ class EntryItem extends React.Component {
     render() {
         return (
             <li id={this.props.item.txid} className="entry">
-            <h5>{this.props.item.votes} <a onClick={this.handleUpvote.bind(this)}>▲</a> <a href={this.props.item.link}>{this.props.item.name}</a></h5>
-            <div className="tip-money-button"></div>
-            <p className="description">{this.props.item.description}</p>
-            <p className="url"><a href={this.props.item.link}>{this.props.item.link}</a></p>
+                <div className="row">
+                    <div className="column-10">
+                        <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number">{this.props.item.votes}</span></div> 
+                    </div>
+                    <div className="column">
+                        <h5><a href={this.props.item.link}>{this.props.item.name}</a></h5>
+                        <p className="description">{this.props.item.description}</p>
+                        <p className="url"><a href={this.props.item.link}>{this.props.item.link}</a></p>
+                        <div className="tip-money-button"></div>
+                    </div>
+                </div>
             </li>
         )
     }
@@ -332,6 +367,7 @@ class EntryItem extends React.Component {
 
 class CategoryItem extends React.Component {
 
+    // this is the same as EntryItem above ...share code?
     handleUpvote(e) {
         const OP_RETURN = [
             OPENDIR_PROTOCOL,
@@ -354,10 +390,24 @@ class CategoryItem extends React.Component {
     render() {
         return (
             <li id={this.props.item.txid} className="category">
-            <h3>{this.props.item.votes} <a onClick={this.handleUpvote.bind(this)}>▲</a> <a href={"#" + this.props.item.txid}>{this.props.item.name}</a></h3>
-            <div className="tip-money-button"></div>
-            <p>{this.props.item.description}</p>
+                <div className="row">
+                    <div className="column-10">
+                        <div className="upvote">
+                            <a onClick={this.handleUpvote.bind(this)}>▲</a>
+                            <span className="number">{this.props.item.votes}</span>
+                        </div> 
+                    </div>
+                    <div className="column">
+                        <h3>
+                            <a href={"#" + this.props.item.txid}>{this.props.item.name}</a>
+                            <span className="category-count">({this.props.item.entries})</span>
+                        </h3>
+                        <p className="description">{this.props.item.description}</p>
+                        <div className="tip-money-button"></div>
+                    </div>
+                </div>
             </li>
+
         )
     }
 }
@@ -399,7 +449,7 @@ class AddEntryForm extends React.Component {
                         </label>
                         <label>
                             Description:
-                            <textarea onChange={this.handleDescriptionChange} defaultValue={this.state.description}></textarea>
+                            <textarea onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
                         </label>
                         <input type="submit" value="Add new entry" />
                         <div>
@@ -463,7 +513,11 @@ class AddEntryForm extends React.Component {
                 $el: document.querySelector(".add-entry-money-button"),
                 onPayment: (msg) => {
                     console.log(msg)
-                    this.props.onAddEntry();
+                    this.setState({
+                        title: "",
+                        link: "",
+                        description: ""
+                    });
                 }
             }
         })
@@ -491,7 +545,6 @@ class AddCategoryForm extends React.Component {
         super(props);
         this.state = {
             title: "",
-            link: "",
             description: ""
         };
 
@@ -519,7 +572,7 @@ class AddCategoryForm extends React.Component {
                         </div>
                         <label>
                             Description:
-                            <textarea onChange={this.handleDescriptionChange} defaultValue={this.state.description}></textarea>
+                            <textarea onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
                         </label>
                         <input type="submit" value={this.props.category ? "Add new subcategory" : "Add new directory"} />
                         <div>
@@ -570,7 +623,10 @@ class AddCategoryForm extends React.Component {
                 $el: document.querySelector(".add-category-money-button"),
                 onPayment: (msg) => {
                     console.log(msg)
-                    this.props.onAddCategory();
+                    this.setState({
+                        title: "",
+                        description: ""
+                    });
                 }
             }
         })
