@@ -21,6 +21,8 @@ class OpenDirectoryApp extends React.Component {
             body = (
                 <div>
                     <h1>About Open Directory</h1>
+                    <p>it's early days so no moderation, let's call it a feature instead of a bug for now and see what the market does</p>
+                    <p>tip chain</p>
                     <p>✌️</p>
                 </div>
             );
@@ -60,9 +62,10 @@ class OpenDirectoryApp extends React.Component {
                     {hash == "" && 
                       <div>
                         <h1>Open Directory <code>v0.1</code></h1>
-                        <blockquote>An Open Directory for Bitcoin</blockquote>
-                        <p>Open Directory let's anyone create a collection of resources, like Awesome Lists, BSVDEVs and more. It's hosted 100% on Bitcoin (SV) and works with Bitcoin native protocols like b://, c://, bit:// and more</p>
-                        <p>Check out some of the on-chain resources below, or create your own!</p>
+                        <blockquote>Earn money. Organize the world.</blockquote>
+                        <p>Open Directory let's anyone create a collection of resources, like Awesome Lists, BSVDEVs, DMOZ, Yahoo! Directory and more—all on top of Bitcoin (SV).</p>
+                        <p>Because upvotes are tips, you generate money by organizing or submitting a good resource.</p>
+                        <p>Open Directory works with all kinds of links, from http:// to new Bitcoin-only links like Bitcom, B://, C://, D://, BCAT://</p>
                         <hr />
                       </div>}
                     {body}

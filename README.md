@@ -1,5 +1,8 @@
 ## TODO
 
+// TODO: need subcategory counts working
+// TODO: make site work with new root_category_id concept
+
 * need sharding to download very large data sets
 * are there any risks to including unconfirmed categories on tipchain?
 
@@ -28,6 +31,8 @@
 * fork button! let user edit html, edit paragraphs, change name, set root category
 * pagination of queries
 
+* add (PENDING) tag to categories and entries that haven't been created yet
+
 * add statistics, how many categories, how many entries
 * add recent open directories (changelog)
 * refactor code as much as possible so it's easier to organize
@@ -35,13 +40,15 @@
 * create good examples (bsvdevs, onchain games, onchain art)
 
 
-* disappear and rerender money button
+* disappear and rerender money button (otherwise people might accidentally post wrong content)
 
 
 * could make entire app protocol generic by introducing schema protocol and voting protocol
 * api should have bulk-mode by default so replaying transactions (deep forking) is possible with minimal tx
  * there's an assumption being made right now that tx identifiers uniquely identify categories/items...this breaks in bulk-mode
 
+
+* weird edge case with bitdb on u/c when joining on both, it doubles the download data even if you try to de-duplicate
 
 # FUTURE
 

@@ -1,61 +1,27 @@
-// got some issues to solve
 
 var axios = require('axios')
 //const root_category_id = "f7f43cfa064e754f3a84c945222f08b04fb8a70ebef0061da2d8ac85df2ac7c1";
-const root_category_id = "690ca39d57b57c18b83a30bb285b09fe23db989b1f9cf520dc739b2c128488fa";
+const root_category_id = "b9d323f1b16c09da37d15f5c37f95ff8fa2f9def2cb87b298d404929a58ddc3b";
 var query = {
     "v": 3,
     "q": {
+        "db": ["u", "c"],
         "aggregate": [
             {
                 "$match": {
                     "$and": [
-                        // find open dir protocol
                         {"out.s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi"},
-                        {
-                            // along with either category_id or object that refernces category_id
-                            "$or": [
-                                {"tx.h": root_category_id},
-                                {"out.s6": root_category_id},
-                            ]
-                        }
+                        {"$or": [
+                            {"tx.h": root_category_id},
+                            {"out.s6": root_category_id},
+                        ]}
                     ]
                 }
             },
-            {
-                "$graphLookup": {
-                    "from": "c",
-                    "startWith": "$out.s6",
-                    "connectFromField": "out.s6",
-                    "connectToField": "tx.h",
-                    "as": "confirmed_category"
-                }
-            },
-            {
-                "$lookup": {
-                    "from": "c",
-                    "localField": "tx.h",
-                    "foreignField": "out.s3",
-                    "as": "confirmed_votes"
-                }
-            },
-            {
-                "$graphLookup": {
-                    "from": "u",
-                    "startWith": "$out.s6",
-                    "connectFromField": "out.s6",
-                    "connectToField": "tx.h",
-                    "as": "unconfirmed_category"
-                }
-            },
-            {
-                "$lookup": {
-                    "from": "u",
-                    "localField": "tx.h",
-                    "foreignField": "out.s3",
-                    "as": "unconfirmed_votes"
-                }
-            },
+            { "$graphLookup": { "from": "c", "startWith": "$out.s6", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "confirmed_category" } },
+            { "$graphLookup": { "from": "u", "startWith": "$out.s6", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "unconfirmed_category" } },
+            { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s3", "as": "confirmed_votes" } },
+            { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s3", "as": "unconfirmed_votes" } },
             {
                 "$project": {
                     "confirmed_category": "$confirmed_category",
@@ -88,34 +54,17 @@ var query = {
             },
             { "$unwind": "$items" },
             { "$replaceRoot": { newRoot: "$items" } },
+            { "$project": { "_id": 0, } },
+            { "$addFields": { "_id": "$tx.h", } },
             { "$group": { "_id": null, "items": { $addToSet: "$$ROOT" } } },
             { "$unwind": "$items" },
             { "$replaceRoot": { newRoot: "$items" } },
             { "$sort": { "blk.i": 1 } },
-            {
-                "$project": {
-                    "_id": "$_id",
-                    "item": "$$ROOT",
-                }
-            },
-            { "$group": {_id: "$_id", "items": {$push: "$item"}}},
-            { "$unwind": "$items" },
-            { "$replaceRoot": { newRoot: "$items" } },
-
-            // PROBLEM IS INNER DOCUMENTS HAVE WRONG IDS?
-
-            /*
-            { "$group": { "_id": "$tx.h", "items": { $addToSet: "$$ROOT" } } },
-            { "$addFields": { "_id": "$tx.h" }},
-            */
-            //{ "$unwind": "$items" },
-            //{ "$replaceRoot": { newRoot: "$items" } },
-
         ]
     },
-//    "r": {
-//        "f": "[.[] | {\"height\": .blk.i, \"address\": .in[0].e.a, \"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}] | reverse"
-//    },
+    "r": {
+        "f": "[.[] | {\"height\": .blk.i, \"address\": .in[0].e.a, \"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}] | reverse"
+    },
 };
 
 var s = JSON.stringify(query);
@@ -128,13 +77,28 @@ var header = {
 };
 
 axios.get(url, header).then(function(r) {
-    console.log("Fetched: ", r);
-    const items = r.data.c.concat(r.data.u);
+    //console.log("Fetched: ", r);
+
+    var items = {};
+    const rows = r.data.c.concat(r.data.u);
+    for (const row of rows) {
+        if (!items[row.txid] || (row.height && items[row.txid] && !items[row.txid].height)) {
+            items[row.txid] = row;
+        }
+    }
+
+    const unique = Object.values(items);
+    const final = unique.sort(function(a, b) {
+        if (a.height < b.height) { return 1; }
+        if (a.height > b.height) { return -1; }
+        return 0;
+    });
+
     var idx = 1;
-    for (const row of items) {
+    for (const row of final) {
         console.log("#" + idx++);
         console.log(JSON.stringify(row, null, 4));
         console.log("=".repeat(80));
     }
-    console.log("Found " + items.length + " total rows");
+    console.log("Found " + final.length + " total rows");
 })
