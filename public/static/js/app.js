@@ -103,40 +103,122 @@ class OpenDirectoryApp extends React.Component {
     }
 
     didUpdateLocation() {
+        console.log("DID UPDATE LOCATION");
         const location = this.getLocation();
         const hash = location[0];
 
         var category = null;
-        if (hash != "" && hash != "about") {
+        if (hash != "about") {
+            category = {"txid": (hash == "" ? null : hash), "needsdata": true};
+            /*
             category = this.findObjectByTX(hash);
             if (!category) {
                 category = {"txid": hash, "needsdata": true};
             }
+            */
         }
+
+        console.log("didUpdateLocation", category);
 
         this.setState({
             location: location,
             category: category,
+        }, () => {
+            if (category && category.needsdata) {
+                this.networkAPIFetch();
+            }
         });
     }
 
     componentDidMount() {
-        this.networkAPIFetch();
-        this.setupNetworkSocket();
+        //this.networkAPIFetch();
+        //this.setupNetworkSocket();
         this.didUpdateLocation();
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
     }
 
     getEncodedQuery() {
+        var root_category_id = null;
+        if (this.state.category) {
+            root_category_id = this.state.category.txid;
+        }
+        console.log("ROOT CAT", root_category_id);
         var query = {
             "v": 3,
             "q": {
-                "find": { "out.s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi" }
+                "db": ["u", "c"],
+                "aggregate": [
+                    {
+                        "$match": {
+                            "$and": [
+                                {"out.s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi"},
+                            ]
+                        }
+                    },
+                    { "$graphLookup": { "from": "c", "startWith": "$out.s6", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "confirmed_category" } },
+                    { "$graphLookup": { "from": "u", "startWith": "$out.s6", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "unconfirmed_category" } },
+                    { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s3", "as": "confirmed_votes" } },
+                    { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s3", "as": "unconfirmed_votes" } },
+                    {
+                        "$project": {
+                            "confirmed_category": "$confirmed_category",
+                            "confirmed_votes": "$confirmed_votes",
+                            "unconfirmed_category": "$unconfirmed_category",
+                            "unconfirmed_votes": "$unconfirmed_votes",
+                            "object": ["$$ROOT"],
+                        }
+                    },
+                    {
+                        "$project": {
+                            "object.confirmed_category": 0,
+                            "object.confirmed_votes": 0,
+                            "object.unconfirmed_category": 0,
+                            "object.unconfirmed_votes": 0,
+                        }
+                    },
+                    {
+                        "$project": {
+                            "items": {
+                                "$concatArrays": [
+                                    "$object",
+                                    "$confirmed_category",
+                                    "$confirmed_votes",
+                                    "$unconfirmed_category",
+                                    "$unconfirmed_votes"
+                                ]
+                            }
+                        }
+                    },
+                    { "$unwind": "$items" },
+                    { "$replaceRoot": { newRoot: "$items" } },
+                    { "$project": { "_id": 0, } },
+                    { "$addFields": { "_id": "$tx.h", } },
+                    { "$group": { "_id": null, "items": { $addToSet: "$$ROOT" } } },
+                    { "$unwind": "$items" },
+                    { "$replaceRoot": { newRoot: "$items" } },
+                    { "$sort": { "blk.i": 1 } },
+                ]
             },
             "r": {
                 "f": "[.[] | {\"height\": .blk.i, \"address\": .in[0].e.a, \"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}] | reverse"
-            }
+            },
         };
+
+        if (root_category_id) {
+            query["q"]["aggregate"][0]["$match"]["$and"].push({
+                "$or": [
+                    {"tx.h": root_category_id},
+                    {"out.s6": root_category_id},
+                ]
+            });
+        } else {
+            query["q"]["aggregate"][0]["$match"]["$and"].push({
+                "$or": [
+                    {"tx.h": root_category_id},
+                    {"out.s5": {"$ne": "category"}}, // TODO: need protocol change because votes aren't filtering and s5 isn't stable
+                ]
+            });
+        }
 
         return btoa(JSON.stringify(query));
     }
@@ -144,6 +226,7 @@ class OpenDirectoryApp extends React.Component {
     networkAPIFetch() {
 
         console.log("Network fetching");
+        console.log("STATE", this.state);
 
         // only need to show loading when there are no items
         if (this.state.items.length == 0) {

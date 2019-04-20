@@ -2,6 +2,8 @@
 
 // TODO: need subcategory counts working
 // TODO: make site work with new root_category_id concept
+// TODO: if you actually fetch sub category entries you could cache results slightly more and no loading screen
+// TODO: should get root_category before first fetch
 
 * need sharding to download very large data sets
 * are there any risks to including unconfirmed categories on tipchain?

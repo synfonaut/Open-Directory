@@ -1,7 +1,7 @@
 
 var axios = require('axios')
+const root_category_id = null;
 //const root_category_id = "f7f43cfa064e754f3a84c945222f08b04fb8a70ebef0061da2d8ac85df2ac7c1";
-const root_category_id = "b9d323f1b16c09da37d15f5c37f95ff8fa2f9def2cb87b298d404929a58ddc3b";
 var query = {
     "v": 3,
     "q": {
@@ -11,10 +11,6 @@ var query = {
                 "$match": {
                     "$and": [
                         {"out.s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi"},
-                        {"$or": [
-                            {"tx.h": root_category_id},
-                            {"out.s6": root_category_id},
-                        ]}
                     ]
                 }
             },
@@ -66,6 +62,24 @@ var query = {
         "f": "[.[] | {\"height\": .blk.i, \"address\": .in[0].e.a, \"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}] | reverse"
     },
 };
+
+if (root_category_id) {
+    query["q"]["aggregate"][0]["$match"]["$and"].push({
+        "$or": [
+            {"tx.h": root_category_id},
+            {"out.s6": root_category_id},
+        ]
+    });
+} else {
+    query["q"]["aggregate"][0]["$match"]["$and"].push({
+        "$or": [
+            {"tx.h": root_category_id},
+            {"out.s5": {"$ne": "category"}}, // TODO: need protocol change because votes aren't filtering and s5 isn't stable
+        ]
+    });
+}
+
+console.log(query);
 
 var s = JSON.stringify(query);
 var b64 = Buffer.from(s).toString('base64');
