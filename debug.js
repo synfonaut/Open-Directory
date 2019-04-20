@@ -1,18 +1,20 @@
+// TODO: How to create parent tip chain? graphLookup?
 var axios = require('axios')
-// "f": "[.[] | {\"address\": .in[0].e.a, \"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}]"
+const root_category_id = "f7f43cfa064e754f3a84c945222f08b04fb8a70ebef0061da2d8ac85df2ac7c1";
 var query = {
     "v": 3,
     "q": {
-        sort: { "blk.i": 1 },
         "aggregate": [
             {
                 "$match": {
                     "$and": [
+                        // find open dir protocol
                         {"out.s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi"},
                         {
+                            // along with either category_id or object that refernces category_id
                             "$or": [
-                                {"tx.h": "b9d323f1b16c09da37d15f5c37f95ff8fa2f9def2cb87b298d404929a58ddc3b"},
-                                {"out.s6": "b9d323f1b16c09da37d15f5c37f95ff8fa2f9def2cb87b298d404929a58ddc3b"},
+                                {"tx.h": root_category_id},
+                                {"out.s6": root_category_id},
                             ]
                         }
                     ]
@@ -26,7 +28,6 @@ var query = {
                     "as": "category"
                 }
             },
-            /*
             {
                 "$lookup": {
                     "from": "c",
@@ -35,64 +36,37 @@ var query = {
                     "as": "votes"
                 }
             },
-            */
-        ]
-    }
-};
-
-query = {
-    "v": 3,
-    "q": {
-        sort: { "blk.i": 1 },
-        "aggregate": [
-            {
-                "$match": {
-                    "$and": [
-                        {"out.s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi"},
-                        {
-                            "$or": [
-                                {"tx.h": "b9d323f1b16c09da37d15f5c37f95ff8fa2f9def2cb87b298d404929a58ddc3b"},
-                                {"out.s6": "b9d323f1b16c09da37d15f5c37f95ff8fa2f9def2cb87b298d404929a58ddc3b"},
-                            ]
-                        }
-                    ]
-                }
-            },
-            {
-                "$lookup": {
-                    "from": "c",
-                    "localField": "out.s6",
-                    "foreignField": "tx.h",
-                    "as": "category"
-                }
-            },
             {
                 "$project": {
                     "category": "$category",
+                    "votes": "$votes",
                     "object": ["$$ROOT"],
                 }
             },
             {
                 "$project": {
                     "object.category": 0,
+                    "object.votes": 0,
                 }
             },
             {
                 "$project": {
-                    "_id": 0,
                     "items": {
-                        "$concatArrays": ["$category", "$object"]
+                        "$concatArrays": ["$category", "$object", "$votes"]
                     }
                 }
             },
-            {
-                "$unwind": "$items"
-            },
-            {
-                "$replaceRoot": { newRoot: "$items" }
-            },
+            { "$unwind": "$items" },
+            { "$replaceRoot": { newRoot: "$items" } },
+            { "$group": { "_id": "$_id", "items": { $addToSet: "$$ROOT" } } },
+            { "$unwind": "$items" },
+            { "$replaceRoot": { newRoot: "$items" } },
+            { "$sort": { "blk.i": 1 } },
         ]
-    }
+    },
+    "r": {
+        "f": "[.[] | {\"height\": .blk.i, \"address\": .in[0].e.a, \"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}] | reverse"
+    },
 };
 
 var s = JSON.stringify(query);
