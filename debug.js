@@ -1,7 +1,8 @@
 
 var axios = require('axios')
-const root_category_id = null;
-//const root_category_id = "f7f43cfa064e754f3a84c945222f08b04fb8a70ebef0061da2d8ac85df2ac7c1";
+var root_category_id;
+root_category_id = null;
+//root_category_id = "919c5c4af8c8118e0bedb882dfb15e2167a51521b2d91aa644a490418376125b";
 var query = {
     "v": 3,
     "q": {
@@ -14,14 +15,24 @@ var query = {
                     ]
                 }
             },
+            // climb parent recursively
             { "$graphLookup": { "from": "c", "startWith": "$out.s6", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "confirmed_category" } },
+
             { "$graphLookup": { "from": "u", "startWith": "$out.s6", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "unconfirmed_category" } },
+            // find votes
             { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s3", "as": "confirmed_votes" } },
             { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s3", "as": "unconfirmed_votes" } },
+
+            // climb children
+            { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s6", "as": "confirmed_entries" } },
+            { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s6", "as": "unconfirmed_entries" } },
+
             {
                 "$project": {
                     "confirmed_category": "$confirmed_category",
                     "confirmed_votes": "$confirmed_votes",
+                    "confirmed_entries": "$confirmed_entries",
+                    "unconfirmed_entries": "$unconfirmed_entries",
                     "unconfirmed_category": "$unconfirmed_category",
                     "unconfirmed_votes": "$unconfirmed_votes",
                     "object": ["$$ROOT"],
@@ -31,6 +42,8 @@ var query = {
                 "$project": {
                     "object.confirmed_category": 0,
                     "object.confirmed_votes": 0,
+                    "object.confirmed_entries": 0,
+                    "object.unconfirmed_entries": 0,
                     "object.unconfirmed_category": 0,
                     "object.unconfirmed_votes": 0,
                 }
@@ -42,6 +55,8 @@ var query = {
                             "$object",
                             "$confirmed_category",
                             "$confirmed_votes",
+                            "$confirmed_entries",
+                            "$unconfirmed_entries",
                             "$unconfirmed_category",
                             "$unconfirmed_votes"
                         ]
@@ -92,6 +107,7 @@ var header = {
 
 axios.get(url, header).then(function(r) {
     //console.log("Fetched: ", r);
+    //console.log("Fetched: ", JSON.stringify(r.data.c, null, 4));
 
     var items = {};
     const rows = r.data.c.concat(r.data.u);

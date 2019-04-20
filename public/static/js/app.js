@@ -63,9 +63,22 @@ class OpenDirectoryApp extends React.Component {
                       <div>
                         <h1>Open Directory <code>v0.1</code></h1>
                         <blockquote>Earn money. Organize the world.</blockquote>
-                        <p>Open Directory let's anyone create a collection of resources, like Awesome Lists, BSVDEVs, DMOZ, Yahoo! Directory and more—all on top of Bitcoin (SV).</p>
-                        <p>Because upvotes are tips, you generate money by organizing or submitting a good resource.</p>
-                        <p>Open Directory works with all kinds of links, from http:// to new Bitcoin-only links like Bitcom, B://, C://, D://, BCAT://</p>
+                        <div className="row">
+                            <div className="column">
+                                <p>Open Directory let's anyone create a collection of resources, like Awesome Lists, BSVDEVs, DMOZ, Yahoo! Directory and more—all on top of Bitcoin (SV).</p>
+                                <p>Because upvotes are tips, you generate money by organizing or submitting a good resource.</p>
+                                <p>Open Directory works with all kinds of links, from http:// to new Bitcoin-only links like Bitcom, B://, C://, D://, BCAT://</p>
+                            </div>
+                            <div className="column">
+                                <p>Open Directory works with all kinds of links, from http:// to new Bitcoin-only links like Bitcom, B://, C://, D://, BCAT://</p>
+                                <ul>
+                                    <li><a href="#">Do this</a></li>
+                                    <li><a href="#">Do this</a></li>
+                                    <li><a href="#">Do this</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
                         <hr />
                       </div>}
                     {body}
@@ -109,13 +122,13 @@ class OpenDirectoryApp extends React.Component {
 
         var category = null;
         if (hash != "about") {
-            category = {"txid": (hash == "" ? null : hash), "needsdata": true};
             /*
             category = this.findObjectByTX(hash);
             if (!category) {
                 category = {"txid": hash, "needsdata": true};
             }
             */
+            category = {"txid": (hash == "" ? null : hash), "needsdata": true};
         }
 
         console.log("didUpdateLocation", category);
@@ -151,18 +164,28 @@ class OpenDirectoryApp extends React.Component {
                     {
                         "$match": {
                             "$and": [
-                                {"out.s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi"},
+                                {"out.s1": OPENDIR_PROTOCOL},
                             ]
                         }
                     },
+                    // climb parent recursively
                     { "$graphLookup": { "from": "c", "startWith": "$out.s6", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "confirmed_category" } },
+
                     { "$graphLookup": { "from": "u", "startWith": "$out.s6", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "unconfirmed_category" } },
+                    // find votes
                     { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s3", "as": "confirmed_votes" } },
                     { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s3", "as": "unconfirmed_votes" } },
+
+                    // climb children
+                    { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s6", "as": "confirmed_entries" } },
+                    { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s6", "as": "unconfirmed_entries" } },
+
                     {
                         "$project": {
                             "confirmed_category": "$confirmed_category",
                             "confirmed_votes": "$confirmed_votes",
+                            "confirmed_entries": "$confirmed_entries",
+                            "unconfirmed_entries": "$unconfirmed_entries",
                             "unconfirmed_category": "$unconfirmed_category",
                             "unconfirmed_votes": "$unconfirmed_votes",
                             "object": ["$$ROOT"],
@@ -172,6 +195,8 @@ class OpenDirectoryApp extends React.Component {
                         "$project": {
                             "object.confirmed_category": 0,
                             "object.confirmed_votes": 0,
+                            "object.confirmed_entries": 0,
+                            "object.unconfirmed_entries": 0,
                             "object.unconfirmed_category": 0,
                             "object.unconfirmed_votes": 0,
                         }
@@ -183,6 +208,8 @@ class OpenDirectoryApp extends React.Component {
                                     "$object",
                                     "$confirmed_category",
                                     "$confirmed_votes",
+                                    "$confirmed_entries",
+                                    "$unconfirmed_entries",
                                     "$unconfirmed_category",
                                     "$unconfirmed_votes"
                                 ]

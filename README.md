@@ -5,6 +5,9 @@
 ## TODO
 
 ### data model
+* react should display entries immediately on category change and only update UI if it needs to after network fetch
+* protcol would be nice to have a stable category_id to filter on
+
 * if you actually fetch sub category entries you could cache results slightly more and no loading screen
 * need subcategory counts working
 * pagination of queries
