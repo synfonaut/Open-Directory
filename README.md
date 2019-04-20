@@ -1,5 +1,8 @@
 ## TODO
+* need sharding to download very large data sets
+* root category concept, make it easy to re-use home-page for single-purpose
 * better design
+* let users tip a custom amount to someone who contributed a link and entire tip chain
 * give items their own page as well
 * better homepage description
 * about with tip screen
@@ -14,18 +17,25 @@
 * add default state for no entries
 * success after submit, show a message
 * reset money button after submit
-
-* fork button!
-* let users tip someone who contributed a link
+* add blurb about how you can make money on opendirsv
+* allow markdown in description
+* have a chain of tips where everyone in the chain gets a % of the tip
+* about page (BSV particle effect, only run when active)
+* compile step, minify, convert to c:// and export for web & bitcoin output
+* fork button! let user edit html, edit paragraphs, change name, set root category
+* pagination of queries
 
 * add statistics, how many categories, how many entries
-* changelog
+* add recent open directories (changelog)
+* refactor code as much as possible so it's easier to organize
 * collab with bsvdevs and put 'em on chain
-* create good examples (bsvdevs, onchain games)
+* create good examples (bsvdevs, onchain games, onchain art)
+
+
+* disappear and rerender money button
 
 
 * could make entire app protocol generic by introducing schema protocol and voting protocol
-
 * api should have bulk-mode by default so replaying transactions (deep forking) is possible with minimal tx
  * there's an assumption being made right now that tx identifiers uniquely identify categories/items...this breaks in bulk-mode
 

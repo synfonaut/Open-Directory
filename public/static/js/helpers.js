@@ -75,7 +75,6 @@ function convertMAPOPReturnToKeyValues(orig_args) {
     var obj = {action: map_action};
 
     if (map_action == "SET") {
-
         obj.value = {};
 
         // process s* key/value pairs
@@ -96,7 +95,7 @@ function convertMAPOPReturnToKeyValues(orig_args) {
         }
 
         return obj;
-    } else if (map_action == "DELETE") {
+    } else if (map_action == "DELETE") { // todo
         obj.value = args;
         return obj;
     } else {

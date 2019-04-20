@@ -339,6 +339,12 @@ class EntryItem extends React.Component {
             data: OP_RETURN,
             button: {
                 $el: button,
+                /*$pay: {
+                    to: [{
+                        address: OPENDIR_PROTOCOL,
+                        value: 50000,
+                    }]
+                },*/
                 onPayment: (msg) => {
                     console.log(msg);
                 }
