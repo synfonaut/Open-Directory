@@ -147,8 +147,9 @@ class OpenDirectoryApp extends React.Component {
             this.setState({isLoading: true});
         }
 
-        var query_url = "https://bitomation.com/q/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + this.getEncodedQuery();
-        var header = { headers: { key: "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z" } };
+        var query_url = "https://genesis.bitdb.network/q/1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN/" + this.getEncodedQuery();
+        //var query_url = "https://bitomation.com/q/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + this.getEncodedQuery();
+        var header = { headers: { key: "1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN" } };
         fetch(query_url, header).then(function(r) {
             return r.json()
         }).then(function(results) {

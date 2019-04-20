@@ -1,5 +1,8 @@
 ## TODO
+
 * need sharding to download very large data sets
+* are there any risks to including unconfirmed categories on tipchain?
+
 * root category concept, make it easy to re-use home-page for single-purpose
 * better design
 * let users tip a custom amount to someone who contributed a link and entire tip chain
@@ -15,7 +18,7 @@
 * group sub-categories
 * forms should clear between page refreshes
 * add default state for no entries
-* success after submit, show a message
+* success after submit, show a message and what to do if it doesn't appear (refresh)
 * reset money button after submit
 * add blurb about how you can make money on opendirsv
 * allow markdown in description
