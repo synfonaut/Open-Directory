@@ -1,8 +1,9 @@
+const OPENDIR_PROTOCOL = "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi";
 
 var axios = require('axios')
 var root_category_id;
 root_category_id = null;
-//root_category_id = "919c5c4af8c8118e0bedb882dfb15e2167a51521b2d91aa644a490418376125b";
+root_category_id = "f7f43cfa064e754f3a84c945222f08b04fb8a70ebef0061da2d8ac85df2ac7c1";
 var query = {
     "v": 3,
     "q": {
@@ -11,7 +12,7 @@ var query = {
             {
                 "$match": {
                     "$and": [
-                        {"out.s1": "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi"},
+                        {"out.s1": OPENDIR_PROTOCOL},
                     ]
                 }
             },
@@ -77,6 +78,7 @@ var query = {
         "f": "[.[] | {\"height\": .blk.i, \"address\": .in[0].e.a, \"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}] | reverse"
     },
 };
+;
 
 if (root_category_id) {
     query["q"]["aggregate"][0]["$match"]["$and"].push({

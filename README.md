@@ -5,11 +5,8 @@
 ## TODO
 
 ### data model
-* react should display entries immediately on category change and only update UI if it needs to after network fetch
 * protcol would be nice to have a stable category_id to filter on
 
-* if you actually fetch sub category entries you could cache results slightly more and no loading screen
-* need subcategory counts working
 * pagination of queries
 * dedicated protocol
  - works compatible with forking
@@ -21,6 +18,8 @@
  - need algorithm to calculate
 * disappear and rerender money button (otherwise people might accidentally post wrong content)
 * should categories count as entries in the num?
+
+* bug: verify edit transactions in same block don't lose their order and get confused
 
 ### design/ux
 * better design
@@ -67,12 +66,90 @@
 * use vanity addresses for protocols? 1opendir... helps with UX, downside is people might assume it's safe without actually checking
 * how to do ownership? want collaboration but maybe need some kind of approval system. don't like my resource? 1-click fork
 * need protocol processor that knows how to process on-chain, let bitcom protocol reference on-chain javascript to run to process OP_RETURN
+* offline/client-side caching
+* pretty bitcom links, so Bottle has bot://<OPENDIR_PROTOCOL>/<txid>
 
 
 ## FEEDBACK
+* bitdb bug: event is getting messages it shouldn't
 * bitdb suggestion: weird edge case with bitdb on u/c when joining on both, it doubles the download data even if you try to de-duplicate
 * bitdb suggestion: nice to just say "give me OP_RETURN string array" in addition to s1,s2,s3,s4,s5—useful for variable length protocols like MAP
 * on-chain planaria... end up doing similar "state processing" code to bring "objects" up to date, planarium.js?
  * could be like a planaria state machine transformer, but embedded in a bitcoin tx, so everything is still onchain
  * in addition to {"r": {"f": ...}} could do bit:// protocol transformations? run it through MAP in-chain protocol to convert s1/s2/s3/s3 to key/values
 * enable regex in jq for more advanced filtering
+
+## reaons to build protocol this way
+- forwards comptabile, can easily add new fields and tags
+- a bit more verbose, but a lot more clear—and updates are a lot more straight forward
+
+
+## category
+
+1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
+create.category
+name
+Root category
+description
+This is a new description
+-> 12345...xyz
+
+1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
+create.category
+12345...xyz
+name
+Root category
+description
+This is a new description
+
+1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
+create.update
+123456...abc
+name
+Not a root category anymore
+description
+Updated description
+
+1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
+create.delete
+123456...abc
+
+## entry
+
+1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
+entry.create
+123456...abc
+name
+name of entry
+link
+link://link
+description
+description
+-> abc-123
+
+1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
+entry.update
+abc-123
+description
+"hello description"
+
+1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
+entry.update
+abc-123
+name
+"better name"
+
+1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
+entry.delete
+abc-123
+
+## vote
+
+1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
+vote
+123456...abc
+
+1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
+vote
+12345...xyz
+

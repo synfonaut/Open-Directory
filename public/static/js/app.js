@@ -8,6 +8,7 @@ class OpenDirectoryApp extends React.Component {
             isLoading: true,
             isError: false
         };
+
     }
 
     render() {
@@ -142,7 +143,6 @@ class OpenDirectoryApp extends React.Component {
     }
 
     componentDidMount() {
-        this.setupNetworkSocket();
         this.didUpdateLocation();
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
     }
@@ -266,10 +266,27 @@ class OpenDirectoryApp extends React.Component {
                 return [];
             }
 
-            return processOpenDirectoryTransactions(results.c)
-                .concat(processOpenDirectoryTransactions(results.u));
+            var items = {};
+            const rows = results.c.concat(results.u);
+            for (const row of rows) {
+                if (!items[row.txid] || (row.height && items[row.txid] && !items[row.txid].height)) {
+                    items[row.txid] = row;
+                }
+            }
+
+            const unique = Object.values(items);
+            const final = unique.sort(function(a, b) {
+                if (a.height < b.height) { return 1; }
+                if (a.height > b.height) { return -1; }
+                return 0;
+            });
+
+
+            return processOpenDirectoryTransactions(final);
         }).then((results) => {
             var final = []
+
+            //console.log("Got " + results.length + " results to process");
 
             // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
             for (const result of results.filter(r => { return r.type == "category" })) {
@@ -297,6 +314,9 @@ class OpenDirectoryApp extends React.Component {
                 isLoading: false,
                 isError: false
             });
+
+            this.setupNetworkSocket();
+
         }).catch((e) => {
             console.log("error", e);
             this.setState({
@@ -308,14 +328,37 @@ class OpenDirectoryApp extends React.Component {
     }
 
     setupNetworkSocket() {
-        const socket = new EventSource("https://bitomation.com/s/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + this.getEncodedQuery());
-        socket.onmessage = (e) => {
+
+        if (this.socket) {
+            console.log("refreshing network socket");
+            this.socket.close();
+            delete this.socket;
+        } else {
+            console.log("setting up new network socket");
+        }
+
+        this.socket = new EventSource("https://bitomation.com/s/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + this.getEncodedQuery());
+        this.socket.onmessage = (e) => {
             try {
                 const resp = JSON.parse(e.data);
                 if ((resp.type == "c" || resp.type == "u") && (resp.data.length > 0)) {
-                    console.log("Socket handled new message");
-                    this.networkAPIFetch();
+
+                    var needsUpdate = false;
+                    for (var i = 0; i < resp.data.length; i++) {
+                        if (resp.data[i] && resp.data[i].data && resp.data[i].data.s1 == OPENDIR_PROTOCOL) {
+                            needsUpdate = true;
+                        }
+                    }
+
+                    if (needsUpdate) {
+                        console.log("Handled new message", resp);
+                        this.networkAPIFetch();
+                    } else {
+                        console.log("Unhandled message", resp);
+                    }
                 }
+
+
             } catch (e) {
                 console.log("error handling network socket data", e.data);
             }
@@ -323,6 +366,7 @@ class OpenDirectoryApp extends React.Component {
     }
 
     processResult(result, existing) {
+
         if (result.action == "create" && result.change.action == "SET") {
             const obj = result.change.value;
             obj.type = result.type;
