@@ -20,6 +20,7 @@
  - condense tip if same author gets multiple
  - need algorithm to calculate
 * disappear and rerender money button (otherwise people might accidentally post wrong content)
+* should categories count as entries in the num?
 
 ### design/ux
 * better design
@@ -40,6 +41,7 @@
 * add blurb about how you can make money on opendirsv
 * allow markdown in description
 * about page (BSV particle effect, only run when active)
+* beta tag, let people know it's a new thing and an experiment
 
 ### cleanup
 * compile step, minify, convert to c:// and export for web & bitcoin output

@@ -5,7 +5,7 @@ class OpenDirectoryApp extends React.Component {
             items: [],
             location: [""],
             category: null,
-            isLoading: false,
+            isLoading: true,
             isError: false
         };
     }
@@ -116,22 +116,20 @@ class OpenDirectoryApp extends React.Component {
     }
 
     didUpdateLocation() {
-        console.log("DID UPDATE LOCATION");
         const location = this.getLocation();
         const hash = location[0];
 
+        console.log("Location updated", hash);
+
         var category = null;
         if (hash != "about") {
-            /*
             category = this.findObjectByTX(hash);
             if (!category) {
-                category = {"txid": hash, "needsdata": true};
+                category = {"txid": (hash == "" ? null : hash), "needsdata": true};
+            } else {
+                category.needsdata = true;
             }
-            */
-            category = {"txid": (hash == "" ? null : hash), "needsdata": true};
         }
-
-        console.log("didUpdateLocation", category);
 
         this.setState({
             location: location,
@@ -144,8 +142,7 @@ class OpenDirectoryApp extends React.Component {
     }
 
     componentDidMount() {
-        //this.networkAPIFetch();
-        //this.setupNetworkSocket();
+        this.setupNetworkSocket();
         this.didUpdateLocation();
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
     }
@@ -155,7 +152,7 @@ class OpenDirectoryApp extends React.Component {
         if (this.state.category) {
             root_category_id = this.state.category.txid;
         }
-        console.log("ROOT CAT", root_category_id);
+
         var query = {
             "v": 3,
             "q": {
@@ -253,16 +250,15 @@ class OpenDirectoryApp extends React.Component {
     networkAPIFetch() {
 
         console.log("Network fetching");
-        console.log("STATE", this.state);
 
         // only need to show loading when there are no items
         if (this.state.items.length == 0) {
             this.setState({isLoading: true});
         }
 
-        var query_url = "https://genesis.bitdb.network/q/1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN/" + this.getEncodedQuery();
-        //var query_url = "https://bitomation.com/q/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + this.getEncodedQuery();
-        var header = { headers: { key: "1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN" } };
+        //var query_url = "https://genesis.bitdb.network/q/1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN/" + this.getEncodedQuery();
+        var query_url = "https://bitomation.com/q/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + this.getEncodedQuery();
+        var header = { headers: { key: "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z" } };
         fetch(query_url, header).then(function(r) {
             return r.json()
         }).then(function(results) {
@@ -316,8 +312,8 @@ class OpenDirectoryApp extends React.Component {
         socket.onmessage = (e) => {
             try {
                 const resp = JSON.parse(e.data);
-                console.log("socket received data", resp);
                 if ((resp.type == "c" || resp.type == "u") && (resp.data.length > 0)) {
+                    console.log("Socket handled new message");
                     this.networkAPIFetch();
                 }
             } catch (e) {
