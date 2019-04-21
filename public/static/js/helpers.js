@@ -125,7 +125,7 @@ function processOpenDirectoryTransactions(results) {
 }
 
 
-function fetch_from_network(category_id=null, cursor=0, limit=51, results=[]) {
+function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
     const query = {
         "v": 3,
         "q": {
@@ -237,12 +237,22 @@ function fetch_from_network(category_id=null, cursor=0, limit=51, results=[]) {
         } else {
 
             const sorted = results.sort(function(a, b) {
+                if (!a.height) { return -1; }
                 if (a.height < b.height) { return 1; }
                 if (a.height > b.height) { return -1; }
                 return 0;
             });
 
-            resolve(sorted);
+            var items = new Map();
+            for (const item of sorted) {
+                const matched_item = items[item.txid];
+                if (!matched_item || (matched_item && !matched_item.height)) {
+                    items.set(item.txid, item)
+                }
+            }
+
+            const values = Array.from(items.values());
+            resolve(values);
         }
     }
 

@@ -6,6 +6,8 @@
 
 ### data model
 
+// TODO: Should be able to navigation even if internet is down based on your cache
+// TODO: want to cache results by txid — since they are immutable they should never change...then only overwrite them if they don't have a height (unconfirmed)
 // TODO: Does paging work with unconfirmed results?
 * pagination of queries
 * dedicated protocol
