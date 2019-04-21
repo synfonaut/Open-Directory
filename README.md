@@ -5,8 +5,8 @@
 ## TODO
 
 ### data model
-* protcol would be nice to have a stable category_id to filter on
 
+// TODO: Does paging work with unconfirmed results?
 * pagination of queries
 * dedicated protocol
  - works compatible with forking
@@ -19,7 +19,7 @@
 * disappear and rerender money button (otherwise people might accidentally post wrong content)
 * should categories count as entries in the num?
 
-* bug: verify edit transactions in same block don't lose their order and get confused
+* bug: verify edit transactions in same block don't lose their order in update and set wrong value
 
 ### design/ux
 * better design

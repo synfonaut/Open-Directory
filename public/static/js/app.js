@@ -251,6 +251,57 @@ class OpenDirectoryApp extends React.Component {
 
         console.log("Network fetching");
 
+        if (this.state.items.length == 0) {
+            this.setState({isLoading: true});
+        }
+
+        const category_id = (this.state.category ? this.state.category.txid : null);
+        fetch_from_network(category_id).then(processOpenDirectoryTransactions).then((results) => {
+            var final = []
+
+            //console.log("Got " + results.length + " results to process");
+
+            // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
+            for (const result of results.filter(r => { return r.type == "category" })) {
+                final = this.processResult(result, final)
+            }
+            for (const result of results.filter(r => { return r.type == "entry" })) {
+                final = this.processResult(result, final)
+            }
+            for (const result of results.filter(r => { return r.type == "vote" })) {
+                final = this.processResult(result, final)
+            }
+            return final;
+        }).then((results) => {
+            if (this.state.category && this.state.category.needsdata) { // hacky...better way?
+                for (const result of results) {
+                    if (result.type == "category" && result.txid == this.state.category.txid) {
+                        this.setState({category: result});
+                        break;
+                    }
+                }
+            }
+
+            this.setState({
+                items: results,
+                isLoading: false,
+                isError: false
+            });
+
+            this.setupNetworkSocket();
+
+        }).catch((e) => {
+            console.log("error", e);
+            this.setState({
+                items: [],
+                isLoading: false,
+                isError: true,
+            });
+        });
+
+
+        /*
+
         // only need to show loading when there are no items
         if (this.state.items.length == 0) {
             this.setState({isLoading: true});
@@ -325,6 +376,7 @@ class OpenDirectoryApp extends React.Component {
                 isError: true,
             });
         });
+        */
     }
 
     setupNetworkSocket() {
@@ -396,7 +448,7 @@ class OpenDirectoryApp extends React.Component {
             if (obj) {
                 obj.votes += 1;
             } else {
-                console.log("Couldn't find object for vote", obj);
+                console.log("Couldn't find object for vote", obj, result);
             }
         } else {
             console.log("Error processing result", result);
