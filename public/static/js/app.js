@@ -2,6 +2,7 @@ class OpenDirectoryApp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            archive: [],
             items: [],
             location: [""],
             category: null,
@@ -123,7 +124,6 @@ class OpenDirectoryApp extends React.Component {
         var items = [];
 
         if (hash != "about") {
-
             if (hash == "") {
                 category = {"txid": null, "needsdata": true};
             } else {
@@ -135,7 +135,11 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
+            items = this.buildItemsFromArchive(category.txid, this.state.archive);
+
+            console.log("HASH", hash, "found", items.length);
         }
+
 
         this.setState({
             "location": location,
@@ -256,6 +260,20 @@ class OpenDirectoryApp extends React.Component {
         return btoa(JSON.stringify(query));
     }
 
+    buildItemsFromArchive(category_id, results=[]) {
+        console.log("buildItemsFromArchive", category_id);
+        return results.filter(result => {
+            if (category_id == result.txid)     { return true } // category
+            if (category_id == result.category) { return true } // entry
+
+            // root category
+            if (category_id == null && result.type == "category" && !result.category) {
+                return true;
+            }
+            return false;
+        });
+    }
+
     networkAPIFetch() {
 
         console.log("Network fetching");
@@ -267,9 +285,15 @@ class OpenDirectoryApp extends React.Component {
         const category_id = (this.state.category ? this.state.category.txid : null);
         fetch_from_network(category_id).then((results) => {
 
-            const items = this.processResults(results);
+            const archive = this.processResults(results);
+            const items = this.buildItemsFromArchive(category_id, archive);
+
+            console.log("FOUND ITEMS", items);
+            console.log("NUM IN ARCHIVE ", archive.length);
+            console.log("NUM IN ITEMS", items.length);
 
             this.setState({
+                "archive": archive,
                 "items": items,
                 "isLoading": false,
                 "isError": false

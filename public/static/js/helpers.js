@@ -186,12 +186,12 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                     }
                 },
                 { "$unwind": "$items" },
-                { "$replaceRoot": { newRoot: "$items" } },
+                { "$replaceRoot": { "newRoot": "$items" } },
                 { "$project": { "_id": 0, } },
                 { "$addFields": { "_id": "$tx.h", } },
-                { "$group": { "_id": null, "items": { $addToSet: "$$ROOT" } } },
+                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
                 { "$unwind": "$items" },
-                { "$replaceRoot": { newRoot: "$items" } },
+                { "$replaceRoot": { "newRoot": "$items" } },
                 { "$skip": cursor },
                 { "$limit": limit },
             ]
