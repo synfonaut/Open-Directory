@@ -6,6 +6,9 @@
 
 ### data model
 
+* replace streaming socket 
+* need good loading indidcator
+* need good error indidcator, up high
 * make sure pulling internet really lets you surf around, some weirdness when going to uncached sub-category
 * surfing around is a little glithchy...figure out what that's about
 * need ability to slice out local data because it isn't cached until second time so every first visit will be glitchy

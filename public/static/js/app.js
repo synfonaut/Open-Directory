@@ -127,7 +127,7 @@ class OpenDirectoryApp extends React.Component {
             if (hash == "") {
                 category = {"txid": null, "needsdata": true};
             } else {
-                category = this.findObjectByTX(hash);
+                category = this.findObjectByTX(hash, this.state.archive);
                 if (category) {
                     category.needsdata = true;
                 } else {
@@ -137,7 +137,10 @@ class OpenDirectoryApp extends React.Component {
 
             items = this.buildItemsFromArchive(category.txid, this.state.archive);
 
-            console.log("HASH", hash, "found", items.length);
+        }
+
+        if (location !== this.state.location) {
+            window.scrollTo(0, 0);
         }
 
 
@@ -147,9 +150,7 @@ class OpenDirectoryApp extends React.Component {
             "items": items,
         }, () => {
             if (category && category.needsdata) {
-                setTimeout(() => {
-                    this.networkAPIFetch();
-                }, 2500);
+                this.networkAPIFetch();
             }
         });
     }
@@ -260,37 +261,85 @@ class OpenDirectoryApp extends React.Component {
         return btoa(JSON.stringify(query));
     }
 
-    buildItemsFromArchive(category_id, results=[]) {
-        console.log("buildItemsFromArchive", category_id);
-        return results.filter(result => {
-            if (category_id == result.txid)     { return true } // category
-            if (category_id == result.category) { return true } // entry
-
-            // root category
-            if (category_id == null && result.type == "category" && !result.category) {
-                return true;
-            }
-            return false;
+    getItemFromArchive(txid, results=[]) {
+        const items = results.filter(result => {
+            return txid == result.txid;
         });
+
+        if (items.length == 1) {
+            return items[0];
+        }
+
+        return null;
+    }
+
+    buildItemsFromArchive(category_id, results=[]) {
+
+        // TODO: YUCKY. Clean this up
+
+        // It's like this beause need to build hierarchy in specific way.
+
+        const items = [];
+        const leftover = [];
+        for (const result of results) {
+            if (category_id == result.txid) {
+                items.push(result);
+            } else {
+                leftover.push(result);
+            }
+        }
+
+        const leftover2 = [];
+        for (const result of leftover) {
+            if (category_id == result.category) {
+                items.push(result);
+            } else {
+                leftover2.push(result);
+            }
+        }
+
+        const leftover3 = [];
+        for (const result of leftover2) {
+            if (category_id == result.category) {
+                items.push(result);
+            } else {
+                leftover3.push(result);
+            }
+        }
+
+        if (items[0] && items[0].category) {
+            const response = this.buildItemsFromArchive(items[0].category, leftover3);
+            return response.concat(items);
+        }
+
+        return items;
     }
 
     networkAPIFetch() {
 
-        console.log("Network fetching");
+        console.log("network fetching");
 
         if (this.state.items.length == 0) {
             this.setState({isLoading: true});
         }
 
         const category_id = (this.state.category ? this.state.category.txid : null);
-        fetch_from_network(category_id).then((results) => {
+        fetch_from_network(category_id).then((rows) => {
 
-            const archive = this.processResults(results);
+            const results = this.processResults(rows);
+
+            // Rebuild archive with new results, keeping old copies
+            var unique_archive = new Map();
+            for (const item of this.state.archive) {
+                unique_archive.set(item.txid, item);
+            }
+
+            for (const result of results) {
+                unique_archive.set(result.txid, result);
+            }
+
+            const archive = Array.from(unique_archive.values());
             const items = this.buildItemsFromArchive(category_id, archive);
-
-            console.log("FOUND ITEMS", items);
-            console.log("NUM IN ARCHIVE ", archive.length);
-            console.log("NUM IN ITEMS", items.length);
 
             this.setState({
                 "archive": archive,
@@ -364,10 +413,10 @@ class OpenDirectoryApp extends React.Component {
                     }
 
                     if (needsUpdate) {
-                        console.log("Handled new message", resp);
+                        console.log("handled new message", resp);
                         this.networkAPIFetch();
                     } else {
-                        console.log("Unhandled message", resp);
+                        console.log("unhandled message", resp);
                     }
                 }
 
@@ -394,7 +443,7 @@ class OpenDirectoryApp extends React.Component {
                     category.entries += 1;
                 } else {
                     console.log(obj, existing);
-                    console.log("Couldn't find categoryect for category", category);
+                    console.log("couldn't find categoryect for category", category);
                 }
             } else if (obj.type == "category") {
                 if (!obj.entries) {
@@ -409,10 +458,10 @@ class OpenDirectoryApp extends React.Component {
             if (obj) {
                 obj.votes += 1;
             } else {
-                console.log("Couldn't find object for vote", obj, result);
+                console.log("couldn't find object for vote", obj, result);
             }
         } else {
-            console.log("Error processing result", result);
+            console.log("error processing result", result);
         }
         return existing;
     }
