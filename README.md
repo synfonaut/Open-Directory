@@ -6,10 +6,10 @@
 
 ### data model
 
-// TODO: Should be able to navigation even if internet is down based on your cache
-// TODO: want to cache results by txid — since they are immutable they should never change...then only overwrite them if they don't have a height (unconfirmed)
-// TODO: Does paging work with unconfirmed results?
-* pagination of queries
+* make sure pulling internet really lets you surf around, some weirdness when going to uncached sub-category
+* surfing around is a little glithchy...figure out what that's about
+* need ability to slice out local data because it isn't cached until second time so every first visit will be glitchy
+
 * dedicated protocol
  - works compatible with forking
  - bulk mode breaks tx as id model. also probably breaks querying...how to fix?
@@ -45,11 +45,11 @@
 * beta tag, let people know it's a new thing and an experiment
 
 ### cleanup
-* compile step, minify, convert to c:// and export for web & bitcoin output
+* compile step, minify, remove inbrowser babel, convert to c:// and export for web & bitcoin output
 * refactor code as much as possible so it's easier to organize
 
 ### nice to have
-* fork button! let user edit html, edit paragraphs, change name, set root category
+* fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
 * add statistics, how many categories, how many entries
 * add recent open directories (changelog)
 
@@ -57,15 +57,18 @@
 * collab with bsvdevs and put 'em on chain
 * create good examples (bsvdevs, onchain games, onchain art)
 
+### questions for chat
+* how much is too much to put in aggregate?
+* possible to make app protocol generic by using json schema protocol?
+* use vanity addresses for protocols? 1opendir... helps with UX, downside is people might assume it's safe without actually checking
+
 
 ## FUTURE
 
-* possible to make app protocol generic by using json schema protocol?
 * Use AIP to sign data by author
 * Let a user control a category controlled by their AIP
 * Plug into bit:// for bitdb so we don't have to hardcode it
 * Bottle bookmarklet for easily saving to a category
-* use vanity addresses for protocols? 1opendir... helps with UX, downside is people might assume it's safe without actually checking
 * how to do ownership? want collaboration but maybe need some kind of approval system. don't like my resource? 1-click fork
 * need protocol processor that knows how to process on-chain, let bitcom protocol reference on-chain javascript to run to process OP_RETURN
 * offline/client-side caching

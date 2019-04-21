@@ -14,7 +14,7 @@ class OpenDirectoryApp extends React.Component {
     render() {
         const hash = this.state.location[0];
 
-        var body;
+        var body, loading, error;
         var shouldShowAddNewCategoryForm = false,
             shouldShowAddNewEntryForm = false;
 
@@ -39,22 +39,17 @@ class OpenDirectoryApp extends React.Component {
 
             body = <List items={this.state.items} category={this.state.category} />;
 
-            if (this.state.isLoading) {
-                body = <div className="loading">
-                        <div className="lds-circle"><div></div></div>
-                        <p>Loading Open Directory...</p>
-                    </div>
-            }
+            loading = <div className="loading">
+                    <div className="lds-circle"><div></div></div>
+                    <p>Loading Open Directory...</p>
+                </div>
 
-            if (this.state.isError) {
-                body = <div>
-                    <h2>Error</h2>
-                    <p><strong>Sorry, there was an error while loading open directory information. Please refresh to try again or contact <a href="https://twitter.com/synfonaut">@synfonaut</a></strong></p>
-                    <br />
-                    <p><button onClick={() => { location.reload() }} className="button button-outline">Refresh This Page</button></p>
-               </div>
-            }
-
+            error = <div>
+                <h2>Error</h2>
+                <p><strong>Sorry, there was an error while loading open directory information. Please refresh to try again or contact <a href="https://twitter.com/synfonaut">@synfonaut</a></strong></p>
+                <br />
+                <p><button onClick={() => { location.reload() }} className="button button-outline">Refresh This Page</button></p>
+           </div>
         }
 
         return (
@@ -83,6 +78,8 @@ class OpenDirectoryApp extends React.Component {
                         <hr />
                       </div>}
                     {body}
+                    {this.state.isLoading && loading}
+                    {this.state.isError && error}
                     <hr />
                     <div className="row">
                         {(shouldShowAddNewEntryForm ? <div className="column"><AddEntryForm category={this.state.category}/></div> : null )}
@@ -123,21 +120,32 @@ class OpenDirectoryApp extends React.Component {
         console.log("Location updated", hash);
 
         var category = null;
+        var items = [];
+
         if (hash != "about") {
-            category = this.findObjectByTX(hash);
-            if (!category) {
-                category = {"txid": (hash == "" ? null : hash), "needsdata": true};
+
+            if (hash == "") {
+                category = {"txid": null, "needsdata": true};
             } else {
-                category.needsdata = true;
+                category = this.findObjectByTX(hash);
+                if (category) {
+                    category.needsdata = true;
+                } else {
+                    category = {"txid": hash, "needsdata": true};
+                }
             }
+
         }
 
         this.setState({
-            location: location,
-            category: category,
+            "location": location,
+            "category": category,
+            "items": items,
         }, () => {
             if (category && category.needsdata) {
-                this.networkAPIFetch();
+                setTimeout(() => {
+                    this.networkAPIFetch();
+                }, 2500);
             }
         });
     }
@@ -147,6 +155,7 @@ class OpenDirectoryApp extends React.Component {
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
     }
 
+    // TODO: Move to helper for socket
     getEncodedQuery() {
         var root_category_id = null;
         if (this.state.category) {
@@ -256,36 +265,14 @@ class OpenDirectoryApp extends React.Component {
         }
 
         const category_id = (this.state.category ? this.state.category.txid : null);
-        fetch_from_network(category_id).then(processOpenDirectoryTransactions).then((results) => {
-            var final = []
+        fetch_from_network(category_id).then((results) => {
 
-            //console.log("Got " + results.length + " results to process");
-
-            // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
-            for (const result of results.filter(r => { return r.type == "category" })) {
-                final = this.processResult(result, final)
-            }
-            for (const result of results.filter(r => { return r.type == "entry" })) {
-                final = this.processResult(result, final)
-            }
-            for (const result of results.filter(r => { return r.type == "vote" })) {
-                final = this.processResult(result, final)
-            }
-            return final;
-        }).then((results) => {
-            if (this.state.category && this.state.category.needsdata) { // hacky...better way?
-                for (const result of results) {
-                    if (result.type == "category" && result.txid == this.state.category.txid) {
-                        this.setState({category: result});
-                        break;
-                    }
-                }
-            }
+            const items = this.processResults(results);
 
             this.setState({
-                items: results,
-                isLoading: false,
-                isError: false
+                "items": items,
+                "isLoading": false,
+                "isError": false
             });
 
             this.setupNetworkSocket();
@@ -293,90 +280,38 @@ class OpenDirectoryApp extends React.Component {
         }).catch((e) => {
             console.log("error", e);
             this.setState({
-                items: [],
-                isLoading: false,
-                isError: true,
+                "isLoading": false,
+                "isError": true,
             });
         });
 
+    }
 
-        /*
+    processResults(results) {
+        const processed = processOpenDirectoryTransactions(results);
+        var final = []
 
-        // only need to show loading when there are no items
-        if (this.state.items.length == 0) {
-            this.setState({isLoading: true});
+        // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
+        for (const result of processed.filter(r => { return r.type == "category" })) {
+            final = this.processResult(result, final)
+        }
+        for (const result of processed.filter(r => { return r.type == "entry" })) {
+            final = this.processResult(result, final)
+        }
+        for (const result of processed.filter(r => { return r.type == "vote" })) {
+            final = this.processResult(result, final)
         }
 
-        //var query_url = "https://genesis.bitdb.network/q/1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN/" + this.getEncodedQuery();
-        var query_url = "https://bitomation.com/q/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + this.getEncodedQuery();
-        var header = { headers: { key: "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z" } };
-        fetch(query_url, header).then(function(r) {
-            return r.json()
-        }).then(function(results) {
-            if (!results.c || !results.u) {
-                return [];
-            }
-
-            var items = {};
-            const rows = results.c.concat(results.u);
-            for (const row of rows) {
-                if (!items[row.txid] || (row.height && items[row.txid] && !items[row.txid].height)) {
-                    items[row.txid] = row;
+        if (this.state.category && this.state.category.needsdata) { // hacky...better way?
+            for (const result of final) {
+                if (result.type == "category" && result.txid == this.state.category.txid) {
+                    this.setState({category: result});
+                    break;
                 }
             }
+        }
 
-            const unique = Object.values(items);
-            const final = unique.sort(function(a, b) {
-                if (a.height < b.height) { return 1; }
-                if (a.height > b.height) { return -1; }
-                return 0;
-            });
-
-
-            return processOpenDirectoryTransactions(final);
-        }).then((results) => {
-            var final = []
-
-            //console.log("Got " + results.length + " results to process");
-
-            // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
-            for (const result of results.filter(r => { return r.type == "category" })) {
-                final = this.processResult(result, final)
-            }
-            for (const result of results.filter(r => { return r.type == "entry" })) {
-                final = this.processResult(result, final)
-            }
-            for (const result of results.filter(r => { return r.type == "vote" })) {
-                final = this.processResult(result, final)
-            }
-            return final;
-        }).then((results) => {
-            if (this.state.category && this.state.category.needsdata) { // hacky...better way?
-                for (const result of results) {
-                    if (result.type == "category" && result.txid == this.state.category.txid) {
-                        this.setState({category: result});
-                        break;
-                    }
-                }
-            }
-
-            this.setState({
-                items: results,
-                isLoading: false,
-                isError: false
-            });
-
-            this.setupNetworkSocket();
-
-        }).catch((e) => {
-            console.log("error", e);
-            this.setState({
-                items: [],
-                isLoading: false,
-                isError: true,
-            });
-        });
-        */
+        return final;
     }
 
     setupNetworkSocket() {
@@ -389,7 +324,9 @@ class OpenDirectoryApp extends React.Component {
             console.log("setting up new network socket");
         }
 
-        this.socket = new EventSource("https://bitomation.com/s/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + this.getEncodedQuery());
+        const query = get_bitdb_query(this.state.category ? this.state.category.txid : null);
+        const url = "https://bitomation.com/s/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + toBase64(JSON.stringify(query));
+        this.socket = new EventSource(url);
         this.socket.onmessage = (e) => {
             try {
                 const resp = JSON.parse(e.data);
@@ -518,13 +455,13 @@ class List extends React.Component {
                 {heading}
                 <ul className="list">
                     {categories.map(category => (
-                        <CategoryItem key={category.txid} item={category} />
+                        <CategoryItem key={"category-" + category.txid} item={category} />
                     ))}
                 </ul>
                 <br />
                 <ul className="list">
                     {entries.map(entry => (
-                        <EntryItem key={entry.txid} item={entry} />
+                        <EntryItem key={"entry-" + entry.txid} item={entry} />
                     ))}
                 </ul>
             </div>
@@ -566,7 +503,7 @@ class EntryItem extends React.Component {
                         <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number">{this.props.item.votes}</span></div> 
                     </div>
                     <div className="column">
-                        <h5><a href={this.props.item.link}>{this.props.item.name}</a></h5>
+                        <h5><a href={this.props.item.link}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>}</h5>
                         <p className="description">{this.props.item.description}</p>
                         <p className="url"><a href={this.props.item.link}>{this.props.item.link}</a></p>
                         <div className="tip-money-button"></div>
@@ -613,6 +550,7 @@ class CategoryItem extends React.Component {
                         <h3>
                             <a href={"#" + this.props.item.txid}>{this.props.item.name}</a>
                             <span className="category-count">({this.props.item.entries})</span>
+                            {!this.props.item.height && <span className="pending">pending</span>}
                         </h3>
                         <p className="description">{this.props.item.description}</p>
                         <div className="tip-money-button"></div>

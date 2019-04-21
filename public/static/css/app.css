@@ -73,6 +73,15 @@
     display: block;
 }
 
+.open-directory .pending {
+    background: #ddd;
+    color: #777;
+    padding: 2px 7px;
+    font-size: 12px;
+    opacity: 0.75;
+    border-radius: 5px;
+}
+
 .navigation {
     background: black;
     width: 100%;

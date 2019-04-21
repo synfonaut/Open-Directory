@@ -124,8 +124,7 @@ function processOpenDirectoryTransactions(results) {
     return results.map(processOpenDirectoryTransaction).filter(r => { return r });
 }
 
-
-function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
+function get_bitdb_query(category_id=null, cursor=0, limit=200) {
     const query = {
         "v": 3,
         "q": {
@@ -218,6 +217,13 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
         });
     }
 
+    return query;
+}
+
+function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
+
+    const query = get_bitdb_query(category_id, cursor, limit);
+    
     // TODO: Split out API key
     var url = "https://bitomation.com/q/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + toBase64(JSON.stringify(query));
     var header = { headers: { key: "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z" } };
@@ -274,7 +280,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
                     reject("Error while retrieving response from server " + r.status);
                 }
                 return r.json();
-            }).then(r => { handleResponse(resolve, reject, r) });
+            }).then(r => { handleResponse(resolve, reject, r) }).catch(reject);
         }
 
     });
