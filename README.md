@@ -6,14 +6,8 @@
 
 ### data model
 
-* replace streaming socket 
-* need good loading indidcator
-* need good error indidcator, up high
-* make sure pulling internet really lets you surf around, some weirdness when going to uncached sub-category
-* surfing around is a little glithchy...figure out what that's about
-* need ability to slice out local data because it isn't cached until second time so every first visit will be glitchy
+* pull in sub-category votes so they don't jump
 
-* should pull in sub-category vote data so they don't jump
 
 * dedicated protocol
  - works compatible with forking
@@ -31,8 +25,9 @@
 ### design/ux
 * better design
 * group sub-categories
+* need good loading indidcator
+* need good error indidcator, up high
 * let users tip a custom amount to someone who contributed a link and entire tip chain
-* add (PENDING) tag to categories and entries that haven't been created yet
 * give items their own page as well
 * better homepage description
 * about with tip screen
