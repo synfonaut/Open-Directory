@@ -6,14 +6,17 @@
 
 Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
 
+* protocol is similar to MAP but more like a basic JSON schema.
+* Currently category supports name/description/category and entry supports name/entry/link/category
+
 ### Create Category
 
-`1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
-`create.category`
-**name**
-Root category
-**description**
-This is a new description
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    create.category
+    name
+    Root category
+    description
+    This is a new description
 
 ## TODO
 
