@@ -4,16 +4,33 @@
 
 Open Directory lets you build resources like [Reddit](https://www.reddit.com), [Awesome Lists](https://github.com/sindresorhus/awesome) and [DMOZ](http://dmoz-odp.org) ontop of Bitcoin. With Open Directory you can:
 
-* Create your own resource and drive traffic to earn money through tips
-* Incentivize quality submissions by sharing a portion of the tips back to contributors
-* Earn money on other directories through quality submissions and getting into the tipchain
+* Create your own resource and earn money when people tip (upvote)
+* Incentivize quality submissions by sharing a portion of tips back to contributors (tipchain)
+* Organize an existing directory or fork it with 1-click and start your own (easy exit policy)
 
-Open Directory is 100% Bitcoin native. That means while you can access it through your web browser at opendirectory.org, you can also access it through a blockchain browser at c://abcxyz. Open Directory speaks native Bitcoin, that means:
+### How to access: Bitcoin and Web
 
-* Legacy web urls like http:// and https:// work flawlessly, but so do newer Bitcoin urls like Bitcom, b://, c:// and d://
-* Open Directory app is open source, you're viewing it now
-* Every directory has a 1-click fork, like GitHub. Think of it as an exit strategy, and brutal capitalism.
-* The Open Directory protocol is 100% open to other developers
+Open Directory is 100% Bitcoin native—which means it can be accessed from the [Bottle](https://bottle.bitdb.network) blockchain browser: See it here: [Open Directory Running on Bitcoin (SV)](c://).
+
+For convenience, it also runs on the web at [opendirectory.org](https://). To get started you just need a [Money Button](https://www.moneybutton.com) account.
+
+### Open Source
+
+Open Directory is open source in two ways. You may view and modify the app's source code in this repository to spin up your own.
+
+And the Open Directory Protocol is completely open—if you want to build your own implementation or use the data, read about the protocol below.
+
+### Public Directory
+
+Open Directory currently doesn't have any moderation tools. It might someday, but I don't think they're necessary for v0.1 for three reasons:
+
+* Moderation tools add a ton of complexity, which may be still be gameable. It's better to build something simple that works and evolve it as needed when we understand the problem better
+
+* An interesting market-based approach might take place anyway without any moderation tools. If you have 1 person who is attacking with 1 BSV and 10 people defending with 10 BSV. You don't have to write any code for this—it just works. People may not waste their money trolling as much as they waste their time.
+
+* It's an experiment. Let's see what happens.
+
+Open Directory is an experimental platform to organize the world's information on Bitcoin (SV). What are you going to do with it?
 
 ## Open Directory Protocol
 
@@ -32,7 +49,7 @@ Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
     <name>
     description
     <description>
-
+    
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     category.update
     <category_txid>
@@ -40,7 +57,7 @@ Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
     <name>
     description
     <description
-
+    
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     category.delete
     <category_txid>
@@ -54,7 +71,7 @@ Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
     <name>
     description
     <description>
-
+    
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     entry.update
     <entry_txid>
@@ -62,7 +79,7 @@ Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
     <name>
     description
     <description
-
+    
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     entry.delete
     <entry_txid>
@@ -89,12 +106,17 @@ Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
  - condense tip if same author gets multiple
  - need algorithm to calculate tip
 * disappear and rerender money button (otherwise people might accidentally post wrong content)
-
 * don't fetch network request every single time....use cache if we can
 * bug: verify edit transactions in same block don't lose their order in update and set wrong value
 
+
+
 ### design/ux
+
+* need MIT license
+
 * better design
+* nice logo using color scheme
 * group sub-categories
 * need good loading indidcator
 * need good error indidcator, up high
@@ -136,6 +158,8 @@ Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
 
 ## FUTURE
 
+* protocol for getting latest app version, put notice in app and point to new link
+* probably want to include edits in the tipchain—but this could be abused...
 * Use AIP to sign data by author
 * Let a user control a category controlled by their AIP
 * Plug into bit:// for bitdb so we don't have to hardcode it
