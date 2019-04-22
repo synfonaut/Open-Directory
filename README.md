@@ -89,8 +89,8 @@ Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
  - condense tip if same author gets multiple
  - need algorithm to calculate tip
 * disappear and rerender money button (otherwise people might accidentally post wrong content)
-* count categories as entries
 
+* don't fetch network request every single time....use cache if we can
 * bug: verify edit transactions in same block don't lose their order in update and set wrong value
 
 ### design/ux
