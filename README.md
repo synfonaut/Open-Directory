@@ -4,52 +4,49 @@
 
 Open Directory lets you build resources like [Reddit](https://www.reddit.com), [Awesome Lists](https://github.com/sindresorhus/awesome) and [DMOZ](http://dmoz-odp.org) ontop of Bitcoin. With Open Directory you can:
 
-* Create your own resource and earn money when people tip (upvote)
-* Incentivize quality submissions by sharing a portion of tips back to contributors (tipchain)
-* Organize an existing directory or fork it with 1-click and start your own (easy exit policy)
+* Create your own resource and earn money when people tip ([upvote](#voting))
+* Incentivize quality submissions by sharing a portion of tips back to contributors ([tipchain](#tipchain))
+* Organize an existing directory or fork it with 1-click and start your own ([easy exit policy](#forking))
 
-### How to access: Bitcoin and Web
+Open Directory is an experiment to organize the world's information on Bitcoin (SV). What are you going to do with it?
 
-Open Directory is 100% Bitcoin native—which means it can be accessed from the [Bottle](https://bottle.bitdb.network) blockchain browser: See it here: [Open Directory Running on Bitcoin (SV)](c://).
+### Start using the Open Directory
+
+Open Directory is 100% Bitcoin native—which means it can be accessed from the [Bottle](https://bottle.bitdb.network) blockchain browser at [c://lkasjdflkajsdflkajsdflkajsdlfkajsdf](c://).
 
 For convenience, it also runs on the web at [opendirectory.org](https://). To get started you just need a [Money Button](https://www.moneybutton.com) account.
 
-### Open Source
+### Start building with the Open Directory
 
-Open Directory is open source in two ways. You may view and modify the app's source code in this repository to spin up your own.
+Open Directory is open source in two ways.
 
-And the Open Directory Protocol is completely open—if you want to build your own implementation or use the data, read about the protocol below.
+1. You can view and modify the app's source code to spin up your own copy
 
-### Public Directory
+2. The Open Directory Protocol is 100% open to build for your own use or implementation. Read about it below.
 
-Open Directory currently doesn't have any moderation tools. It might someday, but I don't think they're necessary for v0.1 for three reasons:
 
-* Moderation tools add a ton of complexity, which may be still be gameable. It's better to build something simple that works and evolve it as needed when we understand the problem better
 
-* An interesting market-based approach might take place anyway without any moderation tools. If you have 1 person who is attacking with 1 BSV and 10 people defending with 10 BSV. You don't have to write any code for this—it just works. People may not waste their money trolling as much as they waste their time.
+# Open Directory Protocol
 
-* It's an experiment. Let's see what happens.
+> [Bitcom](https://bitcom.bitdb.network) protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
 
-Open Directory is an experimental platform to organize the world's information on Bitcoin (SV). What are you going to do with it?
+The Open Directory protocol is an open protocol for creating resources on Bitcoin (SV). If you've never heard of Bitcom protocols, [learn more here](https://bitcom.bitdb.network). The main key to understanding Bitcom protocols is they store data in the OP_RETURN of a Bitcoin transaction in a specific format. Here's a simple example:
 
-## Open Directory Protocol
+<pre>
+<strong style="color: #9B4DCA">1dirxA5oET8EmcdW4saKXzPqejmMXQwg2</strong>
+<span style="color: #EB48AB">category.create</span>
+<span style="color: #FF6384">name</span>
+<em>Category Name Goes Here</em>
+<span style="color: #FF6384">description</span>
+Along with a *markdown* description
+</pre>
 
-Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
+Open Directory protocols have two primary forms, creating new items (categories and entries) and then doing things to those entries (edits, deletes, votes)
 
-* protocol is similar to MAP but more like a basic JSON schema.
-* Currently category supports name/description/category and entry supports name/entry/link/category
-- forwards comptabile, can easily add new fields and tags
-- a bit more verbose, but a lot more clear—and updates are a lot more straight forward
 
-### Category
 
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    category.create
-    name
-    <name>
-    description
-    <description>
-    
+
+
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     category.update
     <category_txid>
@@ -89,6 +86,92 @@ Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     vote
     <txid>
+
+### Moderation (pending)
+
+3 kinds of moderation
+* open
+* anyone can add
+* must get approved before adding
+
+
+Moderation could be added with four changes:
+
+Step 1. Sign changes with AIP which automatically makes you owner.
+
+
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    category.create
+    name
+    <name>
+    description
+    <description>
+    |
+    15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva
+    BITCOIN_ECDSA
+    <signing_address>
+    <signature>
+
+Step 2. Enable moderation
+
+
+    # enable moderated
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    moderator.enable
+    <category_txid>
+
+Step 3. Moderation now requires changes to be approved
+
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    category.create
+    name
+    <name>
+    description
+    <description>
+
+
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    moderate.approve
+    <txid>
+
+
+
+
+    # add moderator
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    moderator.create
+    <category_txid>
+    <publickey>
+    
+    # delete moderator
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    moderator.delete
+    <category_txid>
+    <publickey>
+
+
+
+    # disable moderated
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    moderator.disable
+    <category_txid>
+
+
+
+
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    vote
+    <txid>
+    |
+    15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva
+    BITCOIN_ECDSA
+    <signing_address>
+    <signature>
+
+
+
+Using AIP users can sign changes. 
+
 
 
 ## TODO
