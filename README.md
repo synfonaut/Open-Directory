@@ -87,18 +87,27 @@ Open Directory protocols have two primary forms, creating new items (categories 
     vote
     <txid>
 
-### Moderation (pending)
+### Moderation (proposed)
 
-3 kinds of moderation
-* open
-* anyone can add
-* must get approved before adding
+There are three kinds of moderation
 
+* 0 - open (anyone can do anything)
+* 1 - restricted (only moderator can delete)
+* 2 - preapproved (everything must be approved)
 
 Moderation could be added with four changes:
 
-Step 1. Sign changes with AIP which automatically makes you owner.
+Step 1a. Whoever creates category is owner and default moderator
 
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    category.create
+    name
+    <name>
+    description
+    <description>
+
+
+Step 1b. Can also use AIP to sign authorship
 
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     category.create
@@ -112,56 +121,50 @@ Step 1. Sign changes with AIP which automatically makes you owner.
     <signing_address>
     <signature>
 
-Step 2. Enable moderation
-
+Step 2a. Enable open moderation
 
     # enable moderated
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    moderator.enable
+    moderation.set
     <category_txid>
+    0
+
+Step 2a. Enable restricted moderation
+
+    # enable moderated
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    moderation.set
+    <category_txid>
+    2
+
 
 Step 3. Moderation now requires changes to be approved
 
+    # approve change
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    category.create
-    name
-    <name>
-    description
-    <description>
-
-
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    moderate.approve
+    moderation.approve
     <txid>
 
+    # reject change
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    moderation.reject
+    <txid>
 
-
+Step 4a. Add other moderators
 
     # add moderator
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     moderator.create
     <category_txid>
     <publickey>
-    
-    # delete moderator
+
+Step 4b. Can also add moderators with AIP
+
+    # add moderator
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    moderator.delete
+    moderator.create
     <category_txid>
     <publickey>
-
-
-
-    # disable moderated
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    moderator.disable
-    <category_txid>
-
-
-
-
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    vote
-    <txid>
     |
     15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva
     BITCOIN_ECDSA
@@ -170,8 +173,17 @@ Step 3. Moderation now requires changes to be approved
 
 
 
-Using AIP users can sign changes. 
+Step 5. Delete a moderator
+    # delete moderator
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    moderator.delete
+    <publickey>
 
+
+
+open questions
+- does authorship protocol work well for moderation?
+- need to be able to easily undo a delete/edit/update
 
 
 ## TODO
@@ -183,12 +195,13 @@ Using AIP users can sign changes.
  - bulk mode breaks tx as id model. also probably breaks querying...how to fix?
  - need steady action (2) and category_id (3) / could also be txid (1)
 
+* disappear and rerender money button (otherwise people might accidentally post wrong content)
 * edit/delete category
 * edit/delete item
 * have a chain of tips where everyone in the chain gets a % of the tip
  - condense tip if same author gets multiple
  - need algorithm to calculate tip
-* disappear and rerender money button (otherwise people might accidentally post wrong content)
+
 * don't fetch network request every single time....use cache if we can
 * bug: verify edit transactions in same block don't lose their order in update and set wrong value
 
