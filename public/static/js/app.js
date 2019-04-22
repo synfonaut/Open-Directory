@@ -25,7 +25,8 @@ class OpenDirectoryApp extends React.Component {
                     <h1>About Open Directory</h1>
                     <p>it's early days so no moderation, let's call it a feature instead of a bug for now and see what the market does</p>
                     <p>tip chain</p>
-                    <p>✌️</p>
+                     <p><code>v0.1—beta</code> </p>
+                    <p>✌️ synfonaut</p>
                 </div>
             );
         } else {
@@ -57,22 +58,18 @@ class OpenDirectoryApp extends React.Component {
             <div>
                 <div className="open-directory">
                     {hash == "" && 
-                      <div>
-                        <h1>Open Directory <code>v0.1</code></h1>
-                        <blockquote>Earn money. Organize the world.</blockquote>
+                      <div className="intro">
+                        <img id="logo" src="/static/img/logo.png" />
                         <div className="row">
                             <div className="column">
-                                <p>Open Directory let's anyone create a collection of resources, like Awesome Lists, BSVDEVs, DMOZ, Yahoo! Directory and more—all on top of Bitcoin (SV).</p>
-                                <p>Because upvotes are tips, you generate money by organizing or submitting a good resource.</p>
-                                <p>Open Directory works with all kinds of links, from http:// to new Bitcoin-only links like Bitcom, B://, C://, D://, BCAT://</p>
-                            </div>
-                            <div className="column">
-                                <p>Open Directory works with all kinds of links, from http:// to new Bitcoin-only links like Bitcom, B://, C://, D://, BCAT://</p>
+                                <p>Open Directory lets anyone build resources like <a href="https://www.reddit.com">Reddit</a>, <a href="https://github.com/sindresorhus/awesome">Awesome Lists</a> and <a href="http://dmoz-odp.org">DMOZ</a> ontop of Bitcoin. With Open Directory you can:</p>
                                 <ul>
-                                    <li><a href="#">Do this</a></li>
-                                    <li><a href="#">Do this</a></li>
-                                    <li><a href="#">Do this</a></li>
+                                    <li>💡 Create your own resource and earn money when people tip through upvotes</li>
+                                    <li>💰 Incentivize quality submissions by sharing a portion of tips back to contributors</li>
+                                    <li>🛠 Organize an existing directory or fork it with 1-click and start your own</li>
                                 </ul>
+
+                                <p>Create your own directory or view the existing ones below.</p>
                             </div>
                         </div>
 

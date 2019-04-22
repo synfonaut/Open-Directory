@@ -83,17 +83,32 @@
 }
 
 .navigation {
-    background: black;
     width: 100%;
+    background: #f4f5f6;
+    border-bottom: 1px solid #ddd;
     padding: 10px;
-    color: white;
+    color: #444;
 }
 
 .navigation a {
-    color: white;
+    color: #666;
+}
+
+.navigation-title {
+    font-weight: 400;
 }
 
 .navigation-list {
+    list-style: none;
+}
+
+.open-directory #logo {
+    width: 500px;
+    max-width: 100%;
+    padding: 20px 0;
+}
+
+.open-directory .intro li {
     list-style: none;
 }
 
