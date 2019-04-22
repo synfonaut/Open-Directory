@@ -1,13 +1,19 @@
 # Open Directory
 
-> v0.1
+> Organize the world's information on Bitcoin
 
-Open Directory is a way to build resources together with other people online. Resources are things like [Awesome Lists](https://github.com/sindresorhus/awesome), [DMOZ](http://dmoz-odp.org) and even [Reddit](https://www.reddit.com). Open Directory let's anybody become a contributor, that means:
+Open Directory lets you build resources like [Reddit](https://www.reddit.com) with other people. With Open Directory you can:
 
-* Create your own resource and get paid when people upvote (tip)
-* Incentivize contributions by sharing the tip
-* Earn money by contributing to the **tipchain**
-* Organize the world's information in a 100% open way, while getting paid
+* Create your own resource and drive traffic to earn money through tips
+* Incentivize quality submissions by sharing a portion of the tips back to contributors
+* Earn money on other directories through quality submissions and getting into the tipchain
+
+Open Directory is 100% Bitcoin native. That means while you can access it through your web browser at opendirectory.org, you can also access it through a blockchain browser at c://abcxyz. Open Directory speaks native Bitcoin, that means:
+
+* Legacy web urls like http:// and https:// work flawlessly, but so do newer Bitcoin urls like Bitcom, b://, c:// and d://
+* Open Directory app is open source, you're viewing it now
+* Every directory has a 1-click fork, like GitHub. Think of it as an exit strategy, and brutal capitalism.
+* The Open Directory protocol is 100% open to other developers
 
 ## Open Directory Protocol
 
@@ -180,3 +186,7 @@ vote
 vote
 12345...xyz
 
+
+## about
+
+@synfonaut
