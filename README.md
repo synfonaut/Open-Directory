@@ -2,7 +2,7 @@
 
 > Organize the world's information on Bitcoin
 
-Open Directory lets you build resources like [Reddit](https://www.reddit.com) with other people. With Open Directory you can:
+Open Directory lets you build resources like [Reddit](https://www.reddit.com), [Awesome Lists](https://github.com/sindresorhus/awesome) and [DMOZ](http://dmoz-odp.org) ontop of Bitcoin. With Open Directory you can:
 
 * Create your own resource and drive traffic to earn money through tips
 * Incentivize quality submissions by sharing a portion of the tips back to contributors
@@ -21,15 +21,58 @@ Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
 
 * protocol is similar to MAP but more like a basic JSON schema.
 * Currently category supports name/description/category and entry supports name/entry/link/category
+- forwards comptabile, can easily add new fields and tags
+- a bit more verbose, but a lot more clear—and updates are a lot more straight forward
 
-### Create Category
+### Category
 
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    create.category
+    category.create
     name
-    Root category
+    <name>
     description
-    This is a new description
+    <description>
+
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    category.update
+    <category_txid>
+    name
+    <name>
+    description
+    <description
+
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    category.delete
+    <category_txid>
+
+### Entry
+
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    entry.create
+    <category_txid>
+    name
+    <name>
+    description
+    <description>
+
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    entry.update
+    <entry_txid>
+    name
+    <name>
+    description
+    <description
+
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    entry.delete
+    <entry_txid>
+
+### Vote
+
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    vote
+    <txid>
+
 
 ## TODO
 
@@ -111,81 +154,6 @@ Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
  * could be like a planaria state machine transformer, but embedded in a bitcoin tx, so everything is still onchain
  * in addition to {"r": {"f": ...}} could do bit:// protocol transformations? run it through MAP in-chain protocol to convert s1/s2/s3/s3 to key/values
 * enable regex in jq for more advanced filtering
-
-## reaons to build protocol this way
-- forwards comptabile, can easily add new fields and tags
-- a bit more verbose, but a lot more clear—and updates are a lot more straight forward
-
-
-## category
-
-1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
-create.category
-name
-Root category
-description
-This is a new description
--> 12345...xyz
-
-1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
-create.category
-12345...xyz
-name
-Root category
-description
-This is a new description
-
-1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
-create.update
-123456...abc
-name
-Not a root category anymore
-description
-Updated description
-
-1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
-create.delete
-123456...abc
-
-## entry
-
-1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
-entry.create
-123456...abc
-name
-name of entry
-link
-link://link
-description
-description
--> abc-123
-
-1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
-entry.update
-abc-123
-description
-"hello description"
-
-1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
-entry.update
-abc-123
-name
-"better name"
-
-1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
-entry.delete
-abc-123
-
-## vote
-
-1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
-vote
-123456...abc
-
-1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi
-vote
-12345...xyz
-
 
 ## about
 

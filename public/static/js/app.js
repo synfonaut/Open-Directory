@@ -150,10 +150,7 @@ class OpenDirectoryApp extends React.Component {
             "items": items,
         }, () => {
             if (category && category.needsdata) {
-
-                setTimeout(() => {
-                    this.networkAPIFetch();
-                }, 2000);
+                this.networkAPIFetch();
             }
         });
     }
