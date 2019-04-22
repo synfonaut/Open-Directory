@@ -362,18 +362,20 @@ class OpenDirectoryApp extends React.Component {
 
     processResults(results) {
         const processed = processOpenDirectoryTransactions(results);
-        var final = []
+        var processing = []
 
         // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
         for (const result of processed.filter(r => { return r.type == "category" })) {
-            final = this.processResult(result, final)
+            processing = this.processResult(result, processing)
         }
         for (const result of processed.filter(r => { return r.type == "entry" })) {
-            final = this.processResult(result, final)
+            processing = this.processResult(result, processing)
         }
         for (const result of processed.filter(r => { return r.type == "vote" })) {
-            final = this.processResult(result, final)
+            processing = this.processResult(result, processing)
         }
+
+        const final = this.updateCategoryEntryCounts(processing);
 
         if (this.state.category && this.state.category.needsdata) { // hacky...better way?
             for (const result of final) {
@@ -386,6 +388,52 @@ class OpenDirectoryApp extends React.Component {
 
         return final;
     }
+
+
+
+        /*
+        if ((obj.type == "entry" || obj.type == "category") && obj.category) {
+            const category = this.findObjectByTX(obj.category, results);
+            if (category) {
+                category.entries += 1;
+            } else {
+                console.log("couldn't find category for", obj.type, obj);
+            }
+        } else if (obj.type == "category") {
+            if (!obj.entries) {
+                obj.entries = 0;
+            }
+        }
+
+        return obj;
+        console.log(entries);
+        */
+
+
+    updateCategoryEntryCounts(results) {
+
+        const counts = {};
+        for (const result of results) {
+            if (result.category) {
+                if (counts[result.category]) {
+                    counts[result.category] += 1;
+                } else {
+                    counts[result.category] = 1;
+                }
+            }
+        }
+
+
+        return results.map(r => {
+            if (r.type == "category") {
+                var count = counts[r.txid];
+                if (!count) { count = 0; }
+                r.entries = count;
+            }
+            return r;
+        });
+    }
+
 
     setupNetworkSocket() {
 
@@ -436,22 +484,6 @@ class OpenDirectoryApp extends React.Component {
             obj.address = result.address;
             obj.height = result.height;
             obj.votes = 0;
-
-            if (obj.type == "entry") {
-                const category = this.findObjectByTX(obj.category, existing);
-                if (category) {
-                    category.entries += 1;
-                } else {
-                    console.log(obj, existing);
-                    console.log("couldn't find categoryect for category", category);
-                }
-            } else if (obj.type == "category") {
-                if (!obj.entries) {
-                    obj.entries = 0;
-                }
-
-            }
-
             existing.push(obj);
         } else if (result.type == "vote") {
             const obj = this.findObjectByTX(result.action_id, existing);
@@ -607,6 +639,15 @@ class CategoryItem extends React.Component {
                 }
             }
         });
+        e.preventDefault();
+    }
+
+    handleLink(e) {
+        console.log("HANDLE LINK");
+        const url = e.target.href;
+        history.pushState({}, "", url);
+        window.dispatchEvent(new HashChangeEvent("hashchange"));
+        e.preventDefault();
     }
 
     render() {
@@ -621,7 +662,7 @@ class CategoryItem extends React.Component {
                     </div>
                     <div className="column">
                         <h3>
-                            <a href={"#" + this.props.item.txid}>{this.props.item.name}</a>
+                            <a href={"#" + this.props.item.txid} onClick={this.handleLink.bind(this)}>{this.props.item.name}</a>
                             <span className="category-count">({this.props.item.entries})</span>
                             {!this.props.item.height && <span className="pending">pending</span>}
                         </h3>

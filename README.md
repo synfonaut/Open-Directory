@@ -13,6 +13,8 @@
 * surfing around is a little glithchy...figure out what that's about
 * need ability to slice out local data because it isn't cached until second time so every first visit will be glitchy
 
+* should pull in sub-category vote data so they don't jump
+
 * dedicated protocol
  - works compatible with forking
  - bulk mode breaks tx as id model. also probably breaks querying...how to fix?
@@ -22,7 +24,7 @@
  - condense tip if same author gets multiple
  - need algorithm to calculate
 * disappear and rerender money button (otherwise people might accidentally post wrong content)
-* should categories count as entries in the num?
+* count categories as entries
 
 * bug: verify edit transactions in same block don't lose their order in update and set wrong value
 
