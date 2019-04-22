@@ -139,13 +139,9 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 },
                 // climb parent recursively
                 { "$graphLookup": { "from": "c", "startWith": "$out.s6", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "confirmed_category" } },
-
                 { "$graphLookup": { "from": "u", "startWith": "$out.s6", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "unconfirmed_category" } },
 
-
                 // find votes
-                { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s3", "as": "confirmed_votes" } },
-                { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s3", "as": "unconfirmed_votes" } },
 
                 // climb children
                 { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s6", "as": "confirmed_entries" } },
@@ -154,22 +150,22 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 {
                     "$project": {
                         "confirmed_category": "$confirmed_category",
-                        "confirmed_votes": "$confirmed_votes",
+                        //"confirmed_votes": "$confirmed_votes",
                         "confirmed_entries": "$confirmed_entries",
                         "unconfirmed_entries": "$unconfirmed_entries",
                         "unconfirmed_category": "$unconfirmed_category",
-                        "unconfirmed_votes": "$unconfirmed_votes",
+                        //"unconfirmed_votes": "$unconfirmed_votes",
                         "object": ["$$ROOT"],
                     }
                 },
                 {
                     "$project": {
                         "object.confirmed_category": 0,
-                        "object.confirmed_votes": 0,
+                        //"object.confirmed_votes": 0,
                         "object.confirmed_entries": 0,
                         "object.unconfirmed_entries": 0,
                         "object.unconfirmed_category": 0,
-                        "object.unconfirmed_votes": 0,
+                        //"object.unconfirmed_votes": 0,
                     }
                 },
                 {
@@ -178,22 +174,58 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                             "$concatArrays": [
                                 "$object",
                                 "$confirmed_category",
-                                "$confirmed_votes",
+                                //"$confirmed_votes",
                                 "$confirmed_entries",
                                 "$unconfirmed_entries",
                                 "$unconfirmed_category",
+                                //"$unconfirmed_votes"
+                            ]
+                        }
+                    }
+                },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$replaceRoot": { "newRoot": "$items" } },
+                { "$project": { "_id": 0, } },
+                { "$addFields": { "_id": "$tx.h", } },
+                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$replaceRoot": { "newRoot": "$items" } },
+
+                { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s3", "as": "confirmed_votes" } },
+                { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s3", "as": "unconfirmed_votes" } },
+                {
+                    "$project": {
+                        "confirmed_votes": "$confirmed_votes",
+                        "unconfirmed_votes": "$unconfirmed_votes",
+                        "object": ["$$ROOT"],
+                    }
+                },
+                {
+                    "$project": {
+                        "object.confirmed_votes": 0,
+                        "object.unconfirmed_votes": 0,
+                    }
+                },
+                {
+                    "$project": {
+                        "items": {
+                            "$concatArrays": [
+                                "$object",
+                                "$confirmed_votes",
                                 "$unconfirmed_votes"
                             ]
                         }
                     }
                 },
-                { "$unwind": "$items" },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
                 { "$project": { "_id": 0, } },
                 { "$addFields": { "_id": "$tx.h", } },
                 { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
-                { "$unwind": "$items" },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
+
+                
                 { "$skip": cursor },
                 { "$limit": limit },
             ]
@@ -232,6 +264,9 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
 
     function handleResponse(resolve, reject, r) {
 
+        if (r.errors) {
+            reject("error during query " + r.errors);
+        }
 
         var items = {};
         const rows = r.c.concat(r.u).reverse();

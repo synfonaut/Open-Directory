@@ -150,7 +150,10 @@ class OpenDirectoryApp extends React.Component {
             "items": items,
         }, () => {
             if (category && category.needsdata) {
-                this.networkAPIFetch();
+
+                setTimeout(() => {
+                    this.networkAPIFetch();
+                }, 2000);
             }
         });
     }
@@ -287,27 +290,6 @@ class OpenDirectoryApp extends React.Component {
 
         return final;
     }
-
-
-
-        /*
-        if ((obj.type == "entry" || obj.type == "category") && obj.category) {
-            const category = this.findObjectByTX(obj.category, results);
-            if (category) {
-                category.entries += 1;
-            } else {
-                console.log("couldn't find category for", obj.type, obj);
-            }
-        } else if (obj.type == "category") {
-            if (!obj.entries) {
-                obj.entries = 0;
-            }
-        }
-
-        return obj;
-        console.log(entries);
-        */
-
 
     updateCategoryEntryCounts(results) {
 
@@ -542,7 +524,6 @@ class CategoryItem extends React.Component {
     }
 
     handleLink(e) {
-        console.log("HANDLE LINK");
         const url = e.target.href;
         history.pushState({}, "", url);
         window.dispatchEvent(new HashChangeEvent("hashchange"));
