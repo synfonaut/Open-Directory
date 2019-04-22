@@ -1,22 +1,34 @@
-# Open Directory
+# Open Directory v0.1
 
-> organize the world
+> A Bitcoin protocol for public resources
+
+## Protocol Specification
+
+Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
+
+### Create Category
+
+`1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
+`create.category`
+**name**
+Root category
+**description**
+This is a new description
 
 ## TODO
 
 ### data model
 
-* pull in sub-category votes so they don't jump
-
-
 * dedicated protocol
  - works compatible with forking
  - bulk mode breaks tx as id model. also probably breaks querying...how to fix?
+ - need steady action (2) and category_id (3) / could also be txid (1)
+
 * edit/delete category
 * edit/delete item
 * have a chain of tips where everyone in the chain gets a % of the tip
  - condense tip if same author gets multiple
- - need algorithm to calculate
+ - need algorithm to calculate tip
 * disappear and rerender money button (otherwise people might accidentally post wrong content)
 * count categories as entries
 
