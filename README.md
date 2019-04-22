@@ -1,8 +1,15 @@
-# Open Directory v0.1
+# Open Directory
 
-> A Bitcoin protocol for public resources
+> v0.1
 
-## Protocol Specification
+Open Directory is a way to build resources together with other people online. Resources are things like [Awesome Lists](https://github.com/sindresorhus/awesome), [DMOZ](http://dmoz-odp.org) and even [Reddit](https://www.reddit.com). Open Directory let's anybody become a contributor, that means:
+
+* Create your own resource and get paid when people upvote (tip)
+* Incentivize contributions by sharing the tip
+* Earn money by contributing to the **tipchain**
+* Organize the world's information in a 100% open way, while getting paid
+
+## Open Directory Protocol
 
 Open Directory uses the Bitcom protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
 
