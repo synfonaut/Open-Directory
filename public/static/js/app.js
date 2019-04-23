@@ -246,8 +246,6 @@ class OpenDirectoryApp extends React.Component {
             const archive = Array.from(unique_archive.values());
             const items = this.buildItemsFromArchive(category_id, archive);
 
-            console.log("ITEMS", items);
-
             this.setState({
                 "archive": archive,
                 "items": items,
@@ -259,7 +257,6 @@ class OpenDirectoryApp extends React.Component {
 
         }).catch((e) => {
             console.log("error", e);
-            throw e;
             this.setState({
                 "isLoading": false,
                 "isError": true,
@@ -476,6 +473,35 @@ class List extends React.Component {
 }
 
 class EntryItem extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this._isMounted = false;
+    }
+
+    componentDidMount() {
+        window.addEventListener('hashchange', this.clearForm.bind(this), false);
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('hashchange', this.clearForm.bind(this));
+        this._isMounted = false;
+    }
+
+    clearForm() {
+        if (this._isMounted) {
+            const el = document.querySelector(".entry-tip-money-button");
+            if (el) {
+                const parentNode = el.parentNode;
+                parentNode.removeChild(el);
+                const newEl = document.createElement('div');
+                newEl.className = "entry-tip-money-button";
+                parentNode.appendChild(newEl);
+            }
+        }
+    }
+
     handleUpvote(e) {
         const OP_RETURN = [
             OPENDIR_PROTOCOL,
@@ -483,7 +509,7 @@ class EntryItem extends React.Component {
             this.props.item.txid,
         ];
 
-        const button = document.getElementById(this.props.item.txid).querySelector(".tip-money-button");
+        const button = document.getElementById(this.props.item.txid).querySelector(".entry-tip-money-button");
         databutton.build({
             data: OP_RETURN,
             button: {
@@ -496,6 +522,9 @@ class EntryItem extends React.Component {
                 },*/
                 onPayment: (msg) => {
                     console.log(msg);
+                    setTimeout(() => {
+                        this.clearForm();
+                    }, 5000);
                 }
             }
         });
@@ -510,7 +539,7 @@ class EntryItem extends React.Component {
                         <h5><a href={this.props.item.link}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>}</h5>
                         <p className="description">{this.props.item.description}</p>
                         <p className="url"><a href={this.props.item.link}>{this.props.item.link}</a></p>
-                        <div className="tip-money-button"></div>
+                        <div className="entry-tip-money-button"></div>
                    </div>
                     <div className="clearfix"></div>
                 </div>
@@ -521,6 +550,35 @@ class EntryItem extends React.Component {
 
 class CategoryItem extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this._isMounted = false;
+    }
+
+    componentDidMount() {
+        window.addEventListener('hashchange', this.clearForm.bind(this), false);
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('hashchange', this.clearForm.bind(this));
+        this._isMounted = false;
+    }
+
+    clearForm() {
+        if (this._isMounted) {
+            const el = document.querySelector(".category-tip-money-button");
+            if (el) {
+                const parentNode = el.parentNode;
+                parentNode.removeChild(el);
+                const newEl = document.createElement('div');
+                newEl.className = "category-tip-money-button";
+                parentNode.appendChild(newEl);
+            }
+        }
+    }
+
+
     // this is the same as EntryItem above ...share code?
     handleUpvote(e) {
         const OP_RETURN = [
@@ -529,13 +587,16 @@ class CategoryItem extends React.Component {
             this.props.item.txid,
         ];
 
-        const button = document.getElementById(this.props.item.txid).querySelector(".tip-money-button");
+        const button = document.getElementById(this.props.item.txid).querySelector(".category-tip-money-button");
         databutton.build({
             data: OP_RETURN,
             button: {
                 $el: button,
                 onPayment: (msg) => {
                     console.log(msg);
+                    setTimeout(() => {
+                        this.clearForm();
+                    }, 5000);
                 }
             }
         });
@@ -565,7 +626,7 @@ class CategoryItem extends React.Component {
                             {!this.props.item.height && <span className="pending">pending</span>}
                         </h3>
                         <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.description}}></p>
-                        <div className="tip-money-button"></div>
+                        <div className="category-tip-money-button"></div>
                     </div>
                     <div className="clearfix"></div>
                 </div>
