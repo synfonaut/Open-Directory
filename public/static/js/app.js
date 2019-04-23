@@ -25,6 +25,7 @@ class OpenDirectoryApp extends React.Component {
                     <h1>About Open Directory</h1>
                     <p>it's early days so no moderation, let's call it a feature instead of a bug for now and see what the market does</p>
                     <p>tip chain</p>
+                    <p>tools, milligram, bitdb, moneybutton</p>
                      <p><code>v0.1—beta</code> </p>
                     <p>✌️ synfonaut</p>
                 </div>
@@ -34,7 +35,7 @@ class OpenDirectoryApp extends React.Component {
             if (!this.state.isLoading && !this.state.isError) {
                 shouldShowAddNewCategoryForm = true;
 
-                if (this.state.category) {
+                if (this.state.category && this.state.category.txid) {
                     shouldShowAddNewEntryForm = true;
                 }
             }
@@ -433,17 +434,18 @@ class List extends React.Component {
         return (
             <div>
                 {heading}
-                <ul className="list">
+                <ul className="category list">
                     {categories.map(category => (
                         <CategoryItem key={"category-" + category.txid} item={category} />
                     ))}
                 </ul>
-                <br />
-                <ul className="list">
+                <div className="clearfix"></div>
+                <ul className="entry list">
                     {entries.map(entry => (
                         <EntryItem key={"entry-" + entry.txid} item={entry} />
                     ))}
                 </ul>
+                <div className="clearfix"></div>
             </div>
         );
     }
@@ -589,7 +591,7 @@ class AddEntryForm extends React.Component {
                             Description:
                             <textarea onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
                         </label>
-                        <input type="submit" value="Add new entry" />
+                        <input type="submit" className="button-outline button-pink" value="Add new entry" />
                         <div>
                             <div className="add-entry-money-button"></div>
                         </div>
@@ -712,7 +714,7 @@ class AddCategoryForm extends React.Component {
                             Description:
                             <textarea onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
                         </label>
-                        <input type="submit" value={this.props.category ? "Add new subcategory" : "Add new directory"} />
+                        <input type="submit" className="button button-outline button-red" value={this.props.category ? "Add new subcategory" : "Add new directory"} />
                         <div>
                             <div className="add-category-money-button"></div>
                         </div>

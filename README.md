@@ -195,6 +195,10 @@ open questions
  - bulk mode breaks tx as id model. also probably breaks querying...how to fix?
  - need steady action (2) and category_id (3) / could also be txid (1)
 
+
+### generic
+* shouldn't be able to add entries under root
+* should be able to add categories under root
 * disappear and rerender money button (otherwise people might accidentally post wrong content)
 * edit/delete category
 * edit/delete item
@@ -205,13 +209,18 @@ open questions
 * don't fetch network request every single time....use cache if we can
 * bug: verify edit transactions in same block don't lose their order in update and set wrong value
 
+* bug: can you add an item to a brand new category without refreshing?
+
 
 
 ### design/ux
 
 * need MIT license
 
+* add themes that stick work during forking
+* upvotes in mobile don't look good
 * better design
+* update title to reflect category (including home)
 * nice logo using color scheme
 * group sub-categories
 * need good loading indidcator
