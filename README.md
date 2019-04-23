@@ -44,9 +44,6 @@ Along with a *markdown* description
 Open Directory protocols have two primary forms, creating new items (categories and entries) and then doing things to those entries (edits, deletes, votes)
 
 
-
-
-
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     category.update
     <category_txid>
@@ -179,115 +176,92 @@ Step 5. Delete a moderator
     moderator.delete
     <publickey>
 
+TODO: Does this solve moderation in a way that can be used with AIP?
 
+### Forking (proposed)
 
-open questions
-- does authorship protocol work well for moderation?
-- need to be able to easily undo a delete/edit/update
+    # fork
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    fork
+    <category_txid>
 
+### Undo (proposed)
+
+    # undo 
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    undo
+    <txid>
+
+    # undoing an undo is a no-op, but you can re-do an undo
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    redo
+    <undo_txid>
 
 ## TODO
 
-### data model
-
-* use local storage for user-specific settings, like an alternative endpiont for bitdb genesis
+### protocol
 * unit tests for core transformations
-* stress test server, see if aggregate is putting too much load
-* add bitcom protocol link on about page
-* add information about micro payments. they're built into the actions of the site
+* edit category
+* delete category
+* edit item
+* delete item
+* undo
+* fork
 
-* dedicated protocol
- - works compatible with forking
- - bulk mode breaks tx as id model. also probably breaks querying...how to fix?
- - need steady action (2) and category_id (3) / could also be txid (1)
-
-
-### generic
-* shouldn't be able to add entries under root
-* should be able to add categories under root
-* disappear and rerender money button (otherwise people might accidentally post wrong content)
-* edit/delete category
-* edit/delete item
+### app
+* let users tip a custom amount to someone who contributed a link and entire tip chain
 * have a chain of tips where everyone in the chain gets a % of the tip
  - condense tip if same author gets multiple
  - need algorithm to calculate tip
-
-* don't fetch network request every single time....use cache if we can
 * bug: verify edit transactions in same block don't lose their order in update and set wrong value
+* fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
+* add recent open directories (changelog)
 
-* bug: occasionally react throws a warning about hashchange clearform
-* bug: can you add an item to a brand new category without refreshing?
 
+### nice to have
+* add themes that stick and work during forking
+* use local storage for user-specific settings, like an alternative endpiont for bitdb genesis
+* optimize: don't fetch network request every single time
+* give items their own page as well
+* add sorting: by votes, latest
+* hide create category by default
+* add statistics, how many categories, how many entries
 
 
 ### design/ux
-
-* need MIT license
-
-* floating categories go right sometimes for some reason
-* add themes that stick work during forking
-* upvotes in mobile don't look good
-* better design
+* bug: floating categories go right sometimes for some reason
 * update title to reflect category (including home)
-* nice logo using color scheme
-* group sub-categories
+* upvotes in mobile don't look good
 * need good loading indidcator
 * need good error indidcator, up high
-* let users tip a custom amount to someone who contributed a link and entire tip chain
-* give items their own page as well
-* better homepage description
-* about with tip screen
-* add sorting: by votes, date, submitter
-* hide create category by default
-* better iconography and graphics
-* find places to add more color
-* add default state for no entries
 * success after submit, show a message and what to do if it doesn't appear (refresh)
-* add blurb about how you can make money on opendirsv
-* allow markdown in description
-* about page (BSV particle effect, only run when active)
-* beta tag, let people know it's a new thing and an experiment
+* add default state for no entries
 
-### cleanup
-* compile step, minify, remove inbrowser babel, convert to c:// and export for web & bitcoin output
-* refactor code as much as possible so it's easier to organize
-
-### nice to have
-* fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
-* add statistics, how many categories, how many entries
-* add recent open directories (changelog)
+* better iconography and graphics
+* better homepage description (benefits and how you can make money)
 
 ### for launch
-* collab with bsvdevs and put 'em on chain
-* create good examples (bsvdevs, onchain games, onchain art)
-
-### questions for chat
-* how much is too much to put in aggregate?
-* possible to make app protocol generic by using json schema protocol?
-* use vanity addresses for protocols? 1opendir... helps with UX, downside is people might assume it's safe without actually checking
+* compile step, minify, remove inbrowser babel, convert to c:// and export for web & bitcoin output
+* refactor code as much as possible so it's easier to organize
+* create good examples (collab with bsvdevs, onchain games, onchain art, onchain utilities)
+* stress test server, see if aggregate is putting too much load
 
 
 ## FUTURE
-
 * protocol for getting latest app version, put notice in app and point to new link
-* probably want to include edits in the tipchain—but this could be abused...
-* Use AIP to sign data by author
-* Let a user control a category controlled by their AIP
-* Plug into bit:// for bitdb so we don't have to hardcode it
+* might want to include edits in the tipchain
+* Moderation
+* AIP to sign data by author
+* Plug into bit:// for genesis bitdb so we don't have to hardcode it
 * Bottle bookmarklet for easily saving to a category
-* how to do ownership? want collaboration but maybe need some kind of approval system. don't like my resource? 1-click fork
-* need protocol processor that knows how to process on-chain, let bitcom protocol reference on-chain javascript to run to process OP_RETURN
-* offline/client-side caching
 * pretty bitcom links, so Bottle has bot://<OPENDIR_PROTOCOL>/<txid>
 
-
 ## FEEDBACK
-* bitdb bug: event is getting messages it shouldn't
+* bitdb bug: event stream is getting messages it shouldn't
 * bitdb suggestion: weird edge case with bitdb on u/c when joining on both, it doubles the download data even if you try to de-duplicate
 * bitdb suggestion: nice to just say "give me OP_RETURN string array" in addition to s1,s2,s3,s4,s5—useful for variable length protocols like MAP
-* on-chain planaria... end up doing similar "state processing" code to bring "objects" up to date, planarium.js?
- * could be like a planaria state machine transformer, but embedded in a bitcoin tx, so everything is still onchain
- * in addition to {"r": {"f": ...}} could do bit:// protocol transformations? run it through MAP in-chain protocol to convert s1/s2/s3/s3 to key/values
+* on-chain planaria... end up doing similar "state processing" code to bring "objects" up to date, eventually will need full Planaria, but for lighter apps, planarium.js?
+* protocol processor that's a planaria state machine transformer, but embedded in a bitcoin tx, so everything is still onchain
 * enable regex in jq for more advanced filtering
 
 ## about

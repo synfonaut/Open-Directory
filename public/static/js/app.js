@@ -26,6 +26,10 @@ class OpenDirectoryApp extends React.Component {
                     <p>it's early days so no moderation, let's call it a feature instead of a bug for now and see what the market does</p>
                     <p>tip chain</p>
                     <p>tools, milligram, bitdb, moneybutton</p>
+                    <p>* add bitcom protocol link on about page</p>
+                    <p>* add information about micro payments. they're built into the actions of the site</p>
+                    <p>* about with tip screen</p>
+                    <p>* about page (BSV particle effect, only run when active)</p>
                      <p><code>v0.1—beta</code> </p>
                     <p>✌️ synfonaut</p>
                 </div>
@@ -64,17 +68,15 @@ class OpenDirectoryApp extends React.Component {
                         <div className="row">
                             <div className="column">
                                 <p>Open Directory lets anyone build resources like <a href="https://www.reddit.com">Reddit</a>, <a href="https://github.com/sindresorhus/awesome">Awesome Lists</a> and <a href="http://dmoz-odp.org">DMOZ</a> ontop of Bitcoin. With Open Directory you can:</p>
-                                <ul>
+                                <ul className="blurb">
                                     <li>💡 Create your own resource and earn money when people tip through upvotes</li>
                                     <li>💰 Incentivize quality submissions by sharing a portion of tips back to contributors</li>
                                     <li>🛠 Organize an existing directory or fork it with 1-click and start your own</li>
                                 </ul>
 
-                                <p>Create your own directory or view the existing ones below.</p>
+                                <p className="nopadding">Create your own directory or view the existing ones below.</p>
                             </div>
                         </div>
-
-                        <hr />
                       </div>}
                     {body}
                     {this.state.isLoading && loading}
@@ -238,6 +240,8 @@ class OpenDirectoryApp extends React.Component {
             const archive = Array.from(unique_archive.values());
             const items = this.buildItemsFromArchive(category_id, archive);
 
+            console.log("ITEMS", items);
+
             this.setState({
                 "archive": archive,
                 "items": items,
@@ -249,6 +253,7 @@ class OpenDirectoryApp extends React.Component {
 
         }).catch((e) => {
             console.log("error", e);
+            throw e;
             this.setState({
                 "isLoading": false,
                 "isError": true,
@@ -353,8 +358,18 @@ class OpenDirectoryApp extends React.Component {
 
     processResult(result, existing) {
 
-        if (result.action == "create" && result.change.action == "SET") {
-            const obj = result.change.value;
+        if (result.action == "create") {
+            const obj = result.change;
+
+            if (obj.description) {
+                const markdown = new markdownit();
+                obj.description = markdown.renderInline(obj.description);
+            }
+
+            if (result.action_id) {
+                obj.category = result.action_id;
+            }
+
             obj.type = result.type;
             obj.txid = result.txid;
             obj.address = result.address;
@@ -393,7 +408,7 @@ class List extends React.Component {
 
     getEntries() {
         if (this.props.category) {
-            const entries = this.props.items.filter(i => { return i.type == "entry" && i.category == this.props.category.txid });
+            const entries = this.props.items.filter(i => { return i.type == "entry" && i.category && i.category == this.props.category.txid });
             return entries.sort((a, b) => {
                 if (a.votes < b.votes) { return 1; }
                 if (a.votes > b.votes) { return -1; }
@@ -427,8 +442,8 @@ class List extends React.Component {
             }
             heading = (<div>
                 {back}
-                <h2>{this.props.category.name}</h2>
-                <p>{this.props.category.description}</p>
+                <h1>{this.props.category.name}</h1>
+                <p dangerouslySetInnerHTML={{__html: this.props.category.description}}></p>
             </div>);
         }
         return (
@@ -486,7 +501,7 @@ class EntryItem extends React.Component {
                     </div>
                     <div className="column">
                         <h5><a href={this.props.item.link}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>}</h5>
-                        <p className="description">{this.props.item.description}</p>
+                        <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.description}}></p>
                         <p className="url"><a href={this.props.item.link}>{this.props.item.link}</a></p>
                         <div className="tip-money-button"></div>
                     </div>
@@ -542,7 +557,7 @@ class CategoryItem extends React.Component {
                             <span className="category-count">({this.props.item.entries})</span>
                             {!this.props.item.height && <span className="pending">pending</span>}
                         </h3>
-                        <p className="description">{this.props.item.description}</p>
+                        <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.description}}></p>
                         <div className="tip-money-button"></div>
                     </div>
                 </div>
@@ -663,9 +678,6 @@ class AddEntryForm extends React.Component {
         const OP_RETURN = [
             OPENDIR_PROTOCOL,
             "entry.create",
-            MAP_PROTOCOL,
-            "SET",
-            "category",
             this.props.category.txid,
             "name",
             this.state.title,
@@ -810,12 +822,9 @@ class AddCategoryForm extends React.Component {
         var OP_RETURN = [
             OPENDIR_PROTOCOL,
             "category.create",
-            MAP_PROTOCOL,
-            "SET",
         ];
 
-        if (this.props.category && this.props.category.txid) {
-            OP_RETURN.push("category");
+        if (this.props.category.txid) {
             OP_RETURN.push(this.props.category.txid);
         }
 

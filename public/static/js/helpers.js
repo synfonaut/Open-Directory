@@ -6,7 +6,7 @@ if (isNode) {
     axios = require("axios");
 }
 
-const OPENDIR_PROTOCOL = "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi";
+const OPENDIR_PROTOCOL = "1dirxA5oET8EmcdW4saKXzPqejmMXQwg2";
 const OPENDIR_ACTIONS = [
     "category.create",
     "category.update",
@@ -45,6 +45,7 @@ function processOpenDirectoryTransaction(result) {
     const protocol_id = args.shift();
     const opendir_action = args.shift();
 
+
     if (!txid) { return null; }
     if (protocol_id !== OPENDIR_PROTOCOL) { return null; }
     if (OPENDIR_ACTIONS.indexOf(opendir_action) == -1) { return null; }
@@ -63,61 +64,63 @@ function processOpenDirectoryTransaction(result) {
         height: height
     };
 
-    if (item_action == "delete") {
-        obj.action_id = args.shift();
-    } else if (item_action == "create" || item_action == "update") {
-        if (item_action == "update") {
+    if (item_type == "category") {
+        if (item_action == "create") {
+            // if odd parameters, that means we've added a category
+            // this will be unstable long-term, best to check if keys are in schema
+            if ((args.length % 2) == 1) {
+                obj.action_id = args.shift();
+            }
+
+            obj.change = convertKeyValues(args);
+        } else if (item_action == "update") {
+            obj.action_id = args.shift();
+            obj.change = convertKeyValues(args);
+        } else if (item_action == "delete") {
             obj.action_id = args.shift();
         }
-
-        const data = convertMAPOPReturnToKeyValues(args);
-        if (data) {
-            obj.change = data;
+    } else if (item_type == "entry") {
+        if (item_action == "create") {
+            obj.action_id = args.shift();
+            obj.change = convertKeyValues(args);
+        } else if (item_action == "update") {
+            obj.action_id = args.shift();
+            obj.change = convertKeyValues(args);
+        } else if (item_action == "delete") {
+            obj.action_id = args.shift();
         }
-    } else if (item_action == "vote") {
+    } else if (item_type == "vote") {
         obj.action_id = args.shift();
+    } else {
+        console.log("unknown action", result);
     }
 
     return obj;
 }
 
-function convertMAPOPReturnToKeyValues(orig_args) {
+function convertKeyValues(orig_args) {
     var args = JSON.parse(JSON.stringify(orig_args)); // copy
 
-    const protocol_id = args.shift();
-    const map_action = args.shift();
+    var keyvalues = {};
 
-    if (protocol_id != MAP_PROTOCOL) { return null; }
-    if (MAP_ACTIONS.indexOf(map_action) == -1) { return null; }
-    var obj = {action: map_action};
+    // process key/value pairs
+    var key = null, value = null, tmp = null;
 
-    if (map_action == "SET") {
-        obj.value = {};
-
-        // process s* key/value pairs
-        var key = null, value = null, tmp = null;
-
-        while (tmp = args.shift()) {
-            if (key) {
-                value = tmp;
-            } else {
-                key = tmp;
-            }
-
-            if (key && value) {
-                obj.value[key] = value;
-                key = null;
-                value = null;
-            }
+    while (tmp = args.shift()) {
+        if (key) {
+            value = tmp;
+        } else {
+            key = tmp;
         }
 
-        return obj;
-    } else if (map_action == "DELETE") { // todo
-        obj.value = args;
-        return obj;
-    } else {
-        return null;
+        if (key && value) {
+            keyvalues[key] = value;
+            key = null;
+            value = null;
+        }
     }
+
+    return keyvalues;
 }
 
 function processOpenDirectoryTransactions(results) {
@@ -138,34 +141,30 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                     }
                 },
                 // climb parent recursively
-                { "$graphLookup": { "from": "c", "startWith": "$out.s6", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "confirmed_category" } },
-                { "$graphLookup": { "from": "u", "startWith": "$out.s6", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "unconfirmed_category" } },
+                { "$graphLookup": { "from": "c", "startWith": "$out.s3", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "confirmed_category" } },
+                { "$graphLookup": { "from": "u", "startWith": "$out.s3", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "unconfirmed_category" } },
 
                 // find votes
 
                 // climb children
-                { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s6", "as": "confirmed_entries" } },
-                { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s6", "as": "unconfirmed_entries" } },
+                { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s3", "as": "confirmed_entries" } },
+                { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s3", "as": "unconfirmed_entries" } },
 
                 {
                     "$project": {
                         "confirmed_category": "$confirmed_category",
-                        //"confirmed_votes": "$confirmed_votes",
                         "confirmed_entries": "$confirmed_entries",
                         "unconfirmed_entries": "$unconfirmed_entries",
                         "unconfirmed_category": "$unconfirmed_category",
-                        //"unconfirmed_votes": "$unconfirmed_votes",
                         "object": ["$$ROOT"],
                     }
                 },
                 {
                     "$project": {
                         "object.confirmed_category": 0,
-                        //"object.confirmed_votes": 0,
                         "object.confirmed_entries": 0,
                         "object.unconfirmed_entries": 0,
                         "object.unconfirmed_category": 0,
-                        //"object.unconfirmed_votes": 0,
                     }
                 },
                 {
@@ -174,11 +173,9 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                             "$concatArrays": [
                                 "$object",
                                 "$confirmed_category",
-                                //"$confirmed_votes",
                                 "$confirmed_entries",
                                 "$unconfirmed_entries",
                                 "$unconfirmed_category",
-                                //"$unconfirmed_votes"
                             ]
                         }
                     }

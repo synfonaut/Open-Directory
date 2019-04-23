@@ -1,7 +1,18 @@
+body {
+    background: url("/static/img/bg-50.png") repeat;
+}
+
 .open-directory
 {
     font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-    margin-top: 10px;
+}
+
+input[type='email'], input[type='number'], input[type='password'], input[type='search'], input[type='tel'], input[type='text'], input[type='url'], textarea, select {
+    background-color: #ffffffaa
+}
+
+input[type='email']:focus, input[type='number']:focus, input[type='password']:focus, input[type='search']:focus, input[type='tel']:focus, input[type='text']:focus, input[type='url']:focus, textarea:focus, select:focus {
+    border-color: #ccc;
 }
 
 body.theme-purple a { color: #9B4DCA; }
@@ -22,6 +33,27 @@ h6 {
 
 h3 .highlight {
     font-size: 21px;
+}
+
+.intro {
+    background: rgba(255, 255, 255, 0.69);
+    padding: 10px 20px 10px 20px;
+    margin-bottom: 40px;
+    border-radius: 5px;
+    border: 1px solid #e8e2d699;
+}
+
+.blurb {
+    padding: 7px 0 3px 0;
+}
+
+hr {
+    border-top: 1px dashed #e8e2d699;
+}
+
+p.nopadding {
+    padding-bottom: 0;
+    margin-bottom: 10px;
 }
 
 .highlight {
@@ -67,7 +99,11 @@ a {
 }
 
 .back hr {
-    margin: 5px 0;
+    margin: 7px 0;
+}
+
+.back {
+    margin-bottom: 15px;
 }
 
 .entry {
@@ -113,9 +149,10 @@ form {
 }
 
 .pending {
-    background: #ddd;
-    color: #777;
+    background-color: #FF9464;
+    color: #fff;
     padding: 2px 7px;
+    margin-left: 4px;
     font-size: 12px;
     opacity: 0.75;
     border-radius: 5px;
@@ -123,7 +160,7 @@ form {
 
 .navigation {
     width: 100%;
-    background: #f4f5f6;
+    background: #efece588;
     border-bottom: 1px solid #ddd;
     padding: 11px;
     color: #444;
@@ -134,7 +171,7 @@ form {
 }
 
 .navigation-title {
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .navigation-list {
