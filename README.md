@@ -44,9 +44,6 @@ Along with a *markdown* description
 Open Directory protocols have two primary forms, creating new items (categories and entries) and then doing things to those entries (edits, deletes, votes)
 
 
-
-
-
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     category.update
     <category_txid>

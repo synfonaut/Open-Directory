@@ -6,7 +6,7 @@ if (isNode) {
     axios = require("axios");
 }
 
-const OPENDIR_PROTOCOL = "1AaTyUTs5wBLu75mHt3cJfswowPyNRHeFi";
+const OPENDIR_PROTOCOL = "1dirxA5oET8EmcdW4saKXzPqejmMXQwg2";
 const OPENDIR_ACTIONS = [
     "category.create",
     "category.update",

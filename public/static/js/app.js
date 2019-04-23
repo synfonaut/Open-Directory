@@ -633,9 +633,6 @@ class AddEntryForm extends React.Component {
         const OP_RETURN = [
             OPENDIR_PROTOCOL,
             "entry.create",
-            MAP_PROTOCOL,
-            "SET",
-            "category",
             this.props.category.txid,
             "name",
             this.state.title,
@@ -740,14 +737,8 @@ class AddCategoryForm extends React.Component {
         var OP_RETURN = [
             OPENDIR_PROTOCOL,
             "category.create",
-            MAP_PROTOCOL,
-            "SET",
+            this.props.category.txid,
         ];
-
-        if (this.props.category) {
-            OP_RETURN.push("category");
-            OP_RETURN.push(this.props.category.txid);
-        }
 
         OP_RETURN.push("name");
         OP_RETURN.push(this.state.title);
