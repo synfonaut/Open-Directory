@@ -34,32 +34,6 @@ body.theme-yellow a { color: #F9F871; }
     width: 100%;
 }
 
-.open-directory ul.list.category li h3 a {
-    color: #FF6384;
-}
-
-.open-directory ul.list.category li .upvote a {
-    color: #FF6384;
-}
-
-.open-directory ul.list.entry li a {
-    color: #EB48AB;
-}
-
-.open-directory ul.list.entry li .upvote a {
-    color: #EB48AB;
-}
-
-.button-pink {
-    color: #FF6384 !important;
-    border-color: #FF6384 !important;
-}
-
-.button-red {
-    color: #EB48AB !important;
-    border-color: #EB48AB !important;
-}
-
 .open-directory a {
     cursor: pointer;
 }

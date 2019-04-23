@@ -591,7 +591,7 @@ class AddEntryForm extends React.Component {
                             Description:
                             <textarea onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
                         </label>
-                        <input type="submit" className="button-outline button-pink" value="Add new entry" />
+                        <input type="submit" className="button-outline" value="Add new entry" />
                         <div>
                             <div className="add-entry-money-button"></div>
                         </div>
@@ -714,7 +714,7 @@ class AddCategoryForm extends React.Component {
                             Description:
                             <textarea onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
                         </label>
-                        <input type="submit" className="button button-outline button-red" value={this.props.category ? "Add new subcategory" : "Add new directory"} />
+                        <input type="submit" className="button button-outline" value={this.props.category ? "Add new subcategory" : "Add new directory"} />
                         <div>
                             <div className="add-category-money-button"></div>
                         </div>

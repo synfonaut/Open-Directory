@@ -190,6 +190,12 @@ open questions
 
 ### data model
 
+* use local storage for user-specific settings, like an alternative endpiont for bitdb genesis
+* unit tests for core transformations
+* stress test server, see if aggregate is putting too much load
+* add bitcom protocol link on about page
+* add information about micro payments. they're built into the actions of the site
+
 * dedicated protocol
  - works compatible with forking
  - bulk mode breaks tx as id model. also probably breaks querying...how to fix?
