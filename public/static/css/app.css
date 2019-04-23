@@ -254,6 +254,29 @@ form {
     animation: lds-circle 4.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 }
 
+.pages {
+    margin-top: 30px;
+}
+
+.pages a {
+    margin-right: 11px;
+    border: 1px solid #ccc;
+    padding: 3px 7px;
+    display: inline-block;
+    color: #ccc;
+    font-size: 13px;
+}
+
+.pages a:hover {
+    border-color: #bbb;
+    color: #aaa;
+    background-color: #eeeeee22;
+}
+.pages a.active {
+    border-color: #FF6384;
+    color: #FF6384;
+}
+
 @keyframes lds-circle {
     0%, 100% {
         animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5);

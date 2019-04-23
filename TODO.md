@@ -1,4 +1,5 @@
 * need to be able to page entries
+// TODO: Add empty listing view
 
 * delete category
 * delete item
@@ -44,6 +45,7 @@
 * stress test server, see if aggregate is putting too much load
 
 ## FUTURE
+* votes get unsynced which cause pages to flash, client<->server cache gets very complex with partial objects
 * protocol for getting latest app version, put notice in app and point to new link
 * might want to include edits in the tipchain
 * Moderation

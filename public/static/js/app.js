@@ -142,6 +142,7 @@ class OpenDirectoryApp extends React.Component {
             }
 
             items = this.buildItemsFromArchive(category.txid, this.state.archive);
+            console.log("DID UPDATE LOCATION GOT ", items);
 
         }
 
@@ -180,7 +181,7 @@ class OpenDirectoryApp extends React.Component {
 
     buildItemsFromArchive(category_id, results=[]) {
 
-        // TODO: YUCKY. Clean this up
+        // TODO: Clean this up
 
         // It's like this beause need to build hierarchy in specific way.
 
@@ -233,7 +234,6 @@ class OpenDirectoryApp extends React.Component {
 
             const results = this.processResults(rows);
 
-            // Rebuild archive with new results, keeping old copies
             var unique_archive = new Map();
             for (const item of this.state.archive) {
                 unique_archive.set(item.txid, item);
@@ -257,6 +257,7 @@ class OpenDirectoryApp extends React.Component {
 
         }).catch((e) => {
             console.log("error", e);
+            throw e; // TODO: remove
             this.setState({
                 "isLoading": false,
                 "isError": true,
@@ -399,7 +400,9 @@ class List extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "sort": "votes"
+            "sort": "votes",
+            "limit": 10,
+            "cursor": 0,
         };
     }
 
@@ -421,14 +424,16 @@ class List extends React.Component {
         if (this.props.category) {
             const entries = this.props.items.filter(i => { return i.type == "entry" && i.category && i.category == this.props.category.txid });
             return entries.sort((a, b) => {
-
-                if (this.state.sort == "votes") {
+                if (this.state.sort == "time") {
+                    if (!a.height) { return -1; }
+                    if (a.height < b.height) { return 1; }
+                    if (a.height > b.height) { return -1; }
+                } else {
                     if (a.votes < b.votes) { return 1; }
                     if (a.votes > b.votes) { return -1; }
+                    if (a.height < b.height) { return 1; }
+                    if (a.height > b.height) { return -1; }
                 }
-
-                if (a.height < b.height) { return 1; }
-                if (a.height > b.height) { return -1; }
                 return 0;
             });
         }
@@ -448,9 +453,24 @@ class List extends React.Component {
         }
     }
 
+    handlePageChange(page) {
+        const idx = (page - 1);
+        const cursor = idx * this.state.limit;
+        this.setState({"cursor": cursor});
+    }
+
     render() {
         const categories = this.getCategories();
         const entries = this.getEntries();
+
+        var slice = entries.slice(this.state.cursor, this.state.cursor + this.state.limit);
+
+        var numPages = Math.ceil(entries.length / this.state.limit);
+
+        var pages = [...Array(numPages).keys()].map(idx => {
+            const page = idx + 1;
+            return <a key={"page-" + page} className={this.state.cursor == (idx*this.state.limit) ? "active" : null} onClick={() => { this.handlePageChange(page) }}>{page}</a>;
+        });
 
         var parent;
         if (this.props.category && this.props.category.category) {
@@ -471,7 +491,7 @@ class List extends React.Component {
         }
 
         var entryListing;
-        if (entries.length > 0) {
+        if (slice.length > 0) {
             entryListing = (
                 <div>
                     <div className="sort">
@@ -484,10 +504,11 @@ class List extends React.Component {
                     </div>
 
                     <ul className="entry list">
-                        {entries.map(entry => (
+                        {slice.map(entry => (
                             <EntryItem key={"entry-" + entry.txid} item={entry} />
                         ))}
                     </ul>
+                    {pages.length > 1 && <div className="pages">{pages}</div>}
                 </div>
             );
         } else {
@@ -514,22 +535,20 @@ class EntryItem extends React.Component {
 
     constructor(props) {
         super(props);
-        this._isMounted = false;
     }
 
     componentDidMount() {
         window.addEventListener('hashchange', this.clearForm.bind(this), false);
-        this._isMounted = true;
     }
 
     componentWillUnmount() {
         window.removeEventListener('hashchange', this.clearForm.bind(this));
-        this._isMounted = false;
     }
 
     clearForm() {
-        if (this._isMounted) {
-            const el = document.querySelector(".entry-tip-money-button");
+        const container = document.getElementById(this.props.item.txid);
+        if (container) {
+            const el = container.querySelector(".entry-tip-money-button");
             if (el) {
                 const parentNode = el.parentNode;
                 parentNode.removeChild(el);
@@ -588,31 +607,22 @@ class EntryItem extends React.Component {
 
 class CategoryItem extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this._isMounted = false;
-    }
-
     componentDidMount() {
         window.addEventListener('hashchange', this.clearForm.bind(this), false);
-        this._isMounted = true;
     }
 
     componentWillUnmount() {
         window.removeEventListener('hashchange', this.clearForm.bind(this));
-        this._isMounted = false;
     }
 
     clearForm() {
-        if (this._isMounted) {
-            const el = document.querySelector(".category-tip-money-button");
-            if (el) {
-                const parentNode = el.parentNode;
-                parentNode.removeChild(el);
-                const newEl = document.createElement('div');
-                newEl.className = "category-tip-money-button";
-                parentNode.appendChild(newEl);
-            }
+        const el = document.querySelector(".category-tip-money-button");
+        if (el) {
+            const parentNode = el.parentNode;
+            parentNode.removeChild(el);
+            const newEl = document.createElement('div');
+            newEl.className = "category-tip-money-button";
+            parentNode.appendChild(newEl);
         }
     }
 
