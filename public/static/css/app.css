@@ -20,10 +20,26 @@ h6 {
     margin-bottom: 0;
 }
 
+h3 .highlight {
+    font-size: 21px;
+}
 
 .highlight {
-    color: #9B4DCA;
+    background-color: #FF6384;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 10px;
     font-weight: 400;
+}
+
+.button, button, input[type='button'], input[type='reset'], input[type='submit'] {
+    background-color: #FF6384;
+    color: #FF6384;
+}
+
+.button.button-outline, button.button-outline, input[type='button'].button-outline, input[type='reset'].button-outline, input[type='submit'].button-outline {
+    border-color: #FF6384;
+    color: #FF6384;
 }
 
 ul.list {
@@ -42,6 +58,7 @@ ul.list.category li {
 
 a {
     cursor: pointer;
+    color: #FF6384;
 }
 
 .loading {

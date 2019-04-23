@@ -7,7 +7,7 @@ class OpenDirectoryApp extends React.Component {
             location: [""],
             category: null,
             isLoading: true,
-            isError: false
+            isError: false,
         };
 
     }
@@ -562,6 +562,7 @@ class AddEntryForm extends React.Component {
             description: ""
         };
 
+        this._isMounted = false;
         this.handleTitleChange = this.handleTitleChange.bind(this);
         this.handleLinkChange = this.handleLinkChange.bind(this);
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
@@ -570,33 +571,37 @@ class AddEntryForm extends React.Component {
 
     componentDidMount() {
         window.addEventListener('hashchange', this.clearForm.bind(this), false);
+        this._isMounted = true;
     }
 
     componentWillUnmount() {
         window.removeEventListener('hashchange', this.clearForm.bind(this));
+        this._isMounted = false;
     }
 
     clearForm() {
-        const el = document.querySelector(".add-entry-money-button");
-        if (el) {
-            const parentNode = el.parentNode;
-            parentNode.removeChild(el);
-            const newEl = document.createElement('div');
-            newEl.className = "add-entry-money-button";
-            parentNode.appendChild(newEl);
-        }
+        if (this._isMounted) {
+            const el = document.querySelector(".add-entry-money-button");
+            if (el) {
+                const parentNode = el.parentNode;
+                parentNode.removeChild(el);
+                const newEl = document.createElement('div');
+                newEl.className = "add-entry-money-button";
+                parentNode.appendChild(newEl);
+            }
 
-        this.setState({
-            title: "",
-            link: "",
-            description: ""
-        });
+            this.setState({
+                title: "",
+                link: "",
+                description: ""
+            });
+        }
     }
 
     render() {
         return (
             <div className="column">
-                <h3>Add new entry to <span className="highlight">{this.props.category.name}</span></h3>
+                <h3>Add new link to <span className="highlight">{this.props.category.name}</span></h3>
                 <form onSubmit={this.handleSubmit}>
                     <fieldset>
                         <div className="row">
@@ -616,7 +621,7 @@ class AddEntryForm extends React.Component {
                             Description:
                             <textarea onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
                         </label>
-                        <input type="submit" className="button-outline" value="Add new entry" />
+                        <input type="submit" className="button-outline" value="Add new link" />
                         <div>
                             <div className="add-entry-money-button"></div>
                         </div>
@@ -719,6 +724,8 @@ class AddCategoryForm extends React.Component {
             description: ""
         };
 
+        this._isMounted = false;
+
         this.handleTitleChange = this.handleTitleChange.bind(this);
         this.handleLinkChange = this.handleLinkChange.bind(this);
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
@@ -727,26 +734,30 @@ class AddCategoryForm extends React.Component {
 
     componentDidMount() {
         window.addEventListener('hashchange', this.clearForm.bind(this), false);
+        this._isMounted = true;
     }
 
     componentWillUnmount() {
         window.removeEventListener('hashchange', this.clearForm.bind(this));
+        this._isMounted = false;
     }
 
     clearForm() {
-        const el = document.querySelector(".add-category-money-button");
-        if (el) {
-            const parentNode = el.parentNode;
-            parentNode.removeChild(el);
-            const newEl = document.createElement('div');
-            newEl.className = "add-category-money-button";
-            parentNode.appendChild(newEl);
-        }
+        if (this._isMounted) {
+            const el = document.querySelector(".add-category-money-button");
+            if (el) {
+                const parentNode = el.parentNode;
+                parentNode.removeChild(el);
+                const newEl = document.createElement('div');
+                newEl.className = "add-category-money-button";
+                parentNode.appendChild(newEl);
+            }
 
-        this.setState({
-            title: "",
-            description: ""
-        });
+            this.setState({
+                title: "",
+                description: ""
+            });
+        }
     }
 
     render() {
