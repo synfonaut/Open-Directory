@@ -695,10 +695,14 @@ class AddCategoryForm extends React.Component {
     }
 
     render() {
+        var header = <h3>Add new directory</h3>
+        if (this.props.category.txid) {
+            header = <h3>Add new subcategory under <span className="highlight">{this.props.category.name}</span></h3>
+        }
 
         return (
             <div className="column">
-                <h3>Add new {this.props.category ? "subcategory under '" + this.props.category.name + "'" : "directory"}</h3>
+                {header}
                 <form onSubmit={this.handleSubmit}>
                     <fieldset>
                         <div className="row">
@@ -714,7 +718,7 @@ class AddCategoryForm extends React.Component {
                             Description:
                             <textarea onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
                         </label>
-                        <input type="submit" className="button button-outline" value={this.props.category ? "Add new subcategory" : "Add new directory"} />
+                        <input type="submit" className="button button-outline" value={this.props.category.txid ? "Add new subcategory" : "Add new directory"} />
                         <div>
                             <div className="add-category-money-button"></div>
                         </div>
@@ -744,7 +748,7 @@ class AddCategoryForm extends React.Component {
             "SET",
         ];
 
-        if (this.props.category) {
+        if (this.props.category && this.props.category.txid) {
             OP_RETURN.push("category");
             OP_RETURN.push(this.props.category.txid);
         }

@@ -1,5 +1,5 @@
-
-.open-directory {
+.open-directory
+{
     font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
     margin-top: 10px;
 }
@@ -11,85 +11,91 @@ body.theme-orange1 a { color: #FF9464; }
 body.theme-orange2 a { color: #FFC857; }
 body.theme-yellow a { color: #F9F871; }
 
-.open-directory h1,
-.open-directory h2,
-.open-directory h3,
-.open-directory h4,
-.open-directory h5,
-.open-directory h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin-bottom: 0;
 }
 
-.open-directory ul.list {
+
+.highlight {
+    color: #9B4DCA;
+    font-weight: 400;
+}
+
+ul.list {
     margin-top: 15px;
     list-style: none;
 }
 
-.open-directory ul.list.entry {
+ul.list.entry {
     margin-top: 30px;
 }
 
-.open-directory ul.list.category li {
+ul.list.category li {
     float: left;
     width: 100%;
 }
 
-.open-directory a {
+a {
     cursor: pointer;
 }
 
-.open-directory .loading {
+.loading {
     text-align: center;
     padding: 30px;
 }
 
-.open-directory .back hr {
+.back hr {
     margin: 5px 0;
 }
 
-.open-directory .entry {
+.entry {
     margin-bottom: 30px;
 }
 
-.open-directory .entry .description {
+.entry .description {
     margin: 0;
 }
 
-.open-directory .entry .url {
+.entry .url {
     font-size: 14px;
     margin: 0;
 }
 
-.open-directory .entry .url a {
+.entry .url a {
     color: #AAA;
 }
 
-.open-directory .entry .url a:hover {
+.entry .url a:hover {
     text-decoration: underline;
 }
 
-.open-directory form {
+form {
     margin: 10px 0;
 }
 
-.open-directory .upvote {
+.upvote {
     font-size: 13px;
     float: left;
     text-align: center;
     padding: 3px 1px;
 }
 
-.open-directory .category-count {
+.category-count {
     font-size: 14px;
     padding: 5px;
     color: #AAA;
 }
 
-.open-directory .upvote a {
+.upvote a {
     display: block;
 }
 
-.open-directory .pending {
+.pending {
     background: #ddd;
     color: #777;
     padding: 2px 7px;
@@ -118,13 +124,13 @@ body.theme-yellow a { color: #F9F871; }
     list-style: none;
 }
 
-.open-directory #logo {
+#logo {
     width: 500px;
     max-width: 100%;
     padding: 20px 0;
 }
 
-.open-directory .intro li {
+.intro li {
     list-style: none;
 }
 
@@ -162,14 +168,14 @@ body.theme-yellow a { color: #F9F871; }
 
 /* Larger than mobile screen */
 @media (min-width: 40.0rem) {
-    .open-directory ul.list li.category {
+    ul.list li.category {
         width: 50%;
     }
 }
 
 /* Larger than tablet screen */
 @media (min-width: 80.0rem) {
-    .open-directory ul.list li.category {
+    ul.list li.category {
         width: 33%;
     }
 }
