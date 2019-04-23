@@ -396,6 +396,13 @@ class OpenDirectoryApp extends React.Component {
 
 class List extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            "sort": "votes"
+        };
+    }
+
     getCategories() {
         const category_id = (this.props.category ? this.props.category.txid: null);
         const categories = this.props.items.filter(i => { return i.type == "category" && i.category == category_id });
@@ -414,8 +421,12 @@ class List extends React.Component {
         if (this.props.category) {
             const entries = this.props.items.filter(i => { return i.type == "entry" && i.category && i.category == this.props.category.txid });
             return entries.sort((a, b) => {
-                if (a.votes < b.votes) { return 1; }
-                if (a.votes > b.votes) { return -1; }
+
+                if (this.state.sort == "votes") {
+                    if (a.votes < b.votes) { return 1; }
+                    if (a.votes > b.votes) { return -1; }
+                }
+
                 if (a.height < b.height) { return 1; }
                 if (a.height > b.height) { return -1; }
                 return 0;
@@ -427,6 +438,14 @@ class List extends React.Component {
 
     findCategoryByTXID(txid) {
         return this.props.items.filter(i => { return i.type == "category" && i.txid == txid }).shift();
+    }
+
+    handleChangeSortOrder(order) {
+        if (order == "time") {
+            this.setState({"sort": "time"});
+        } else {
+            this.setState({"sort": "votes"});
+        }
     }
 
     render() {
@@ -450,6 +469,31 @@ class List extends React.Component {
                 <p dangerouslySetInnerHTML={{__html: this.props.category.description}}></p>
             </div>);
         }
+
+        var entryListing;
+        if (entries.length > 0) {
+            entryListing = (
+                <div>
+                    <div className="sort">
+                        <span className="label">sort by</span>
+                        <ul>
+                            <li><a onClick={() => { this.handleChangeSortOrder("vote") }} className={this.state.sort == "votes" ? "active" : ""}>votes</a></li>
+                            <li><a onClick={() => { this.handleChangeSortOrder("time") }} className={this.state.sort == "time" ? "active" : ""}>time</a></li>
+                        </ul>
+                        <div className="clearfix"></div>
+                    </div>
+
+                    <ul className="entry list">
+                        {entries.map(entry => (
+                            <EntryItem key={"entry-" + entry.txid} item={entry} />
+                        ))}
+                    </ul>
+                </div>
+            );
+        } else {
+            // TODO: Add empty listing view
+        }
+
         return (
             <div>
                 {heading}
@@ -459,13 +503,7 @@ class List extends React.Component {
                     ))}
                 </ul>
                 <div className="clearfix"></div>
-                {entries.length > 0 && 
-                <div className="sort"><span className="label">sort by</span> <ul><li><a href="" className="active">votes</a></li><li><a href="">time</a></li></ul><div className="clearfix"></div></div>}
-                <ul className="entry list">
-                    {entries.map(entry => (
-                        <EntryItem key={"entry-" + entry.txid} item={entry} />
-                    ))}
-                </ul>
+                {entryListing}
                 <div className="clearfix"></div>
             </div>
         );
