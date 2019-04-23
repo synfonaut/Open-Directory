@@ -215,6 +215,7 @@ open questions
 * don't fetch network request every single time....use cache if we can
 * bug: verify edit transactions in same block don't lose their order in update and set wrong value
 
+* bug: occasionally react throws a warning about hashchange clearform
 * bug: can you add an item to a brand new category without refreshing?
 
 
@@ -223,6 +224,7 @@ open questions
 
 * need MIT license
 
+* floating categories go right sometimes for some reason
 * add themes that stick work during forking
 * upvotes in mobile don't look good
 * better design
@@ -239,10 +241,8 @@ open questions
 * hide create category by default
 * better iconography and graphics
 * find places to add more color
-* forms should clear between page refreshes
 * add default state for no entries
 * success after submit, show a message and what to do if it doesn't appear (refresh)
-* reset money button after submit
 * add blurb about how you can make money on opendirsv
 * allow markdown in description
 * about page (BSV particle effect, only run when active)

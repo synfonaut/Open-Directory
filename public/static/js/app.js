@@ -568,10 +568,35 @@ class AddEntryForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    componentDidMount() {
+        window.addEventListener('hashchange', this.clearForm.bind(this), false);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('hashchange', this.clearForm.bind(this));
+    }
+
+    clearForm() {
+        const el = document.querySelector(".add-entry-money-button");
+        if (el) {
+            const parentNode = el.parentNode;
+            parentNode.removeChild(el);
+            const newEl = document.createElement('div');
+            newEl.className = "add-entry-money-button";
+            parentNode.appendChild(newEl);
+        }
+
+        this.setState({
+            title: "",
+            link: "",
+            description: ""
+        });
+    }
+
     render() {
         return (
             <div className="column">
-                <h3>Add new entry</h3>
+                <h3>Add new entry to <span className="highlight">{this.props.category.name}</span></h3>
                 <form onSubmit={this.handleSubmit}>
                     <fieldset>
                         <div className="row">
@@ -653,11 +678,17 @@ class AddEntryForm extends React.Component {
                 $el: document.querySelector(".add-entry-money-button"),
                 onPayment: (msg) => {
                     console.log(msg)
-                    this.setState({
-                        title: "",
-                        link: "",
-                        description: ""
-                    });
+                    setTimeout(() => {
+                        this.clearForm();
+                    }, 5000);
+
+                    setTimeout(() => {
+                        this.setState({
+                            title: "",
+                            link: "",
+                            description: ""
+                        });
+                    }, 3000);
                 }
             }
         })
@@ -692,6 +723,30 @@ class AddCategoryForm extends React.Component {
         this.handleLinkChange = this.handleLinkChange.bind(this);
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    componentDidMount() {
+        window.addEventListener('hashchange', this.clearForm.bind(this), false);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('hashchange', this.clearForm.bind(this));
+    }
+
+    clearForm() {
+        const el = document.querySelector(".add-category-money-button");
+        if (el) {
+            const parentNode = el.parentNode;
+            parentNode.removeChild(el);
+            const newEl = document.createElement('div');
+            newEl.className = "add-category-money-button";
+            parentNode.appendChild(newEl);
+        }
+
+        this.setState({
+            title: "",
+            description: ""
+        });
     }
 
     render() {
@@ -766,11 +821,16 @@ class AddCategoryForm extends React.Component {
             button: {
                 $el: document.querySelector(".add-category-money-button"),
                 onPayment: (msg) => {
-                    console.log(msg)
-                    this.setState({
-                        title: "",
-                        description: ""
-                    });
+                    console.log(msg);
+                    setTimeout(() => {
+                        this.clearForm();
+                    }, 5000);
+                    setTimeout(() => {
+                        this.setState({
+                            title: "",
+                            description: ""
+                        });
+                    }, 3000);
                 }
             }
         })
