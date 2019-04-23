@@ -217,28 +217,24 @@ TODO: Does this solve moderation in a way that can be used with AIP?
 * fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
 * add recent open directories (changelog)
 
+### design/ux
+* need good loading indidcator (navigation)
+* need good error indidcator, up high (message that appears)
+* success after submit, show a message and what to do if it doesn't appear (success message that appears)
+* add default state for no entries (no yet, why don't you add one?)
+* bug: floating categories go right sometimes for some reason
+* add sorting: by votes, latest
+* hide create category by default
+
+* better iconography and graphics
+* better homepage description (benefits and how you can make money)
 
 ### nice to have
 * add themes that stick and work during forking
 * use local storage for user-specific settings, like an alternative endpiont for bitdb genesis
 * optimize: don't fetch network request every single time
 * give items their own page as well
-* add sorting: by votes, latest
-* hide create category by default
 * add statistics, how many categories, how many entries
-
-
-### design/ux
-* bug: floating categories go right sometimes for some reason
-* update title to reflect category (including home)
-* upvotes in mobile don't look good
-* need good loading indidcator
-* need good error indidcator, up high
-* success after submit, show a message and what to do if it doesn't appear (refresh)
-* add default state for no entries
-
-* better iconography and graphics
-* better homepage description (benefits and how you can make money)
 
 ### for launch
 * compile step, minify, remove inbrowser babel, convert to c:// and export for web & bitcoin output

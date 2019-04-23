@@ -67,7 +67,7 @@ class OpenDirectoryApp extends React.Component {
                         <img id="logo" src="/static/img/logo.png" />
                         <div className="row">
                             <div className="column">
-                                <p>Open Directory lets anyone build resources like <a href="https://www.reddit.com">Reddit</a>, <a href="https://github.com/sindresorhus/awesome">Awesome Lists</a> and <a href="http://dmoz-odp.org">DMOZ</a> ontop of Bitcoin. With Open Directory you can:</p>
+                                <p>Open Directory lets anyone build resources like <a href="https://www.reddit.com">Reddit</a>, <a href="https://github.com/sindresorhus/awesome">Awesome Lists</a> and <a href="http://dmoz-odp.org">DMOZ</a> ontop of Bitcoin (SV). With Open Directory you can:</p>
                                 <ul className="blurb">
                                     <li>💡 Create your own resource and earn money when people tip through upvotes</li>
                                     <li>💰 Incentivize quality submissions by sharing a portion of tips back to contributors</li>
@@ -91,7 +91,7 @@ class OpenDirectoryApp extends React.Component {
                     </div>
                     <div className="row">
                         <div className="column">
-                            <p align="center">made by <a href="https://twitter.com/synfonaut">@synfonaut</a></p>
+                            <p align="center">built by <a href="https://twitter.com/synfonaut">@synfonaut</a></p>
                         </div>
                     </div>
                 </div>
@@ -123,15 +123,21 @@ class OpenDirectoryApp extends React.Component {
         var category = null;
         var items = [];
 
-        if (hash != "about") {
+        if (hash == "about") {
+            document.title = "About Open Directory";
+        } else {
             if (hash == "") {
                 category = {"txid": null, "needsdata": true};
+                document.title = "Open Directory";
             } else {
                 category = this.findObjectByTX(hash, this.state.archive);
                 if (category) {
                     category.needsdata = true;
+                    document.title = category.name + " — Open Directory";
                 } else {
                     category = {"txid": hash, "needsdata": true};
+                    category.needsdata = true;
+                    document.title = "Open Directory";
                 }
             }
 
@@ -283,6 +289,7 @@ class OpenDirectoryApp extends React.Component {
             for (const result of final) {
                 if (result.type == "category" && result.txid == this.state.category.txid) {
                     this.setState({category: result});
+                    document.title = result.name + " — Open Directory";
                     break;
                 }
             }
@@ -361,7 +368,7 @@ class OpenDirectoryApp extends React.Component {
         if (result.action == "create") {
             const obj = result.change;
 
-            if (obj.description) {
+            if (result.type == "category" && obj.description) {
                 const markdown = new markdownit();
                 obj.description = markdown.renderInline(obj.description);
             }
@@ -455,6 +462,8 @@ class List extends React.Component {
                     ))}
                 </ul>
                 <div className="clearfix"></div>
+                {entries.length > 0 && 
+                <div className="sort"><span className="label">sort by</span> <ul><li><a href="" className="active">votes</a></li><li><a href="">time</a></li></ul><div className="clearfix"></div></div>}
                 <ul className="entry list">
                     {entries.map(entry => (
                         <EntryItem key={"entry-" + entry.txid} item={entry} />
@@ -495,16 +504,15 @@ class EntryItem extends React.Component {
     render() {
         return (
             <li id={this.props.item.txid} className="entry">
-                <div className="row">
-                    <div className="column-10">
-                        <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number">{this.props.item.votes}</span></div> 
-                    </div>
-                    <div className="column">
+                <div className="upvoteContainer">
+                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number">{this.props.item.votes}</span></div> 
+                    <div className="entry">
                         <h5><a href={this.props.item.link}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>}</h5>
-                        <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.description}}></p>
+                        <p className="description">{this.props.item.description}</p>
                         <p className="url"><a href={this.props.item.link}>{this.props.item.link}</a></p>
                         <div className="tip-money-button"></div>
-                    </div>
+                   </div>
+                    <div className="clearfix"></div>
                 </div>
             </li>
         )
@@ -544,14 +552,13 @@ class CategoryItem extends React.Component {
     render() {
         return (
             <li id={this.props.item.txid} className="category">
-                <div className="row">
-                    <div className="column-10">
-                        <div className="upvote">
-                            <a onClick={this.handleUpvote.bind(this)}>▲</a>
-                            <span className="number">{this.props.item.votes}</span>
-                        </div> 
+
+                <div className="upvoteContainer">
+                    <div className="upvote">
+                        <a onClick={this.handleUpvote.bind(this)}>▲</a>
+                        <span className="number">{this.props.item.votes}</span>
                     </div>
-                    <div className="column">
+                    <div className="category">
                         <h3>
                             <a href={"#" + this.props.item.txid} onClick={this.handleLink.bind(this)}>{this.props.item.name}</a>
                             <span className="category-count">({this.props.item.entries})</span>
@@ -560,6 +567,7 @@ class CategoryItem extends React.Component {
                         <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.description}}></p>
                         <div className="tip-money-button"></div>
                     </div>
+                    <div className="clearfix"></div>
                 </div>
             </li>
 

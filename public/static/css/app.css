@@ -35,6 +35,10 @@ h3 .highlight {
     font-size: 21px;
 }
 
+h1 {
+    margin-top: 10px;
+}
+
 .intro {
     background: rgba(255, 255, 255, 0.69);
     padding: 10px 20px 10px 20px;
@@ -59,6 +63,7 @@ p.nopadding {
 .highlight {
     background-color: #FF6384;
     color: white;
+    white-space: nowrap;
     padding: 5px 10px;
     border-radius: 10px;
     font-weight: 400;
@@ -75,12 +80,7 @@ p.nopadding {
 }
 
 ul.list {
-    margin-top: 15px;
     list-style: none;
-}
-
-ul.list.entry {
-    margin-top: 30px;
 }
 
 ul.list.category li {
@@ -107,7 +107,7 @@ a {
 }
 
 .entry {
-    margin-bottom: 30px;
+    margin-bottom: 11px;
 }
 
 .entry .description {
@@ -160,7 +160,7 @@ form {
 
 .navigation {
     width: 100%;
-    background: #efece588;
+    background: #efece577;
     border-bottom: 1px solid #ddd;
     padding: 11px;
     color: #444;
@@ -188,6 +188,56 @@ form {
     list-style: none;
 }
 
+.entry .upvoteContainer .upvote {
+    float: left;
+    padding: 5px 11px 3px 0px;
+}
+
+.category .upvoteContainer .upvote {
+    padding: 8px 11px 3px 0px;
+    font-size: 15px;
+    float: left;
+}
+
+.sort .label {
+    float: left;
+    font-weight: 500;
+    color: #777;
+}
+
+.sort {
+    font-size: 15px;
+    margin: 11px 0 6px 0;
+}
+
+.sort ul {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+.sort ul li {
+    list-style: none;
+    float: left;
+    margin: 0;
+    padding: 0;
+    margin-left: 14px;
+}
+
+.sort ul li a {
+    color: #EB48AB;
+}
+
+.sort ul li a.active {
+    text-decoration: underline;
+    font-weight: 400;
+}
+
+.upvoteContainer .entry,
+.upvoteContainer .category {
+    float: left;
+    max-width: 90%;
+}
 /* https://loading.io/css/ */
 .lds-circle {
     display: inline-block;
