@@ -1,5 +1,6 @@
-* need to be able to page entries
-// TODO: Add empty listing view
+* need good error indidcator, up high (message that appears)
+* success after submit, show a message and what to do if it doesn't appear (success message that appears)
+* hide create category by default
 
 * delete category
 * delete item
@@ -21,12 +22,7 @@
 * add recent open directories (changelog)
 
 ### design/ux
-* need good loading indidcator (navigation)
-* need good error indidcator, up high (message that appears)
-* success after submit, show a message and what to do if it doesn't appear (success message that appears)
-* add default state for no entries (no yet, why don't you add one?)
 * bug: floating categories go right sometimes for some reason
-* hide create category by default
 
 * better iconography and graphics
 * better homepage description (benefits and how you can make money)

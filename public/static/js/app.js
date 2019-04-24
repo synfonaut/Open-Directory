@@ -44,7 +44,7 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
-            body = <List items={this.state.items} category={this.state.category} />;
+            body = <List items={this.state.items} category={this.state.category} isLoading={this.state.isLoading} />;
 
             loading = <div className="loading">
                     <div className="lds-circle"><div></div></div>
@@ -61,39 +61,61 @@ class OpenDirectoryApp extends React.Component {
 
         return (
             <div>
-                <div className="open-directory">
-                    {hash == "" && 
-                      <div className="intro">
-                        <img id="logo" src="/static/img/logo.png" />
-                        <div className="row">
-                            <div className="column">
-                                <p>Open Directory lets anyone build resources like <a href="https://www.reddit.com">Reddit</a>, <a href="https://github.com/sindresorhus/awesome">Awesome Lists</a> and <a href="http://dmoz-odp.org">DMOZ</a> ontop of Bitcoin (SV). With Open Directory you can:</p>
-                                <ul className="blurb">
-                                    <li>💡 Create your own resource and earn money when people tip through upvotes</li>
-                                    <li>💰 Incentivize quality submissions by sharing a portion of tips back to contributors</li>
-                                    <li>🛠 Organize an existing directory or fork it with 1-click and start your own</li>
-                                </ul>
+                <nav className="navigation">
+                  <section className="container">
+                    <a href="/#" className="navigation-title">Open Directory</a>
+                    <div className={this.state.networkActive ? "spinner active" : "spinner"}>
+                        <div className="bounce1"></div>
+                        <div className="bounce2"></div>
+                        <div className="bounce3"></div>
+                    </div>
+                    <ul className="navigation-list float-right">
+                      <li className="navigation-item">
+                        <a className="navigation-link" href="#about">About</a>
+                      </li>
+                    </ul>
+                  </section>
+                </nav>
+                <div className="container">
+                  <div className="row">
+                    <div className="column">
+                      <div className="open-directory">
+                          {hash == "" && 
+                            <div className="intro">
+                              <img id="logo" src="/static/img/logo.png" />
+                              <div className="row">
+                                  <div className="column">
+                                      <p>Open Directory lets anyone build resources like <a href="https://www.reddit.com">Reddit</a>, <a href="https://github.com/sindresorhus/awesome">Awesome Lists</a> and <a href="http://dmoz-odp.org">DMOZ</a> ontop of Bitcoin (SV). With Open Directory you can:</p>
+                                      <ul className="blurb">
+                                          <li>💡 Create your own resource and earn money when people tip through upvotes</li>
+                                          <li>💰 Incentivize quality submissions by sharing a portion of tips back to contributors</li>
+                                          <li>🛠 Organize an existing directory or fork it with 1-click and start your own</li>
+                                      </ul>
+      
+                                      <p className="nopadding">Create your own directory or view the existing ones below.</p>
+                                  </div>
+                              </div>
+                            </div>}
+                          {body}
+                          {this.state.isLoading && loading}
+                          {this.state.isError && error}
+                          <hr />
+                          <div className="row">
+                              {(shouldShowAddNewEntryForm ? <div className="column"><AddEntryForm category={this.state.category}/></div> : null )}
+                              <div className="column">
+                              {(shouldShowAddNewCategoryForm ? <div><AddCategoryForm category={this.state.category} /></div> : null)}
+                              </div>
+                              {(shouldShowAddNewEntryForm ? null : <div className="column"></div>)}
+                          </div>
+                          <div className="row">
+                              <div className="column">
+                                  <p align="center">built by <a href="https://twitter.com/synfonaut">@synfonaut</a></p>
+                              </div>
+                          </div>
+                      </div>
 
-                                <p className="nopadding">Create your own directory or view the existing ones below.</p>
-                            </div>
-                        </div>
-                      </div>}
-                    {body}
-                    {this.state.isLoading && loading}
-                    {this.state.isError && error}
-                    <hr />
-                    <div className="row">
-                        {(shouldShowAddNewEntryForm ? <div className="column"><AddEntryForm category={this.state.category}/></div> : null )}
-                        <div className="column">
-                        {(shouldShowAddNewCategoryForm ? <div><AddCategoryForm category={this.state.category} /></div> : null)}
-                        </div>
-                        {(shouldShowAddNewEntryForm ? null : <div className="column"></div>)}
                     </div>
-                    <div className="row">
-                        <div className="column">
-                            <p align="center">built by <a href="https://twitter.com/synfonaut">@synfonaut</a></p>
-                        </div>
-                    </div>
+                  </div>
                 </div>
             </div>
         );
@@ -142,8 +164,6 @@ class OpenDirectoryApp extends React.Component {
             }
 
             items = this.buildItemsFromArchive(category.txid, this.state.archive);
-            console.log("DID UPDATE LOCATION GOT ", items);
-
         }
 
         if (location !== this.state.location) {
@@ -225,9 +245,13 @@ class OpenDirectoryApp extends React.Component {
 
         console.log("network fetching");
 
+        var state = {networkActive: true};
+
         if (this.state.items.length == 0) {
-            this.setState({isLoading: true});
+            state.isLoading = true;
         }
+
+        this.setState(state);
 
         const category_id = (this.state.category ? this.state.category.txid : null);
         fetch_from_network(category_id).then((rows) => {
@@ -249,6 +273,7 @@ class OpenDirectoryApp extends React.Component {
             this.setState({
                 "archive": archive,
                 "items": items,
+                "networkActive": false,
                 "isLoading": false,
                 "isError": false
             });
@@ -257,9 +282,9 @@ class OpenDirectoryApp extends React.Component {
 
         }).catch((e) => {
             console.log("error", e);
-            throw e; // TODO: remove
             this.setState({
                 "isLoading": false,
+                "networkActive": false,
                 "isError": true,
             });
         });
@@ -512,7 +537,14 @@ class List extends React.Component {
                 </div>
             );
         } else {
-            // TODO: Add empty listing view
+            if (!this.props.isLoading && this.props.category && this.props.category.txid) {
+                entryListing = (
+                    <div className="empty-entry-listing">
+                        <img src="/static/img/link.png" />
+                        <p>There's no links here yet. Go ahead and add a new link below. 👍</p>
+                    </div>
+                );
+            }
         }
 
         return (
