@@ -309,20 +309,23 @@ form {
 }
 
 .spinner {
+    -webkit-transition: 0.15s;
+    -moz-transition: 0.15s;
+    -o-transition: 0.15s;
+    transition: 0.15s;
+}
+
+.navigation .spinner {
+    opacity: 0;
+    visibility: hidden;
     text-align: center;
     position: absolute;
     top: 0;
     right: 0;
     width: 100%;
-    -webkit-transition: 0.15s;
-    -moz-transition: 0.15s;
-    -o-transition: 0.15s;
-    transition: 0.15s;
-    opacity: 0;
-    visibility: hidden;
 }
 
-.spinner.active {
+.navigation .spinner.active {
     opacity: 1;
     visibility: visible;
 }
@@ -336,6 +339,15 @@ form {
     display: inline-block;
     -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
     animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.loading .spinner {
+    margin: 7px 0;
+}
+
+.loading .spinner > div {
+    width: 18px;
+    height: 18px;
 }
 
 .spinner .bounce1 {

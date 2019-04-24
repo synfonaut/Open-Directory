@@ -47,7 +47,11 @@ class OpenDirectoryApp extends React.Component {
             body = <List items={this.state.items} category={this.state.category} isLoading={this.state.isLoading} />;
 
             loading = <div className="loading">
-                    <div className="lds-circle"><div></div></div>
+                    <div className="spinner">
+                        <div className="bounce1"></div>
+                        <div className="bounce2"></div>
+                        <div className="bounce3"></div>
+                    </div>
                     <p>Loading Open Directory...</p>
                 </div>
 
