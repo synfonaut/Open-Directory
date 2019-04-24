@@ -40,7 +40,7 @@ h1 {
 }
 
 .intro {
-    background: rgba(255, 255, 255, 0.69);
+    background: rgba(255, 255, 255, 0.85);
     padding: 10px 20px 10px 20px;
     margin-bottom: 40px;
     border-radius: 5px;
@@ -348,6 +348,29 @@ form {
 .loading .spinner > div {
     width: 18px;
     height: 18px;
+}
+
+.message {
+    border-radius: 5px;
+    color: white;
+    padding: 2px 8px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: 400;
+    -webkit-transition: 0.5s;
+    -moz-transition: 0.5s;
+    -o-transition: 0.5s;
+    transition: 0.5s;
+}
+
+.error {
+    background: #FF6384;
+    border: 1px solid #FF6384;
+}
+
+.success {
+    background: #FF9464;
+    border: 1px solid #FF9464;
 }
 
 .spinner .bounce1 {

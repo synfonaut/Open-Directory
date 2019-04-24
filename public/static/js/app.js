@@ -5,11 +5,44 @@ class OpenDirectoryApp extends React.Component {
             archive: [],
             items: [],
             location: [""],
+            messages: [],
             category: null,
             isLoading: true,
             isError: false,
         };
 
+        this.addSuccessMessage = this.addSuccessMessage.bind(this);
+        this.addErrorMessage = this.addErrorMessage.bind(this);
+    }
+
+    addMessage(msg, type, cb=null) {
+        const key = (new Date()).getTime();
+        const messages = this.state.messages.concat([{
+            "type": type, "message": msg, "key": key,
+        }]);
+
+        this.setState({ "messages": messages }, () => {
+            setTimeout(() => {
+                this.hideMessage(key);
+            }, 5000);
+            if (cb) { cb(); }
+        });
+    }
+
+    addSuccessMessage(msg, cb=null) {
+        this.addMessage(msg, "success", cb);
+    }
+
+    addErrorMessage(msg, cb=null) {
+        this.addMessage(msg, "error");
+    }
+
+    hideMessage(key) {
+        const messages = this.state.messages.filter(m => {
+            return m.key != key;
+        });
+
+        this.setState({ "messages": messages });
     }
 
     render() {
@@ -44,7 +77,7 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
-            body = <List items={this.state.items} category={this.state.category} isLoading={this.state.isLoading} />;
+            body = <List items={this.state.items} category={this.state.category} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
 
             loading = <div className="loading">
                     <div className="spinner">
@@ -83,6 +116,11 @@ class OpenDirectoryApp extends React.Component {
                 <div className="container">
                   <div className="row">
                     <div className="column">
+                       <div className="messages">
+                           {this.state.messages.map((m) => {
+                               return <div key={m.key} className={"message " + m.type}>{m.message}</div>;
+                           })}
+                      </div>
                       <div className="open-directory">
                           {hash == "" && 
                             <div className="intro">
@@ -105,9 +143,9 @@ class OpenDirectoryApp extends React.Component {
                           {this.state.isError && error}
                           <hr />
                           <div className="row">
-                              {(shouldShowAddNewEntryForm ? <div className="column"><AddEntryForm category={this.state.category}/></div> : null )}
+                              {(shouldShowAddNewEntryForm ? <div className="column"><AddEntryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} /></div> : null )}
                               <div className="column">
-                              {(shouldShowAddNewCategoryForm ? <div><AddCategoryForm category={this.state.category} /></div> : null)}
+                              {(shouldShowAddNewCategoryForm ? <div><AddCategoryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} /></div> : null)}
                               </div>
                               {(shouldShowAddNewEntryForm ? null : <div className="column"></div>)}
                           </div>
@@ -848,6 +886,8 @@ class AddEntryForm extends React.Component {
                 $el: document.querySelector(".add-entry-money-button"),
                 onPayment: (msg) => {
                     console.log(msg)
+
+
                     setTimeout(() => {
                         this.clearForm();
                     }, 5000);
@@ -858,6 +898,8 @@ class AddEntryForm extends React.Component {
                             link: "",
                             description: ""
                         });
+
+                        this.props.onSuccessHandler("Successfully added new link, it will appear automatically.");
                     }, 3000);
                 }
             }
@@ -1003,6 +1045,8 @@ class AddCategoryForm extends React.Component {
                             title: "",
                             description: ""
                         });
+
+                        this.props.onSuccessHandler("Successfully added new category, it will appear automatically");
                     }, 3000);
                 }
             }

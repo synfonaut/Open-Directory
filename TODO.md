@@ -1,7 +1,3 @@
-* need good error indidcator, up high (message that appears)
-* success after submit, show a message and what to do if it doesn't appear (success message that appears)
-* hide create category by default
-
 * delete category
 * delete item
 
@@ -23,7 +19,7 @@
 
 ### design/ux
 * bug: floating categories go right sometimes for some reason
-
+* hide create category by default
 * better iconography and graphics
 * better homepage description (benefits and how you can make money)
 
