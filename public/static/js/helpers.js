@@ -17,12 +17,6 @@ const OPENDIR_ACTIONS = [
     "vote",
 ];
 
-const MAP_PROTOCOL = "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5";
-const MAP_ACTIONS = [
-    "SET",
-    "DELETE",
-];
-
 function toBase64(str) {
     if (isNode) {
         return Buffer.from(str).toString('base64');
@@ -44,7 +38,6 @@ function processOpenDirectoryTransaction(result) {
     var args = Object.values(result.data);
     const protocol_id = args.shift();
     const opendir_action = args.shift();
-
 
     if (!txid) { return null; }
     if (protocol_id !== OPENDIR_PROTOCOL) { return null; }
@@ -78,6 +71,8 @@ function processOpenDirectoryTransaction(result) {
             obj.change = convertKeyValues(args);
         } else if (item_action == "delete") {
             obj.action_id = args.shift();
+        } else {
+            console.log("unknown category action", result);
         }
     } else if (item_type == "entry") {
         if (item_action == "create") {
@@ -88,12 +83,15 @@ function processOpenDirectoryTransaction(result) {
             obj.change = convertKeyValues(args);
         } else if (item_action == "delete") {
             obj.action_id = args.shift();
+        } else {
+            console.log("unknown entry action", result);
         }
     } else if (item_type == "vote") {
         obj.action_id = args.shift();
     } else {
-        console.log("unknown action", result);
+        console.log("unknown item type", result);
     }
+
 
     return obj;
 }
@@ -243,7 +241,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
         query["q"]["aggregate"][0]["$match"]["$and"].push({
             "$or": [
                 {"tx.h": category_id},
-                {"out.s5": {"$ne": "category"}}, // TODO: need protocol change because votes aren't filtering and s5 isn't stable
+                {"out.s5": {"$ne": "category"}}, // TODO: verify s5 is right output
             ]
         });
     }
@@ -256,6 +254,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
     const query = get_bitdb_query(category_id, cursor, limit);
     
     // TODO: Split out API key
+    // TODO: Use localstorage to set alternative
     var url = "https://bitomation.com/q/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + toBase64(JSON.stringify(query));
     var header = { headers: { key: "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z" } };
 

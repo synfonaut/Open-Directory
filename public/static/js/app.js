@@ -448,6 +448,9 @@ class OpenDirectoryApp extends React.Component {
             obj.height = result.height;
             obj.votes = 0;
             existing.push(obj);
+        } else if (result.action == "delete") {
+            const obj = this.findObjectByTX(result.action_id, existing);
+            obj.deleted = true;
         } else if (result.type == "vote") {
             const obj = this.findObjectByTX(result.action_id, existing);
             if (obj) {
@@ -475,7 +478,7 @@ class List extends React.Component {
 
     getCategories() {
         const category_id = (this.props.category ? this.props.category.txid: null);
-        const categories = this.props.items.filter(i => { return i.type == "category" && i.category == category_id });
+        const categories = this.props.items.filter(i => { return !i.deleted && i.type == "category" && i.category == category_id });
         return categories.sort((a, b) => {
             if (a.votes < b.votes) { return 1; }
             if (a.votes > b.votes) { return -1; }
@@ -489,7 +492,7 @@ class List extends React.Component {
 
     getEntries() {
         if (this.props.category) {
-            const entries = this.props.items.filter(i => { return i.type == "entry" && i.category && i.category == this.props.category.txid });
+            const entries = this.props.items.filter(i => { return !i.deleted && i.type == "entry" && i.category && i.category == this.props.category.txid });
             return entries.sort((a, b) => {
                 if (this.state.sort == "time") {
                     if (!a.height) { return -1; }
@@ -697,7 +700,7 @@ class EntryItem extends React.Component {
         }, () => {
             const OP_RETURN = [
                 OPENDIR_PROTOCOL,
-                "delete",
+                "entry.delete",
                 this.props.item.txid,
             ];
 

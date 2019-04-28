@@ -1,6 +1,6 @@
 ## TODO
 * delete category
-* delete item
+
 * edit category
 * edit item
 * undo
