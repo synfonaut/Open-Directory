@@ -383,6 +383,66 @@ form {
     animation-delay: -0.16s;
 }
 
+.edit {
+    font-size: 11px;
+}
+
+.edit .arrow {
+    color: #ddd;
+}
+
+.edit .arrow:hover {
+    color: #bbb;
+}
+
+.edit a {
+    margin-right: 7px;
+}
+
+.edit .action {
+    color: #EB48AB;
+}
+
+.edit .action:hover {
+    text-decoration: underline;
+}
+
+.delete {
+    font-size: 14px;
+    background: white;
+    margin-top: 11px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.delete .warning {
+    display: inline-block;
+    border-radius: 3px 3px 0 0;
+    background: #FF6384;
+    color: white;
+    margin: 0;
+    padding: 3px 7px;
+    font-weight: 500;
+    width: 100%;
+    max-width: 500px;
+}
+
+.delete .explain {
+    display: block;
+    padding: 3px 7px;
+    font-size: 13px;
+    border-radius: 0 0 3px 3px;
+    border-size: 0 1px 1px 1px;
+    border: 1px solid #DDD;
+    width: 100%;
+    max-width: 500px;
+}
+
+.delete .explain p {
+    margin-bottom: 10px;
+}
+
+
 @-webkit-keyframes sk-bouncedelay {
     0%, 80%, 100% { -webkit-transform: scale(0) }
     40% { -webkit-transform: scale(1.0) }
