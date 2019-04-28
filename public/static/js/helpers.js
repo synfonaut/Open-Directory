@@ -276,9 +276,9 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
         } else {
 
             const sorted = results.sort(function(a, b) {
-                if (!a.height) { return -1; }
-                if (a.height < b.height) { return 1; }
-                if (a.height > b.height) { return -1; }
+                if (!a.height || !b.height) { return -1; }
+                if (a.height < b.height) { return -1; }
+                if (a.height > b.height) { return 1; }
                 return 0;
             });
 

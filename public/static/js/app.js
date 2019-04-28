@@ -182,7 +182,7 @@ class OpenDirectoryApp extends React.Component {
         const location = this.getLocation();
         const hash = location[0];
 
-        console.log("Location updated", hash);
+        console.log("location updated", hash);
 
         var category = null;
         var items = [];
@@ -367,7 +367,7 @@ class OpenDirectoryApp extends React.Component {
 
         const counts = {};
         for (const result of results) {
-            if (result.category) {
+            if (!result.deleted && result.category) {
                 if (counts[result.category]) {
                     counts[result.category] += 1;
                 } else {
@@ -449,8 +449,13 @@ class OpenDirectoryApp extends React.Component {
             obj.votes = 0;
             existing.push(obj);
         } else if (result.action == "delete") {
+            console.log("DELETE", result);
             const obj = this.findObjectByTX(result.action_id, existing);
-            obj.deleted = true;
+            if (obj) {
+                obj.deleted = true;
+            } else {
+                console.log("couldn't find object for delete", obj, result);
+            }
         } else if (result.type == "vote") {
             const obj = this.findObjectByTX(result.action_id, existing);
             if (obj) {
@@ -760,6 +765,14 @@ class EntryItem extends React.Component {
 
 class CategoryItem extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            "isExpanded": false,
+            "isDeleting": false,
+        };
+    }
+
     componentDidMount() {
         window.addEventListener('hashchange', this.clearForm.bind(this), false);
     }
@@ -769,6 +782,11 @@ class CategoryItem extends React.Component {
     }
 
     clearForm() {
+        this.setState({
+            "isExpanded": false,
+            "isDeleting": false,
+        });
+
         const el = document.querySelector(".category-tip-money-button");
         if (el) {
             const parentNode = el.parentNode;
@@ -811,7 +829,60 @@ class CategoryItem extends React.Component {
         e.preventDefault();
     }
 
+    handleToggleExpand(e) {
+        this.setState({
+            "isExpanded": !this.state.isExpanded
+        });
+    }
+
+    handleEdit(e) {
+        console.log("EDIT");
+    }
+
+    handleDelete(e) {
+        this.setState({
+            "isDeleting": true
+        }, () => {
+            const OP_RETURN = [
+                OPENDIR_PROTOCOL,
+                "category.delete",
+                this.props.item.txid,
+            ];
+
+            const button = document.getElementById(this.props.item.txid).querySelector(".category-delete-money-button")
+            console.log(button);
+
+            databutton.build({
+                data: OP_RETURN,
+                button: {
+                    $el: button,
+                    /*$pay: {
+                    to: [{
+                        address: OPENDIR_PROTOCOL,
+                        value: 50000,
+                    }]
+                },*/
+                    onPayment: (msg) => {
+                        console.log(msg);
+                        setTimeout(() => {
+                            this.clearForm();
+                            this.props.onSuccessHandler("Successfully deleted category, it will disappear automatically.");
+                        }, 5000);
+                    }
+                }
+            });
+        });
+
+    }
+
     render() {
+        var edit = (
+            <span className="edit">
+                <a onClick={this.handleToggleExpand.bind(this)} className="arrow">{this.state.isExpanded ? "▶" : "▼"}</a>
+                {this.state.isExpanded && <a className="action" onClick={this.handleEdit.bind(this)}>edit</a>}
+                {this.state.isExpanded && <a className="action" onClick={this.handleDelete.bind(this)}>delete</a>}
+            </span>);
+
         return (
             <li id={this.props.item.txid} className="category">
 
@@ -825,8 +896,10 @@ class CategoryItem extends React.Component {
                             <a href={"#" + this.props.item.txid} onClick={this.handleLink.bind(this)}>{this.props.item.name}</a>
                             <span className="category-count">({this.props.item.entries})</span>
                             {!this.props.item.height && <span className="pending">pending</span>}
+                            {edit}
                         </h3>
                         <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.description}}></p>
+                        {this.state.isDeleting && <div className="delete"><span className="warning">You are about to delete this entry, are you sure you want to do this?</span><div className="explain"><p>If you remove this category you'll be permanently removing it from this directory for others to view. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently delete category from this directory</strong></p><div className="category-delete-money-button"></div> </div></div>}
                         <div className="category-tip-money-button"></div>
                     </div>
                     <div className="clearfix"></div>

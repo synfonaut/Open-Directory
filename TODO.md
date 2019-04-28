@@ -1,9 +1,11 @@
 ## TODO
-* delete category
+* fix bug with entry counts not working with deleted items properly (not getting it from network?)
+ - consider dropping entry counts. they cause caching issues and invalidate previous cache results because we don't get the full graph
+
+* undo
 
 * edit category
 * edit item
-* undo
 * protocol for getting latest app version, put notice in app and point to new link (verify signature)
 * fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
 * add recent changes (changelog)
