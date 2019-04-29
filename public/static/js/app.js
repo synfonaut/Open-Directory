@@ -11,6 +11,7 @@ class OpenDirectoryApp extends React.Component {
             isError: false,
         };
 
+        this.NETWORK_DELAY = 0;
         this._isMounted = false;
         this.addSuccessMessage = this.addSuccessMessage.bind(this);
         this.addErrorMessage = this.addErrorMessage.bind(this);
@@ -237,7 +238,6 @@ class OpenDirectoryApp extends React.Component {
         }
 
         this.setState(state);
-
         setTimeout(() => {
 
             const category_id = (this.state.category ? this.state.category.txid : null);
@@ -278,8 +278,7 @@ class OpenDirectoryApp extends React.Component {
             });
 
 
-        }, 1250);
-
+        }, this.NETWORK_DELAY);
     }
 
     setupNetworkSocket() {
@@ -474,6 +473,7 @@ class EntryItem extends React.Component {
         this.state = {
             "isExpanded": false,
             "isDeleting": false,
+            "isEditing": false,
         };
 
         this._isMounted = false;
@@ -495,6 +495,7 @@ class EntryItem extends React.Component {
             this.setState({
                 "isExpanded": false,
                 "isDeleting": false,
+                "isEditing": false,
             });
         }
 
@@ -542,7 +543,7 @@ class EntryItem extends React.Component {
                     console.log(msg);
                     setTimeout(() => {
                         this.clearForm();
-                        this.props.onSuccessHandler("Successfully upvoted link, it will appear automatically.");
+                        this.props.onSuccessHandler("Successfully upvoted link, it will appear automatically—please refresh the page if it doesn't");
                     }, 5000);
                 }
             }
@@ -551,12 +552,19 @@ class EntryItem extends React.Component {
 
     handleToggleExpand(e) {
         this.setState({
-            "isExpanded": !this.state.isExpanded
+            "isExpanded": !this.state.isExpanded,
+            "isDeleting": false,
+            "isEditing": false,
         });
     }
 
     handleEdit(e) {
         console.log("EDIT");
+        this.setState({
+            "isEditing": true
+        }, () => {
+            console.log("EDITING");
+        });
     }
 
     handleDelete(e) {
@@ -586,7 +594,7 @@ class EntryItem extends React.Component {
                         console.log(msg);
                         setTimeout(() => {
                             this.clearForm();
-                            this.props.onSuccessHandler("Successfully deleted link, it will disappear automatically.");
+                            this.props.onSuccessHandler("Successfully deleted link, it will disappear automatically—please refresh the page if it doesn't");
                         }, 5000);
                     }
                 }
@@ -597,8 +605,8 @@ class EntryItem extends React.Component {
 
     render() {
 
-        var edit = (
-            <span className="edit">
+        var actions = (
+            <span className="actions">
                 <a onClick={this.handleToggleExpand.bind(this)} className="arrow">{this.state.isExpanded ? "▶" : "▼"}</a>
                 {this.state.isExpanded && <a className="action" onClick={this.handleEdit.bind(this)}>edit</a>}
                 {this.state.isExpanded && <a className="action" onClick={this.handleDelete.bind(this)}>delete</a>}
@@ -609,7 +617,7 @@ class EntryItem extends React.Component {
                 <div className="upvoteContainer">
                     <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number">{this.props.item.votes}</span></div>
                     <div className="entry">
-                        <h5><a href={this.props.item.link}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>} {edit}</h5>
+                        <h5><a href={this.props.item.link}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>} {actions}</h5>
                         <p className="description">{this.props.item.description}</p>
                         <p className="url"><a href={this.props.item.link}>{this.props.item.link}</a></p>
                         {this.state.isDeleting && <div className="delete"><span className="warning">You are about to delete this entry, are you sure you want to do this?</span><div className="explain"><p>If you remove this link you'll be permanently removing it from this directory for others to view. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently delete this link from this directory</strong></p><div className="entry-delete-money-button"></div> </div></div>}
@@ -630,6 +638,7 @@ class CategoryItem extends React.Component {
         this.state = {
             "isExpanded": false,
             "isDeleting": false,
+            "isEditing": false,
         };
 
         this._isMounted = false;
@@ -651,6 +660,7 @@ class CategoryItem extends React.Component {
             this.setState({
                 "isExpanded": false,
                 "isDeleting": false,
+                "isEditing": false,
             });
         }
 
@@ -698,13 +708,21 @@ class CategoryItem extends React.Component {
 
     handleToggleExpand(e) {
         this.setState({
-            "isExpanded": !this.state.isExpanded
+            "isExpanded": !this.state.isExpanded,
+            "isDeleting": false,
+            "isEditing": false,
         });
     }
 
     handleEdit(e) {
         console.log("EDIT");
+        this.setState({
+            "isEditing": true
+        }, () => {
+            console.log("EDITING");
+        });
     }
+
 
     handleDelete(e) {
         this.setState({
@@ -733,7 +751,7 @@ class CategoryItem extends React.Component {
                         console.log(msg);
                         setTimeout(() => {
                             this.clearForm();
-                            this.props.onSuccessHandler("Successfully deleted category, it will disappear automatically.");
+                            this.props.onSuccessHandler("Successfully deleted category, it will disappear automatically—please refresh the page if it doesn't.");
                         }, 5000);
                     }
                 }
@@ -743,12 +761,13 @@ class CategoryItem extends React.Component {
     }
 
     render() {
-        var edit = (
-            <span className="edit">
+        var actions = (
+            <span className="actions">
                 <a onClick={this.handleToggleExpand.bind(this)} className="arrow">{this.state.isExpanded ? "▶" : "▼"}</a>
                 {this.state.isExpanded && <a className="action" onClick={this.handleEdit.bind(this)}>edit</a>}
                 {this.state.isExpanded && <a className="action" onClick={this.handleDelete.bind(this)}>delete</a>}
             </span>);
+
 
         return (
             <li id={this.props.item.txid} className="category">
@@ -763,9 +782,10 @@ class CategoryItem extends React.Component {
                             <a href={"#" + this.props.item.txid} onClick={this.handleLink.bind(this)}>{this.props.item.name}</a>
                             {!this.props.item.height && <span className="pending">pending</span>}
                             <span className="category-count">({this.props.item.entries})</span>
-                            {edit}
+                            {actions}
                         </h3>
                         <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.description}}></p>
+                        {this.state.isEditing && <div className="column"><AddCategoryForm category={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} /></div>}
                         {this.state.isDeleting && <div className="delete"><span className="warning">You are about to delete this entry, are you sure you want to do this?</span><div className="explain"><p>If you remove this category you'll be permanently removing it from this directory for others to view. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently delete category from this directory</strong></p><div className="category-delete-money-button"></div> </div></div>}
                         <div className="category-tip-money-button"></div>
                     </div>
@@ -918,7 +938,7 @@ class AddEntryForm extends React.Component {
                             description: ""
                         });
 
-                        this.props.onSuccessHandler("Successfully added new link, it will appear automatically.");
+                        this.props.onSuccessHandler("Successfully added new link, it will appear automatically—please refresh the page if it doesn't.");
                     }, 3000);
                 }
             }
@@ -1065,7 +1085,7 @@ class AddCategoryForm extends React.Component {
                             description: ""
                         });
 
-                        this.props.onSuccessHandler("Successfully added new category, it will appear automatically");
+                        this.props.onSuccessHandler("Successfully added new category, it will appear automatically—please refresh the page if it doesn't.");
                     }, 3000);
                 }
             }

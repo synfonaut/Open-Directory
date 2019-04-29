@@ -1,16 +1,19 @@
 ## TODO
-* fix bug with entry counts not working with deleted items properly (not getting it from network?)
- - consider dropping entry counts. they cause caching issues and invalidate previous cache results because we don't get the full graph
-* react unmounted component bug
-* tell users to refresh if action doesn't work
-
-* undo
 
 * edit category
 * edit item
+
+* add recent changes (changelog)
+* undo
+
+
+
+
+
+
+
 * protocol for getting latest app version, put notice in app and point to new link (verify signature)
 * fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
-* add recent changes (changelog)
 * use local storage for user-specific settings, like an alternative endpiont for bitdb genesis
 * let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
 * have a chain of tips where everyone in the chain gets a % of the tip (condense tips)

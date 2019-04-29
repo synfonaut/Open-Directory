@@ -384,31 +384,31 @@ form {
     animation-delay: -0.16s;
 }
 
-.edit {
+.actions {
     font-size: 11px;
 }
 
-.edit .arrow {
+.actions .arrow {
     color: #ddd;
 }
 
-.edit .arrow:hover {
+.actions .arrow:hover {
     color: #bbb;
 }
 
-.edit a {
+.actions a {
     margin-right: 7px;
 }
 
-.edit .action {
+.actions .action {
     color: #EB48AB;
 }
 
-.edit .action:hover {
+.actions .action:hover {
     text-decoration: underline;
 }
 
-.category .edit {
+.category .actions {
     margin-left: 5px;
 }
 
@@ -417,7 +417,6 @@ form {
     background: white;
     margin-top: 11px;
     width: 100%;
-    max-width: 500px;
 }
 
 .delete .warning {
@@ -468,6 +467,10 @@ form {
     ul.list li.category {
         width: 50%;
     }
+
+    .delete {
+        width: 550px;
+    }
 }
 
 /* Larger than tablet screen */
@@ -475,6 +478,7 @@ form {
     ul.list li.category {
         width: 33%;
     }
+
 }
 
 /* Larger than desktop screen */
