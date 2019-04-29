@@ -1,6 +1,8 @@
 ## TODO
 * fix bug with entry counts not working with deleted items properly (not getting it from network?)
  - consider dropping entry counts. they cause caching issues and invalidate previous cache results because we don't get the full graph
+* react unmounted component bug
+* tell users to refresh if action doesn't work
 
 * undo
 
@@ -10,7 +12,7 @@
 * fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
 * add recent changes (changelog)
 * use local storage for user-specific settings, like an alternative endpiont for bitdb genesis
-* let users tip a custom amount to someone who contributed a link and entire tip chain
+* let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
 * have a chain of tips where everyone in the chain gets a % of the tip (condense tips)
 * bug: floating categories go right sometimes for some reason
 * hide create category by default
@@ -22,6 +24,7 @@
 * stress test server, see if aggregate is putting too much load
 
 ## FUTURE
+* bring back sub-category counts
 * votes get unsynced which cause pages to flash, client<->server cache gets very complex with partial objects
 * might want to include edits in the tipchain
 * Moderation

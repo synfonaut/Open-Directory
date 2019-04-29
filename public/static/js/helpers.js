@@ -135,6 +135,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                     "$match": {
                         "$and": [
                             {"out.s1": OPENDIR_PROTOCOL},
+                            // other clause gets dynamically inserted below
                         ]
                     }
                 },
@@ -188,6 +189,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
 
                 { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s3", "as": "confirmed_votes" } },
                 { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s3", "as": "unconfirmed_votes" } },
+
                 {
                     "$project": {
                         "confirmed_votes": "$confirmed_votes",
@@ -234,7 +236,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
         query["q"]["aggregate"][0]["$match"]["$and"].push({
             "$or": [
                 {"tx.h": category_id},
-                {"out.s6": category_id},
+                {"out.s3": category_id},
             ]
         });
     } else {
@@ -245,6 +247,8 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
             ]
         });
     }
+
+    console.log(JSON.stringify(query, null, 4));
 
     return query;
 }

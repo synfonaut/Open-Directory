@@ -206,6 +206,8 @@ class OpenDirectoryApp extends React.Component {
             }
 
             items = this.buildItemsFromArchive(category.txid, this.state.archive);
+
+            console.log("FOUND ITEMS", items);
         }
 
         if (location !== this.state.location) {
@@ -311,6 +313,8 @@ class OpenDirectoryApp extends React.Component {
 
             const archive = Array.from(unique_archive.values());
             const items = this.buildItemsFromArchive(category_id, archive);
+
+            console.log("SETTING ARCHIVE", archive);
 
             this.setState({
                 "archive": archive,
@@ -449,7 +453,6 @@ class OpenDirectoryApp extends React.Component {
             obj.votes = 0;
             existing.push(obj);
         } else if (result.action == "delete") {
-            console.log("DELETE", result);
             const obj = this.findObjectByTX(result.action_id, existing);
             if (obj) {
                 obj.deleted = true;
@@ -894,8 +897,8 @@ class CategoryItem extends React.Component {
                     <div className="category">
                         <h3>
                             <a href={"#" + this.props.item.txid} onClick={this.handleLink.bind(this)}>{this.props.item.name}</a>
-                            <span className="category-count">({this.props.item.entries})</span>
                             {!this.props.item.height && <span className="pending">pending</span>}
+                            <span className="category-count">({this.props.item.entries})</span>
                             {edit}
                         </h3>
                         <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.description}}></p>
