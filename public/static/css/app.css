@@ -320,6 +320,7 @@ form {
     visibility: hidden;
     text-align: center;
     position: absolute;
+    pointer-events: none;
     top: 0;
     right: 0;
     width: 100%;
@@ -405,6 +406,10 @@ form {
 
 .edit .action:hover {
     text-decoration: underline;
+}
+
+.category .edit {
+    margin-left: 5px;
 }
 
 .delete {

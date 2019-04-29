@@ -2,15 +2,49 @@ const helpers = require("./public/static/js/helpers.js");
 
 var category_id;
 category_id = null;
-category_id = "39d0456ae7715d0e8059fa116f0c79a9b3f4e1f7a037492e0a85cada4a373052";
+//category_id = "39d0456ae7715d0e8059fa116f0c79a9b3f4e1f7a037492e0a85cada4a373052";
 helpers.fetch_from_network(category_id).then(rows => {
     console.log("found " + rows.length + " total rows");
+    /*
     var idx = 1;
     for (const row of rows) {
         console.log("#" + idx++);
         console.log(JSON.stringify(row, null, 4));
         console.log("=".repeat(80));
     }
+    */
+
+    console.log("\n");
+
+    const results = helpers.processResults(rows);
+    results.filter(r => { return r.type == "category" }).map(r => {
+        if (r.txid == category_id || r.category == category_id) {
+            console.log("**CATEGORY**", r);
+        } else {
+            console.log("CATEGORY", r);
+        }
+    });
+
+    console.log("\n");
+    console.log("=".repeat(80));
+    console.log("\n");
+
+    results.filter(r => { return r.type == "entry" }).map(r => {
+        if (r.category == category_id) {
+            console.log("**ENTRY**", r);
+        } else {
+            console.log("ENTRY", r);
+        }
+    });
+
+    console.log("\n");
+    console.log("=".repeat(80));
+    console.log("\n");
+
+    results.filter(r => { return r.type == "vote" }).map(r => {
+        console.log("VOTE", r);
+    });
+
 }).catch(e => {
     console.log("error", e);
 });

@@ -4,6 +4,7 @@ const isBrowser = (typeof window == "object");
 var axios;
 if (isNode) {
     axios = require("axios");
+    markdownit = require("markdown-it");
 }
 
 const OPENDIR_PROTOCOL = "1dirxA5oET8EmcdW4saKXzPqejmMXQwg2";
@@ -248,8 +249,6 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
         });
     }
 
-    console.log(JSON.stringify(query, null, 4));
-
     return query;
 }
 
@@ -323,9 +322,104 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
     });
 }
 
+function processResults(results) {
+    const processed = processOpenDirectoryTransactions(results);
+    var processing = []
+
+    // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
+    for (const result of processed.filter(r => { return r.type == "category" })) {
+        processing = processResult(result, processing)
+    }
+    for (const result of processed.filter(r => { return r.type == "entry" })) {
+        processing = processResult(result, processing)
+    }
+    for (const result of processed.filter(r => { return r.type == "vote" })) {
+        processing = processResult(result, processing)
+    }
+
+    const final = updateCategoryEntryCounts(processing);
+
+    return final;
+}
+
+function processResult(result, existing) {
+
+    if (result.action == "create") {
+        const obj = result.change;
+
+        if (result.type == "category" && obj.description) {
+            const markdown = new markdownit();
+            obj.description = markdown.renderInline(obj.description);
+        }
+
+        if (result.action_id) {
+            obj.category = result.action_id;
+        }
+
+        obj.type = result.type;
+        obj.txid = result.txid;
+        obj.address = result.address;
+        obj.height = result.height;
+        obj.votes = 0;
+        existing.push(obj);
+    } else if (result.action == "delete") {
+        const obj = findObjectByTX(result.action_id, existing);
+        if (obj) {
+            obj.deleted = true;
+        } else {
+            console.log("couldn't find object for delete", obj, result);
+        }
+    } else if (result.type == "vote") {
+        const obj = findObjectByTX(result.action_id, existing);
+        if (obj) {
+            obj.votes += 1;
+        } else {
+            console.log("couldn't find object for vote", obj, result);
+        }
+    } else {
+        console.log("error processing result", result);
+    }
+    return existing;
+}
+
+function updateCategoryEntryCounts(results) {
+    const counts = {};
+    for (const result of results) {
+        if (!result.deleted && result.category) {
+            if (counts[result.category]) {
+                counts[result.category] += 1;
+            } else {
+                counts[result.category] = 1;
+            }
+        }
+    }
+
+
+    return results.map(r => {
+        if (r.type == "category") {
+            var count = counts[r.txid];
+            if (!count) { count = 0; }
+            r.entries = count;
+        }
+        return r;
+    });
+}
+
+function findObjectByTX(txid, results=[]) {
+    for (const result of results) {
+        if (result.txid == txid) {
+            return result;
+        }
+    }
+    return null;
+}
+
+
+
 
 if (typeof window == "undefined") {
     module.exports = {
-        fetch_from_network: fetch_from_network
+        fetch_from_network: fetch_from_network,
+        processResults: processResults
     };
 }

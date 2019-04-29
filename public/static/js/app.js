@@ -2,15 +2,16 @@ class OpenDirectoryApp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            archive: [],
+            cache: {},
             items: [],
             location: [""],
             messages: [],
-            category: null,
+            category: {"txid": null, "needsupdate": true},
             isLoading: true,
             isError: false,
         };
 
+        this._isMounted = false;
         this.addSuccessMessage = this.addSuccessMessage.bind(this);
         this.addErrorMessage = this.addErrorMessage.bind(this);
     }
@@ -72,7 +73,7 @@ class OpenDirectoryApp extends React.Component {
             if (!this.state.isLoading && !this.state.isError) {
                 shouldShowAddNewCategoryForm = true;
 
-                if (this.state.category && this.state.category.txid) {
+                if (this.state.category.txid) {
                     shouldShowAddNewEntryForm = true;
                 }
             }
@@ -164,16 +165,6 @@ class OpenDirectoryApp extends React.Component {
 
     }
 
-    findObjectByTX(txid, results=null) {
-        if (!results) { results = this.state.items; }
-        for (const result of results) {
-            if (result.txid == txid) {
-                return result;
-            }
-        }
-        return null;
-    }
-
     getLocation() {
         return window.location.hash.replace(/^#\/?|\/$/g, '').split('/');
     }
@@ -184,36 +175,35 @@ class OpenDirectoryApp extends React.Component {
 
         console.log("location updated", hash);
 
-        var category = null;
+        var category = this.state.category;
         var items = [];
+        var title = "Open Directory";
 
         if (hash == "about") {
-            document.title = "About Open Directory";
+            title = "About Open Directory";
         } else {
-            if (hash == "") {
-                category = {"txid": null, "needsdata": true};
-                document.title = "Open Directory";
-            } else {
-                category = this.findObjectByTX(hash, this.state.archive);
-                if (category) {
-                    category.needsdata = true;
-                    document.title = category.name + " — Open Directory";
-                } else {
-                    category = {"txid": hash, "needsdata": true};
-                    category.needsdata = true;
-                    document.title = "Open Directory";
+            const category_id = (hash == "" ? null : hash);
+            const cached = this.state.cache[category_id];
+
+            category = {"txid": category_id, "needsdata": true};
+
+            if (cached) {
+                items = cached;
+
+                const cachedCategory = findObjectByTX(category_id, cached);
+                if (cachedCategory) {
+                    cachedCategory.needsdata = true; // don't know for sure the server hasn't updated since we last cached
+                    title = category.name + " — Open Directory";
+                    category = cachedCategory;
                 }
             }
-
-            items = this.buildItemsFromArchive(category.txid, this.state.archive);
-
-            console.log("FOUND ITEMS", items);
         }
+
+        document.title = title;
 
         if (location !== this.state.location) {
             window.scrollTo(0, 0);
         }
-
 
         this.setState({
             "location": location,
@@ -227,62 +217,13 @@ class OpenDirectoryApp extends React.Component {
     }
 
     componentDidMount() {
+        this._isMounted = true;
         this.didUpdateLocation();
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
     }
 
-    getItemFromArchive(txid, results=[]) {
-        const items = results.filter(result => {
-            return txid == result.txid;
-        });
-
-        if (items.length == 1) {
-            return items[0];
-        }
-
-        return null;
-    }
-
-    buildItemsFromArchive(category_id, results=[]) {
-
-        // TODO: Clean this up
-
-        // It's like this beause need to build hierarchy in specific way.
-
-        const items = [];
-        const leftover = [];
-        for (const result of results) {
-            if (category_id == result.txid) {
-                items.push(result);
-            } else {
-                leftover.push(result);
-            }
-        }
-
-        const leftover2 = [];
-        for (const result of leftover) {
-            if (category_id == result.category) {
-                items.push(result);
-            } else {
-                leftover2.push(result);
-            }
-        }
-
-        const leftover3 = [];
-        for (const result of leftover2) {
-            if (category_id == result.category) {
-                items.push(result);
-            } else {
-                leftover3.push(result);
-            }
-        }
-
-        if (items[0] && items[0].category) {
-            const response = this.buildItemsFromArchive(items[0].category, leftover3);
-            return response.concat(items);
-        }
-
-        return items;
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     networkAPIFetch() {
@@ -297,100 +238,49 @@ class OpenDirectoryApp extends React.Component {
 
         this.setState(state);
 
-        const category_id = (this.state.category ? this.state.category.txid : null);
-        fetch_from_network(category_id).then((rows) => {
+        setTimeout(() => {
 
-            const results = this.processResults(rows);
+            const category_id = (this.state.category ? this.state.category.txid : null);
+            fetch_from_network(category_id).then((rows) => {
 
-            var unique_archive = new Map();
-            for (const item of this.state.archive) {
-                unique_archive.set(item.txid, item);
-            }
+                const results = processResults(rows);
+                if (this.state.category && this.state.category.needsdata) { // hacky...better way?
+                    for (const result of results) {
+                        if (result.type == "category" && result.txid == this.state.category.txid) {
+                            this.setState({category: result});
+                            document.title = result.name + " — Open Directory";
+                            break;
+                        }
+                    }
+                }
 
-            for (const result of results) {
-                unique_archive.set(result.txid, result);
-            }
+                const cache = this.state.cache;
 
-            const archive = Array.from(unique_archive.values());
-            const items = this.buildItemsFromArchive(category_id, archive);
+                cache[category_id] = results;
 
-            console.log("SETTING ARCHIVE", archive);
+                this.setState({
+                    "cache": cache,
+                    "items": results,
+                    "networkActive": false,
+                    "isLoading": false,
+                    "isError": false
+                });
 
-            this.setState({
-                "archive": archive,
-                "items": items,
-                "networkActive": false,
-                "isLoading": false,
-                "isError": false
+                this.setupNetworkSocket();
+
+            }).catch((e) => {
+                console.log("error", e);
+                this.setState({
+                    "isLoading": false,
+                    "networkActive": false,
+                    "isError": true,
+                });
             });
 
-            this.setupNetworkSocket();
 
-        }).catch((e) => {
-            console.log("error", e);
-            this.setState({
-                "isLoading": false,
-                "networkActive": false,
-                "isError": true,
-            });
-        });
+        }, 1250);
 
     }
-
-    processResults(results) {
-        const processed = processOpenDirectoryTransactions(results);
-        var processing = []
-
-        // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
-        for (const result of processed.filter(r => { return r.type == "category" })) {
-            processing = this.processResult(result, processing)
-        }
-        for (const result of processed.filter(r => { return r.type == "entry" })) {
-            processing = this.processResult(result, processing)
-        }
-        for (const result of processed.filter(r => { return r.type == "vote" })) {
-            processing = this.processResult(result, processing)
-        }
-
-        const final = this.updateCategoryEntryCounts(processing);
-
-        if (this.state.category && this.state.category.needsdata) { // hacky...better way?
-            for (const result of final) {
-                if (result.type == "category" && result.txid == this.state.category.txid) {
-                    this.setState({category: result});
-                    document.title = result.name + " — Open Directory";
-                    break;
-                }
-            }
-        }
-
-        return final;
-    }
-
-    updateCategoryEntryCounts(results) {
-
-        const counts = {};
-        for (const result of results) {
-            if (!result.deleted && result.category) {
-                if (counts[result.category]) {
-                    counts[result.category] += 1;
-                } else {
-                    counts[result.category] = 1;
-                }
-            }
-        }
-
-
-        return results.map(r => {
-            if (r.type == "category") {
-                var count = counts[r.txid];
-                if (!count) { count = 0; }
-                r.entries = count;
-            }
-            return r;
-        });
-    }
-
 
     setupNetworkSocket() {
 
@@ -432,45 +322,6 @@ class OpenDirectoryApp extends React.Component {
         }
     }
 
-    processResult(result, existing) {
-
-        if (result.action == "create") {
-            const obj = result.change;
-
-            if (result.type == "category" && obj.description) {
-                const markdown = new markdownit();
-                obj.description = markdown.renderInline(obj.description);
-            }
-
-            if (result.action_id) {
-                obj.category = result.action_id;
-            }
-
-            obj.type = result.type;
-            obj.txid = result.txid;
-            obj.address = result.address;
-            obj.height = result.height;
-            obj.votes = 0;
-            existing.push(obj);
-        } else if (result.action == "delete") {
-            const obj = this.findObjectByTX(result.action_id, existing);
-            if (obj) {
-                obj.deleted = true;
-            } else {
-                console.log("couldn't find object for delete", obj, result);
-            }
-        } else if (result.type == "vote") {
-            const obj = this.findObjectByTX(result.action_id, existing);
-            if (obj) {
-                obj.votes += 1;
-            } else {
-                console.log("couldn't find object for vote", obj, result);
-            }
-        } else {
-            console.log("error processing result", result);
-        }
-        return existing;
-    }
 }
 
 class List extends React.Component {
@@ -624,22 +475,28 @@ class EntryItem extends React.Component {
             "isExpanded": false,
             "isDeleting": false,
         };
+
+        this._isMounted = false;
     }
 
     componentDidMount() {
+        this._isMounted = true;
         window.addEventListener('hashchange', this.clearForm.bind(this), false);
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
         window.removeEventListener('hashchange', this.clearForm.bind(this));
     }
 
     clearForm() {
 
-        this.setState({
-            "isExpanded": false,
-            "isDeleting": false,
-        });
+        if (this._isMounted) {
+            this.setState({
+                "isExpanded": false,
+                "isDeleting": false,
+            });
+        }
 
         const container = document.getElementById(this.props.item.txid);
         if (container) {
@@ -774,21 +631,28 @@ class CategoryItem extends React.Component {
             "isExpanded": false,
             "isDeleting": false,
         };
+
+        this._isMounted = false;
     }
 
     componentDidMount() {
+        this._isMounted = true;
         window.addEventListener('hashchange', this.clearForm.bind(this), false);
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
         window.removeEventListener('hashchange', this.clearForm.bind(this));
     }
 
     clearForm() {
-        this.setState({
-            "isExpanded": false,
-            "isDeleting": false,
-        });
+
+        if (this._isMounted) {
+            this.setState({
+                "isExpanded": false,
+                "isDeleting": false,
+            });
+        }
 
         const el = document.querySelector(".category-tip-money-button");
         if (el) {
