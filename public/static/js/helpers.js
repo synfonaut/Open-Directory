@@ -229,7 +229,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
             ]
         },
         "r": {
-            "f": "[.[] | {\"height\": .blk.i, \"address\": .in[0].e.a, \"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}]"
+            "f": "[.[] | {\"height\": .blk.i?, \"address\": .in[0].e.a, \"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}]"
         },
     };
 
@@ -279,10 +279,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
         } else {
 
             const sorted = results.sort(function(a, b) {
-                if (!a.height || !b.height) { return -1; }
-                if (a.height < b.height) { return -1; }
-                if (a.height > b.height) { return 1; }
-                return 0;
+                return (a.height===null)-(b.height===null) || +(a.height>b.height) || -(a.height<b.height);
             });
 
             var items = new Map();
@@ -342,14 +339,13 @@ function processResults(results) {
     return final;
 }
 
-function processResult(result, existing) {
-
+function processCategoryResult(result, existing) {
     if (result.action == "create") {
         const obj = result.change;
 
-        if (result.type == "category" && obj.description) {
+        if (obj.description) {
             const markdown = new markdownit();
-            obj.description = markdown.renderInline(obj.description);
+            obj.rendered_description = markdown.renderInline(obj.description);
         }
 
         if (result.action_id) {
@@ -362,6 +358,21 @@ function processResult(result, existing) {
         obj.height = result.height;
         obj.votes = 0;
         existing.push(obj);
+
+    } else if (result.action == "update") {
+        var obj = findObjectByTX(result.action_id, existing);
+        if (obj) {
+            for (const key in result.change) {
+                obj[key] = result.change[key];
+
+                if (key == "description") {
+                    const markdown = new markdownit();
+                    obj["rendered_description"] = markdown.renderInline(obj.description);
+                }
+            }
+        } else {
+            console.log("couldn't find category for update", obj, result, existing);
+        }
     } else if (result.action == "delete") {
         const obj = findObjectByTX(result.action_id, existing);
         if (obj) {
@@ -369,17 +380,64 @@ function processResult(result, existing) {
         } else {
             console.log("couldn't find object for delete", obj, result);
         }
-    } else if (result.type == "vote") {
+    } else {
+        console.log("error processing category", result);
+    }
+
+    return existing;
+}
+
+function processEntryResult(result, existing) {
+    if (result.action == "create") {
+        const obj = result.change;
+
+        if (result.action_id) {
+            obj.category = result.action_id;
+        }
+
+        obj.type = result.type;
+        obj.txid = result.txid;
+        obj.address = result.address;
+        obj.height = result.height;
+        obj.votes = 0;
+        existing.push(obj);
+
+    } else if (result.action == "delete") {
         const obj = findObjectByTX(result.action_id, existing);
         if (obj) {
-            obj.votes += 1;
+            obj.deleted = true;
         } else {
-            console.log("couldn't find object for vote", obj, result);
+            console.log("couldn't find object for delete", obj, result);
         }
     } else {
-        console.log("error processing result", result);
+        console.log("error processing entry", result);
+    }
+
+    return existing;
+}
+
+function processVoteResult(result, existing) {
+    const obj = findObjectByTX(result.action_id, existing);
+    if (obj) {
+        obj.votes += 1;
+    } else {
+        console.log("couldn't find object for vote", obj, result);
     }
     return existing;
+}
+
+function processResult(result, existing) {
+    switch (result.type) {
+        case "category":
+            return processCategoryResult(result, existing);
+        case "entry":
+            return processEntryResult(result, existing);
+        case "vote":
+            return processVoteResult(result, existing);
+        default:
+            console.log("error processing result", result);
+            return existing;
+    }
 }
 
 function updateCategoryEntryCounts(results) {

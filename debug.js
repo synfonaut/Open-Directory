@@ -2,18 +2,18 @@ const helpers = require("./public/static/js/helpers.js");
 
 var category_id;
 category_id = null;
-//category_id = "39d0456ae7715d0e8059fa116f0c79a9b3f4e1f7a037492e0a85cada4a373052";
+category_id = "8a1cb246c9710554891478c0afaeeba1fb1e99ea0904315578694cf04f6ba01b";
 helpers.fetch_from_network(category_id).then(rows => {
     console.log("found " + rows.length + " total rows");
-    /*
+
     var idx = 1;
     for (const row of rows) {
         console.log("#" + idx++);
         console.log(JSON.stringify(row, null, 4));
         console.log("=".repeat(80));
     }
-    */
 
+    /*
     console.log("\n");
 
     const results = helpers.processResults(rows);
@@ -44,6 +44,7 @@ helpers.fetch_from_network(category_id).then(rows => {
     results.filter(r => { return r.type == "vote" }).map(r => {
         console.log("VOTE", r);
     });
+    */
 
 }).catch(e => {
     console.log("error", e);

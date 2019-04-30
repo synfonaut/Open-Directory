@@ -8,6 +8,10 @@
 
 
 
+hide form after editing or at least repopulate it
+
+* edit form design
+should sort as best we can...creates always come first in a block...then updates....then votes...then deletes
 
 
 
@@ -38,7 +42,6 @@
 * optimize: don't fetch network request every single time
 * add themes that stick and work during forking
 * unit tests for core transformations
-* bug: verify edit transactions in same block don't lose their order in update and set wrong value
 
 ## FEEDBACK
 * bitdb bug: event stream is getting messages it shouldn't
@@ -47,4 +50,5 @@
 * on-chain planaria... end up doing similar "state processing" code to bring "objects" up to date, eventually will need full Planaria, but for lighter apps, planarium.js?
 * protocol processor that's a planaria state machine transformer, but embedded in a bitcoin tx, so everything is still onchain
 * enable regex in jq for more advanced filtering
+* how to verify transactions in same block will always have same order?
 

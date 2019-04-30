@@ -79,7 +79,7 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
-            body = <List items={this.state.items} category={this.state.category} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
+            body = <List items={this.state.items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
 
             loading = <div className="loading">
                     <div className="spinner">
@@ -414,7 +414,7 @@ class List extends React.Component {
             heading = (<div>
                 {back}
                 <h1>{this.props.category.name}</h1>
-                <p dangerouslySetInnerHTML={{__html: this.props.category.description}}></p>
+                <p dangerouslySetInnerHTML={{__html: this.props.category.rendered_description}}></p>
             </div>);
         }
 
@@ -440,7 +440,7 @@ class List extends React.Component {
                 </div>
             );
         } else {
-            if (!this.props.isLoading && this.props.category && this.props.category.txid) {
+            if (!this.props.isError && !this.props.isLoading && this.props.category && this.props.category.txid) {
                 entryListing = (
                     <div className="empty-entry-listing">
                         <img src="/static/img/link.png" />
@@ -455,7 +455,7 @@ class List extends React.Component {
                 {heading}
                 <ul className="category list">
                     {categories.map(category => (
-                        <CategoryItem key={"category-" + category.txid} item={category} />
+                        <CategoryItem key={"category-" + category.txid} item={category} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />
                     ))}
                 </ul>
                 <div className="clearfix"></div>
@@ -559,12 +559,7 @@ class EntryItem extends React.Component {
     }
 
     handleEdit(e) {
-        console.log("EDIT");
-        this.setState({
-            "isEditing": true
-        }, () => {
-            console.log("EDITING");
-        });
+        this.setState({ "isEditing": true });
     }
 
     handleDelete(e) {
@@ -578,8 +573,6 @@ class EntryItem extends React.Component {
             ];
 
             const button = document.getElementById(this.props.item.txid).querySelector(".entry-delete-money-button")
-            console.log(button);
-
             databutton.build({
                 data: OP_RETURN,
                 button: {
@@ -620,7 +613,7 @@ class EntryItem extends React.Component {
                         <h5><a href={this.props.item.link}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>} {actions}</h5>
                         <p className="description">{this.props.item.description}</p>
                         <p className="url"><a href={this.props.item.link}>{this.props.item.link}</a></p>
-                        {this.state.isDeleting && <div className="delete"><span className="warning">You are about to delete this entry, are you sure you want to do this?</span><div className="explain"><p>If you remove this link you'll be permanently removing it from this directory for others to view. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently delete this link from this directory</strong></p><div className="entry-delete-money-button"></div> </div></div>}
+                        {this.state.isDeleting && <div className="notice"><span className="warning">You are about to delete this entry, are you sure you want to do this?</span><div className="explain"><p>If you remove this link you'll be permanently removing it from this directory for others to view. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently delete this link from this directory</strong></p><div className="entry-delete-money-button"></div> </div></div>}
 
                         <div className="entry-tip-money-button"></div>
                    </div>
@@ -654,26 +647,34 @@ class CategoryItem extends React.Component {
         window.removeEventListener('hashchange', this.clearForm.bind(this));
     }
 
-    clearForm() {
+    collapseCategoryItem() {
+        this.setState({
+            "isExpanded": false,
+            "isDeleting": false,
+            "isEditing": false,
+        });
+    }
 
+    clearForm() {
         if (this._isMounted) {
             this.setState({
                 "isExpanded": false,
                 "isDeleting": false,
                 "isEditing": false,
             });
-        }
 
-        const el = document.querySelector(".category-tip-money-button");
-        if (el) {
-            const parentNode = el.parentNode;
-            parentNode.removeChild(el);
-            const newEl = document.createElement('div');
-            newEl.className = "category-tip-money-button";
-            parentNode.appendChild(newEl);
+            const el = document.getElementById(this.props.item.txid).querySelector(".category-tip-money-button");
+            if (el) {
+                const parentNode = el.parentNode;
+                if (parentNode) {
+                    parentNode.removeChild(el);
+                    const newEl = document.createElement('div');
+                    newEl.className = "category-tip-money-button";
+                    parentNode.appendChild(newEl);
+                }
+            }
         }
     }
-
 
     // this is the same as EntryItem above ...share code?
     handleUpvote(e) {
@@ -715,12 +716,7 @@ class CategoryItem extends React.Component {
     }
 
     handleEdit(e) {
-        console.log("EDIT");
-        this.setState({
-            "isEditing": true
-        }, () => {
-            console.log("EDITING");
-        });
+        this.setState({"isEditing": true});
     }
 
 
@@ -784,9 +780,9 @@ class CategoryItem extends React.Component {
                             <span className="category-count">({this.props.item.entries})</span>
                             {actions}
                         </h3>
-                        <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.description}}></p>
-                        {this.state.isEditing && <div className="column"><AddCategoryForm category={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} /></div>}
-                        {this.state.isDeleting && <div className="delete"><span className="warning">You are about to delete this entry, are you sure you want to do this?</span><div className="explain"><p>If you remove this category you'll be permanently removing it from this directory for others to view. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently delete category from this directory</strong></p><div className="category-delete-money-button"></div> </div></div>}
+                        <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.rendered_description}}></p>
+                        {this.state.isEditing && <div className="column"><EditCategoryForm category={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} onSubmit={this.collapseCategoryItem.bind(this)} /></div>}
+                        {this.state.isDeleting && <div className="notice"><span className="warning">You are about to delete this entry, are you sure you want to do this?</span><div className="explain"><p>If you remove this category you'll be permanently removing it from this directory for others to view. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently delete category from this directory</strong></p><div className="category-delete-money-button"></div> </div></div>}
                         <div className="category-tip-money-button"></div>
                     </div>
                     <div className="clearfix"></div>
@@ -961,13 +957,14 @@ class AddEntryForm extends React.Component {
     }
 }
 
-class AddCategoryForm extends React.Component {
+class CategoryForm extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             title: "",
-            description: ""
+            description: "",
+            isShowingWarning: false,
         };
 
         this._isMounted = false;
@@ -976,6 +973,10 @@ class AddCategoryForm extends React.Component {
         this.handleLinkChange = this.handleLinkChange.bind(this);
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    getCategoryID() {
+        return (this.props.category.txid ? this.props.category.txid : "root-category");
     }
 
     componentDidMount() {
@@ -990,21 +991,51 @@ class AddCategoryForm extends React.Component {
 
     clearForm() {
         if (this._isMounted) {
-            const el = document.querySelector(".add-category-money-button");
+            const el = document.querySelector(".change-category-money-button");
             if (el) {
                 const parentNode = el.parentNode;
                 parentNode.removeChild(el);
                 const newEl = document.createElement('div');
-                newEl.className = "add-category-money-button";
+                newEl.className = "change-category-money-button";
                 parentNode.appendChild(newEl);
             }
 
             this.setState({
                 title: "",
-                description: ""
+                description: "",
+                isShowingWarning: false,
             });
         }
     }
+
+    validate() {
+        if (!this.state.title) {
+            alert("Invalid title");
+            return false;
+        }
+
+        if (!this.state.description) {
+            alert("Invalid description");
+            return false;
+        }
+
+        return true;
+    }
+
+    handleTitleChange(e) {
+        this.setState({title: e.target.value});
+    }
+
+    handleLinkChange(e) {
+        this.setState({link: e.target.value});
+    }
+
+    handleDescriptionChange(e) {
+        this.setState({description: e.target.value});
+    }
+}
+
+class AddCategoryForm extends CategoryForm {
 
     render() {
         var header = <h3>Add new directory</h3>
@@ -1013,7 +1044,7 @@ class AddCategoryForm extends React.Component {
         }
 
         return (
-            <div className="column">
+            <div className="column" id={this.getCategoryID()}>
                 {header}
                 <form onSubmit={this.handleSubmit}>
                     <fieldset>
@@ -1032,7 +1063,7 @@ class AddCategoryForm extends React.Component {
                         </label>
                         <input type="submit" className="button button-outline" value={this.props.category.txid ? "Add new subcategory" : "Add new directory"} />
                         <div>
-                            <div className="add-category-money-button"></div>
+                            <div className="change-category-money-button"></div>
                         </div>
                     </fieldset>
                 </form>
@@ -1040,16 +1071,11 @@ class AddCategoryForm extends React.Component {
         )
     }
 
+
     handleSubmit(e) {
         e.preventDefault();
 
-        if (!this.state.title) {
-            alert("Invalid title");
-            return;
-        }
-
-        if (!this.state.description) {
-            alert("Invalid description");
+        if (!this.validate()) {
             return;
         }
 
@@ -1070,21 +1096,16 @@ class AddCategoryForm extends React.Component {
 
         console.log(OP_RETURN);
 
+        const el = document.getElementById(this.getCategoryID()).querySelector(".change-category-money-button");
         databutton.build({
             data: OP_RETURN,
             button: {
-                $el: document.querySelector(".add-category-money-button"),
+                $el: el,
                 onPayment: (msg) => {
                     console.log(msg);
+                    setTimeout(() => { this.clearForm() }, 5000);
                     setTimeout(() => {
-                        this.clearForm();
-                    }, 5000);
-                    setTimeout(() => {
-                        this.setState({
-                            title: "",
-                            description: ""
-                        });
-
+                        this.setState({ title: "", description: "" });
                         this.props.onSuccessHandler("Successfully added new category, it will appear automatically—please refresh the page if it doesn't.");
                     }, 3000);
                 }
@@ -1092,17 +1113,111 @@ class AddCategoryForm extends React.Component {
         })
 
     }
+}
 
-    handleTitleChange(e) {
-        this.setState({title: e.target.value});
+class EditCategoryForm extends CategoryForm {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            title: props.category.name,
+            description: props.category.description,
+        };
     }
 
-    handleLinkChange(e) {
-        this.setState({link: e.target.value});
+    render() {
+        return (
+            <div className="column" id={this.getCategoryID()}>
+                <h3>Edit <span className="highlight">{this.props.category.name}</span></h3>
+                <form onSubmit={this.handleSubmit}>
+                    <fieldset>
+                        <div className="row">
+                            <div className="column">
+                                <label>
+                                    Title:
+                                    <input type="text" value={this.state.title} onChange={this.handleTitleChange} />
+                                </label>
+                            </div>
+                            <div className="column"></div>
+                        </div>
+                        <label>
+                            Description:
+                            <textarea onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
+                        </label>
+                        <input type="submit" className="button button-outline" value="Edit category" />
+                        <div>
+                            {this.state.isShowingWarning && <div className="notice"><span className="warning">You are editing this entry, are you sure you want to do this?</span><div className="explain"><p>If you change this category you'll be permanently changing it in this directory for everyone else. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently change this category?</strong></p><div className="change-category-money-button"></div> </div></div>}
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        )
     }
 
-    handleDescriptionChange(e) {
-        this.setState({description: e.target.value});
+    handleSubmit(e) {
+        e.preventDefault();
+
+        if (!this.validate()) {
+            return;
+        }
+
+        if (!this.props.category.txid) {
+            alert("An unknown error occured, category doesn't have a txid to edit");
+            return;
+        }
+
+        var OP_RETURN = [
+            OPENDIR_PROTOCOL,
+            "category.update",
+            this.props.category.txid,
+        ];
+
+        var edited = false;
+        if (this.props.category.name != this.state.title) {
+            OP_RETURN.push("name");
+            OP_RETURN.push(this.state.title);
+            edited = true;
+        }
+
+        if (this.props.category.description != this.state.description) {
+            OP_RETURN.push("description");
+            OP_RETURN.push(this.state.description);
+            edited = true;
+        }
+
+        if (!edited) {
+            alert("Nothing was edited with the category, please try again");
+            return;
+        }
+
+        this.setState({"isShowingWarning": true}, () => {
+            console.log(OP_RETURN);
+
+            const el = document.getElementById(this.getCategoryID()).querySelector(".change-category-money-button");
+            databutton.build({
+                data: OP_RETURN,
+                button: {
+                    $el: el,
+                    onPayment: (msg) => {
+                        console.log(msg);
+                        setTimeout(() => {
+                            const name = this.state.title;
+                            const desc = this.state.description;
+
+                            this.clearForm()
+                            this.setState({ title: name, description: desc });
+
+                            this.props.onSubmit();
+                        }, 5000);
+                        setTimeout(() => {
+                            this.props.onSuccessHandler("Successfully edited category, it will appear automatically—please refresh the page if it doesn't.");
+                        }, 3000);
+                    }
+                }
+            })
+        });
+
     }
 }
 

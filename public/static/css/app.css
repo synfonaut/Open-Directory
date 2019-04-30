@@ -412,14 +412,14 @@ form {
     margin-left: 5px;
 }
 
-.delete {
+.notice {
     font-size: 14px;
     background: white;
     margin-top: 11px;
     width: 100%;
 }
 
-.delete .warning {
+.notice .warning {
     display: inline-block;
     border-radius: 3px 3px 0 0;
     background: #FF6384;
@@ -431,7 +431,7 @@ form {
     max-width: 500px;
 }
 
-.delete .explain {
+.notice .explain {
     display: block;
     padding: 3px 7px;
     font-size: 13px;
@@ -442,7 +442,7 @@ form {
     max-width: 500px;
 }
 
-.delete .explain p {
+.notice .explain p {
     margin-bottom: 10px;
 }
 
