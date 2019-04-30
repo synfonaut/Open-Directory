@@ -24,7 +24,7 @@ class AddEntryForm extends React.Component {
                             Description:
                             <textarea onChange={this.handleDescriptionChange} value={this.state.description}></textarea>
                         </label>
-                        <input type="submit" className="button-outline" value="Edit new link" />
+                        <input type="submit" className="button-outline" value="Add new link" />
                         <div>
                             <div className="add-entry-money-button"></div>
                         </div>
