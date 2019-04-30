@@ -68,7 +68,7 @@ class OpenDirectoryApp extends React.Component {
         var body, loading, error;
         var shouldShowAddNewCategoryForm = false,
             shouldShowAddNewEntryForm = false;
-        var raw;
+        var changelog;
 
         if (hash == "about") {
             body = (
@@ -95,7 +95,21 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
-            raw = this.state.raw[this.state.category.txid];
+            const raw = this.state.raw[this.state.category.txid];
+
+            var filterIds = [];
+            if (this.state.category.txid) {
+                filterIds.push(this.state.category.txid);
+            } else {
+                for (const item of this.state.items) {
+                    if (item.type == "category" && !item.category) {
+                        filterIds.push(item.txid);
+                    }
+                }
+            }
+
+            changelog = filterChangelog(filterIds, raw);
+
 
             if (!this.state.isError) {
                 body = <List items={this.state.items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
@@ -174,10 +188,10 @@ class OpenDirectoryApp extends React.Component {
                           </div>
 
                           {(shouldShowAddNewEntryForm || shouldShowAddNewCategoryForm) && <hr />}
-                          {raw && 
+                          {changelog && 
                               <div className="row">
                                   <div className="column">
-                                    <ChangeLog items={raw} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
+                                    <ChangeLog items={changelog} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
                                   </div>
                               </div>}
                           <div className="row">
@@ -261,6 +275,8 @@ class OpenDirectoryApp extends React.Component {
 
             const category_id = (this.state.category ? this.state.category.txid : null);
             fetch_from_network(category_id).then((rows) => {
+
+                console.log("ROW LENGHT", rows.length);
 
                 const raw = this.state.raw;
                 raw[category_id] = rows;

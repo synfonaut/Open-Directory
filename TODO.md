@@ -1,7 +1,5 @@
 ## TODO
 
-* need clean changelog (filter out?)
-
 * let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
 * have a chain of tips where everyone in the chain gets a % of the tip (condense tips)
 
@@ -19,7 +17,7 @@
 * edit form design
 * on changelog show timestamp and relative time ago
 * catch all errors and show friendly message instead
-* use local storage for user-specific settings, like an alternative endpiont for bitdb genesis
+* use local storage for user-specific settings, like an alternative endpiont for bitdb genesis and api key
 * bug: floating categories go right sometimes for some reason
 * hide create category by default
 * better iconography and graphics

@@ -3,8 +3,9 @@ class ChangeLog extends React.Component {
 
     constructor(props) {
         super(props);
+
         this.state = {
-            isExpanded: false,
+            "isExpanded": false,
         };
     }
 
@@ -17,25 +18,26 @@ class ChangeLog extends React.Component {
 
     render() {
 
-        const sorted = this.props.items.sort(function(a, b) {
-            return (b.height===null)-(a.height===null) || +(b.height>a.height) || -(b.height<a.height);
-        });
-
         var idx = 0;
+        const max = 5;
+
+        if (this.props.items.length == 0) {
+            return null;
+        }
 
         return (
             <div id="changelog">
                 <h3>Changelog</h3>
                 <table>
                     <tbody>
-                    {sorted.map(i => {
-                        if ((idx++ <= 5) || this.state.isExpanded) {
+                    {this.props.items.map(i => {
+                        if ((idx++ <= max) || this.state.isExpanded) {
                             return <ChangeLogItem item={i} key={"changelog-" + i.txid} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />;
                         }
                     })}
                     </tbody>
-                    {(!this.state.isExpanded && this.props.items.length > 5) && <tbody><tr>
-                        <td colSpan="3" className="expand"><a onClick={this.handleToggleExpand.bind(this)}>Show all {this.props.items.length} changes from Changelog</a></td>
+                    {(!this.state.isExpanded && this.props.items.length > max) && <tbody><tr>
+                        <td colSpan="3" className="expand"><a onClick={this.handleToggleExpand.bind(this)}>Show all {this.props.items.length} changes from changelog</a></td>
                      </tr></tbody>}
                 </table>
             </div>

@@ -139,10 +139,12 @@ function processOpenDirectoryTransactions(results) {
 }
 
 function get_bitdb_query(category_id=null, cursor=0, limit=200) {
+
     const query = {
         "v": 3,
         "q": {
             "db": ["u", "c"],
+            "limit": limit,
             "aggregate": [
                 {
                     "$match": {
@@ -152,46 +154,12 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                         ]
                     }
                 },
-                // climb parent recursively
-                { "$graphLookup": { "from": "c", "startWith": "$out.s3", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "confirmed_category" } },
-                { "$graphLookup": { "from": "u", "startWith": "$out.s3", "connectFromField": "out.s6", "connectToField": "tx.h", "as": "unconfirmed_category" } },
 
-                // find votes
 
-                // climb children
-                { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s3", "as": "confirmed_entries" } },
-                { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s3", "as": "unconfirmed_entries" } },
-
-                {
-                    "$project": {
-                        "confirmed_category": "$confirmed_category",
-                        "confirmed_entries": "$confirmed_entries",
-                        "unconfirmed_entries": "$unconfirmed_entries",
-                        "unconfirmed_category": "$unconfirmed_category",
-                        "object": ["$$ROOT"],
-                    }
-                },
-                {
-                    "$project": {
-                        "object.confirmed_category": 0,
-                        "object.confirmed_entries": 0,
-                        "object.unconfirmed_entries": 0,
-                        "object.unconfirmed_category": 0,
-                    }
-                },
-                {
-                    "$project": {
-                        "items": {
-                            "$concatArrays": [
-                                "$object",
-                                "$confirmed_category",
-                                "$confirmed_entries",
-                                "$unconfirmed_entries",
-                                "$unconfirmed_category",
-                            ]
-                        }
-                    }
-                },
+                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children", "maxDepth": 2 } },
+                { "$project": { "unconfirmed_children": "$unconfirmed_children", "object": ["$$ROOT"], } },
+                { "$project": { "object.unconfirmed_children": 0, } },
+                { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_children", ] } } },
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
                 { "$project": { "_id": 0, } },
@@ -200,31 +168,10 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
-
-                // confirmed meta
-                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_meta" } },
-
-                {
-                    "$project": {
-                        "confirmed_meta": "$confirmed_meta",
-                        "object": ["$$ROOT"],
-                    }
-                },
-                {
-                    "$project": {
-                        "object.confirmed_meta": 0,
-                    }
-                },
-                {
-                    "$project": {
-                        "items": {
-                            "$concatArrays": [
-                                "$object",
-                                "$confirmed_meta",
-                            ]
-                        }
-                    }
-                },
+                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children", "maxDepth": 2 } },
+                { "$project": { "confirmed_children": "$confirmed_children", "object": ["$$ROOT"], } },
+                { "$project": { "object.confirmed_children": 0, } },
+                { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_children", ] } } },
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
                 { "$project": { "_id": 0, } },
@@ -233,46 +180,43 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
-                // unconfirmed meta
-                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_meta" } },
-
-                {
-                    "$project": {
-                        "unconfirmed_meta": "$unconfirmed_meta",
-                        "object": ["$$ROOT"],
-                    }
-                },
-                {
-                    "$project": {
-                        "object.unconfirmed_meta": 0,
-                    }
-                },
-                {
-                    "$project": {
-                        "items": {
-                            "$concatArrays": [
-                                "$object",
-                                "$unconfirmed_meta"
-                            ]
-                        }
-                    }
-                },
+                // confirmed parent
+                { "$graphLookup": { "from": "c", "startWith": "$out.s3", "connectFromField": "out.s3", "connectToField": "tx.h", "as": "confirmed_parent" } },
+                { "$project": { "confirmed_parent": "$confirmed_parent", "object": ["$$ROOT"], } },
+                { "$project": { "object.confirmed_parent": 0, } },
+                { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_parent", ] } } },
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
                 { "$project": { "_id": 0, } },
                 { "$addFields": { "_id": "$tx.h", } },
+                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$replaceRoot": { "newRoot": "$items" } },
+
+                { "$graphLookup": { "from": "u", "startWith": "$out.s3", "connectFromField": "out.s3", "connectToField": "tx.h", "as": "unconfirmed_parent" } },
+                { "$project": { "unconfirmed_parent": "$unconfirmed_parent", "object": ["$$ROOT"], } },
+                { "$project": { "object.unconfirmed_parent": 0, } },
+                { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_parent", ] } } },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$replaceRoot": { "newRoot": "$items" } },
+                { "$project": { "_id": 0, } },
+                { "$addFields": { "_id": "$tx.h", } },
+                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$replaceRoot": { "newRoot": "$items" } },
+
+                // dedupe
                 { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
 
                 { "$skip": cursor },
-                { "$limit": limit },
             ]
         },
         "r": {
             "f": "[.[] | {\"height\": .blk.i?, \"address\": .in[0].e.a, \"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}]"
-        },
+        }
     };
 
     if (category_id) {
@@ -283,25 +227,56 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
             ]
         });
     } else {
+        // only select categories that don't have a subcategory id
         query["q"]["aggregate"][0]["$match"]["$and"].push({
-            "$or": [
-                {"tx.h": category_id},
-                {"out.s5": {"$ne": "category"}}, // TODO: verify s5 is right output
+            "$and": [
+                {"out.s2": "category.create"},
+                {"out.s3": "name"}
             ]
         });
     }
 
-    console.log(JSON.stringify(query, null, 4));
+    console.log("QUERY = ", JSON.stringify(query, null, 4));
 
     return query;
+}
+
+function filterChangelog(txids, items=[]) {
+
+    var processing;
+
+    do {
+        processing = false;
+
+        for (const item of items) {
+            if (txids.indexOf(item.txid) !== -1 ) { continue; }
+            if (txids.indexOf(item.data.s3) !== -1) {
+                txids.push(item.txid);
+                processing = true;
+                break;
+            }
+        }
+
+    } while (processing);
+
+
+    const changelog = [];
+
+    for (const item of items) {
+        if (txids.indexOf(item.txid) !== -1) {
+            changelog.push(item);
+        } else {
+            console.log("filtered out changelog item", item);
+        }
+    }
+
+    return changelog.reverse();
 }
 
 function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
 
     const query = get_bitdb_query(category_id, cursor, limit);
     
-    // TODO: Split out API key
-    // TODO: Use localstorage to set alternative
     var url = "https://bitomation.com/q/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + toBase64(JSON.stringify(query));
     var header = { headers: { key: "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z" } };
 
