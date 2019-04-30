@@ -16,6 +16,7 @@ const OPENDIR_ACTIONS = [
     "entry.update",
     "entry.delete",
     "vote",
+    "undo",
 ];
 
 function toBase64(str) {
@@ -40,9 +41,18 @@ function processOpenDirectoryTransaction(result) {
     const protocol_id = args.shift();
     const opendir_action = args.shift();
 
-    if (!txid) { return null; }
-    if (protocol_id !== OPENDIR_PROTOCOL) { return null; }
-    if (OPENDIR_ACTIONS.indexOf(opendir_action) == -1) { return null; }
+    if (!txid) {
+        console.log("Error while processing open directory transaction: no txid");
+        return null;
+    }
+    if (protocol_id !== OPENDIR_PROTOCOL) {
+        console.log("Error while processing open directory transaction: invalid protocol");
+        return null;
+    }
+    if (OPENDIR_ACTIONS.indexOf(opendir_action) == -1) {
+        console.log("Error while processing open directory transaction: invalid action");
+        return null;
+    }
 
     if (opendir_action == "vote") {
         item_type = item_action = "vote";
@@ -88,6 +98,8 @@ function processOpenDirectoryTransaction(result) {
             console.log("unknown entry action", result);
         }
     } else if (item_type == "vote") {
+        obj.action_id = args.shift();
+    } else if (item_type == "undo") {
         obj.action_id = args.shift();
     } else {
         console.log("unknown item type", result);
@@ -326,34 +338,50 @@ function processResults(results) {
     // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
     // split out create/update/delete incase they're in the same block
 
+    // undo
+    const undos = {};
+    for (const result of processed.filter(r => { return r.type == "undo" })) {
+        const undo = undos[result.action_id];
+        if (undo) {
+            delete undos[result.action_id];
+        } else {
+            undos[result.action_id] = true;
+        }
+    }
+
+    const undo_txids = Object.keys(undos);
+
     // category
     for (const result of processed.filter(r => { return r.type == "category" && r.action == "create" })) {
-        processing = processResult(result, processing)
+        processing = processResult(result, processing, undo_txids)
     }
     for (const result of processed.filter(r => { return r.type == "category" && r.action == "update" })) {
-        processing = processResult(result, processing)
+        processing = processResult(result, processing, undo_txids)
     }
     for (const result of processed.filter(r => { return r.type == "category" && r.action == "delete" })) {
-        processing = processResult(result, processing)
+        processing = processResult(result, processing, undo_txids)
     }
 
     // entry
     for (const result of processed.filter(r => { return r.type == "entry" && r.action == "create" })) {
-        processing = processResult(result, processing)
+        processing = processResult(result, processing, undo_txids)
     }
     for (const result of processed.filter(r => { return r.type == "entry" && r.action == "update" })) {
-        processing = processResult(result, processing)
+        processing = processResult(result, processing, undo_txids)
     }
     for (const result of processed.filter(r => { return r.type == "entry" && r.action == "delete" })) {
-        processing = processResult(result, processing)
+        processing = processResult(result, processing, undo_txids)
     }
 
     // vote
     for (const result of processed.filter(r => { return r.type == "vote" })) {
-        processing = processResult(result, processing)
+        processing = processResult(result, processing, undo_txids)
     }
 
     const final = updateCategoryEntryCounts(processing);
+    if (final.length != processed.length) {
+        console.log("Warning: Some initial results didn't get processed to final results");
+    }
 
     return final;
 }
@@ -465,14 +493,18 @@ function processVoteResult(result, existing) {
     return existing;
 }
 
-function processResult(result, existing) {
+function processResult(result, existing, undo) {
+    if (undo.indexOf(result.txid) !== -1) {
+        return existing;
+    }
+
     switch (result.type) {
         case "category":
-            return processCategoryResult(result, existing);
+            return processCategoryResult(result, existing, undo);
         case "entry":
-            return processEntryResult(result, existing);
+            return processEntryResult(result, existing, undo);
         case "vote":
-            return processVoteResult(result, existing);
+            return processVoteResult(result, existing, undo);
         default:
             console.log("error processing result", result);
             return existing;

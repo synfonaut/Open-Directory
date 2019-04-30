@@ -18,6 +18,10 @@ class OpenDirectoryApp extends React.Component {
         this.addErrorMessage = this.addErrorMessage.bind(this);
     }
 
+    componentDidCatch(error, info) {
+        console.log("ERRR", error, info);
+    }
+
     componentDidMount() {
         this._isMounted = true;
         this.didUpdateLocation();
@@ -170,7 +174,8 @@ class OpenDirectoryApp extends React.Component {
                           {raw && 
                               <div className="row">
                                   <div className="column">
-                                    <Changelog items={raw} />
+                                    <hr />
+                                    <ChangeLog items={raw} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
                                   </div>
                               </div>}
                           <div className="row">
@@ -342,8 +347,6 @@ class OpenDirectoryApp extends React.Component {
     }
 
 }
-
-
 
 var application = <OpenDirectoryApp />;
 ReactDOM.render(application, document.getElementById("app"));

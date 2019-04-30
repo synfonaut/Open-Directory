@@ -462,32 +462,30 @@ form {
     }
 }
 
-#changelog td {
+#changelog {
     font-size: 14px;
 }
 
-#changelog li .height {
-    display: inline-block;
-    padding: 2px 10px;
+#changelog td {
+    border: 0;
+    padding: 0;
 }
 
-#changelog li .action {
-    display: inline-block;
-    padding: 2px 10px;
+
+#changelog pre {
+    margin-bottom: 0;
 }
 
-#changelog li .address {
-    display: inline-block;
-    padding: 2px 10px;
+#changelog .undo {
+    padding-bottom: 40px;
 }
 
-#changelog li .txid {
+#changelog .undo a {
+    color: gray;
+    text-decoration: underline;
+    font-size: 12px;
     display: inline-block;
-    padding: 2px 10px;
-}
-
-#changelog li .data {
-    display: none;
+    padding: 7px 0;
 }
 
 /* Larger than mobile screen */

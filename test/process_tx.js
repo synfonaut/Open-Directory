@@ -34,4 +34,27 @@ describe('process open directory transactions', function() {
         assert.deepEqual(results, processedResults);
     });
 
+
+    it('convert block with undo', function() {
+        const blocks = [
+            {"height":580286,"address":"1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp","txid":"f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"entry.create","s3":"2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","s4":"name","s5":"New link","s6":"link","s7":"bit://asdf","s8":"description","s9":"Desc goes here"}},
+            {"height":580286,"address":"1Juvf2KaCJearuF1zFRxrnRCocmjdh3DcC","txid":"a8b337d22a91f6a2c4263ee2e3bfae6bc88a91af5ce80d217c6b9cf1a0a534a3","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"entry.update","s3":"f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d","s4":"name","s5":"New link with edit","s6":"description","s7":"Desc goes here (edit)"}},
+            {"height":null,"address":"1LLzzUcjT6Gb2eW24cXSTYnQjw3EhA6Cds","txid":"8b5cc3cd1a7ddd3aae32b7e21c623c99027ff885af68a7fd5ae47062fc18dce8","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"undo","s3":"a8b337d22a91f6a2c4263ee2e3bfae6bc88a91af5ce80d217c6b9cf1a0a534a3"}}
+        ];
+
+        const results = [
+            {"name":"New link","link":"bit://asdf","description":"Desc goes here","rendered_description":"Desc goes here","category":"2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","type":"entry","txid":"f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d","address":"1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp","height":580286,"votes":0}
+        ];
+
+        const processedResults = helpers.processResults(blocks);
+        assert.deepEqual(results, processedResults);
+
+    });
+
+
+    // TEST: Undo votes
+    // TEST: Undo create with children
+    // TEST: Undo an undo
+    // TEST: Undo an undo an undo
+
 });
