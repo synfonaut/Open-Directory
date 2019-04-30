@@ -1,0 +1,22 @@
+{
+  "name": "opendirectory",
+  "version": "0.0.1",
+  "description": "OpenDirectory App",
+  "main": "debug.js",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "markdown-it": "^8.4.2"
+  },
+  "devDependencies": {
+    "mocha": "^6.1.4"
+  },
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@synfonaut-github:synfonaut/opendirectory.git"
+  },
+  "author": "synfonaut",
+  "license": "MIT"
+}
