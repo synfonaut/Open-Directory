@@ -234,12 +234,13 @@ class EntryItem extends React.Component {
     }
 
     handleEdit(e) {
-        this.setState({ "isEditing": true });
+        this.setState({ "isEditing": true, "isDeleting": false });
     }
 
     handleDelete(e) {
         this.setState({
-            "isDeleting": true
+            "isDeleting": true,
+            "isEditing": false,
         }, () => {
             const OP_RETURN = [
                 OPENDIR_PROTOCOL,
@@ -400,13 +401,14 @@ class CategoryItem extends React.Component {
     }
 
     handleEdit(e) {
-        this.setState({"isEditing": true});
+        this.setState({"isEditing": true, "isDeleting": false});
     }
 
 
     handleDelete(e) {
         this.setState({
-            "isDeleting": true
+            "isDeleting": true,
+            "isEditing": false,
         }, () => {
             const OP_RETURN = [
                 OPENDIR_PROTOCOL,
