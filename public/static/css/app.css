@@ -158,6 +158,16 @@ form {
     border-radius: 5px;
 }
 
+.block {
+    background-color: #FF6384;
+    color: #fff;
+    padding: 2px 7px;
+    margin-left: 4px;
+    font-size: 12px;
+    opacity: 0.75;
+    border-radius: 5px;
+}
+
 .navigation {
     width: 100%;
     background: #efece577;
@@ -388,11 +398,11 @@ form {
     font-size: 11px;
 }
 
-.actions .arrow {
+.arrow {
     color: #ddd;
 }
 
-.actions .arrow:hover {
+.arrow:hover {
     color: #bbb;
 }
 
@@ -471,7 +481,6 @@ form {
     padding: 0;
 }
 
-
 #changelog pre {
     margin-bottom: 0;
 }
@@ -486,6 +495,55 @@ form {
     font-size: 12px;
     display: inline-block;
     padding: 7px 0;
+}
+
+#changelog .arrow {
+    font-size: 12px;
+    margin-right: 2px;
+}
+
+#changelog .height {
+    width: 110px;
+    padding: 3px;
+}
+
+#changelog .action {
+    word-break: none;
+    white-space: nowrap;
+    width: 140px;
+    padding: 3px;
+}
+
+#changelog .address {
+    padding: 3px;
+    color: #999;
+}
+
+#changelog td {
+    vertical-align: middle;
+}
+
+#changelog table {
+    margin-top: 7px;
+    width: 100%;
+    word-break: break-all;
+}
+
+#changelog .expand {
+    padding: 3px 3px 3px 19px;
+}
+
+#changelog .expand a {
+    color: #aaa;
+    font-size: 12px;
+}
+
+#changelog .expand a:hover {
+    color: #bbb;
+}
+
+pre {
+    border-color: #FF6384;
 }
 
 /* Larger than mobile screen */

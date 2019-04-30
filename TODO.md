@@ -1,16 +1,15 @@
 ## TODO
 
-* changelog design (purple color)
-* add recent changes (changelog)
+* let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
+* have a chain of tips where everyone in the chain gets a % of the tip (condense tips)
+* fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
+
 * edit form design
 
 * catch all errors and show friendly message instead
 
 * protocol for getting latest app version, put notice in app and point to new link (verify signature)
-* fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
 * use local storage for user-specific settings, like an alternative endpiont for bitdb genesis
-* let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
-* have a chain of tips where everyone in the chain gets a % of the tip (condense tips)
 * bug: floating categories go right sometimes for some reason
 * hide create category by default
 * better iconography and graphics

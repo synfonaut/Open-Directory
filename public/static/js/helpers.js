@@ -42,15 +42,15 @@ function processOpenDirectoryTransaction(result) {
     const opendir_action = args.shift();
 
     if (!txid) {
-        console.log("Error while processing open directory transaction: no txid");
+        console.log("Error while processing open directory transaction: no txid", result);
         return null;
     }
     if (protocol_id !== OPENDIR_PROTOCOL) {
-        console.log("Error while processing open directory transaction: invalid protocol");
+        console.log("Error while processing open directory transaction: invalid protocol", result);
         return null;
     }
     if (OPENDIR_ACTIONS.indexOf(opendir_action) == -1) {
-        console.log("Error while processing open directory transaction: invalid action");
+        console.log("Error while processing open directory transaction: invalid action", result);
         return null;
     }
 
