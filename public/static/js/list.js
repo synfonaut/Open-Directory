@@ -94,7 +94,7 @@ class List extends React.Component {
         }
 
         var entryListing;
-        if (slice.length > 0) {
+        if (this.props.category.address && slice.length > 0) {
             entryListing = (
                 <div>
                     <div className="sort">

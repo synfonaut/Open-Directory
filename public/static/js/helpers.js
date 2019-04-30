@@ -200,20 +200,21 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
-                { "$lookup": { "from": "c", "localField": "tx.h", "foreignField": "out.s3", "as": "confirmed_votes" } },
-                { "$lookup": { "from": "u", "localField": "tx.h", "foreignField": "out.s3", "as": "unconfirmed_votes" } },
+
+                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_meta" } },
+                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_meta" } },
 
                 {
                     "$project": {
-                        "confirmed_votes": "$confirmed_votes",
-                        "unconfirmed_votes": "$unconfirmed_votes",
+                        "confirmed_meta": "$confirmed_meta",
+                        "unconfirmed_meta": "$unconfirmed_meta",
                         "object": ["$$ROOT"],
                     }
                 },
                 {
                     "$project": {
-                        "object.confirmed_votes": 0,
-                        "object.unconfirmed_votes": 0,
+                        "object.confirmed_meta": 0,
+                        "object.unconfirmed_meta": 0,
                     }
                 },
                 {
@@ -221,8 +222,8 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                         "items": {
                             "$concatArrays": [
                                 "$object",
-                                "$confirmed_votes",
-                                "$unconfirmed_votes"
+                                "$confirmed_meta",
+                                "$unconfirmed_meta"
                             ]
                         }
                     }
@@ -235,7 +236,6 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
-                
                 { "$skip": cursor },
                 { "$limit": limit },
             ]
@@ -338,18 +338,19 @@ function processResults(results) {
     // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
     // split out create/update/delete incase they're in the same block
 
-    // undo
-    const undos = {};
+    // undo — handle recursive undos
+    var undos = {};
     for (const result of processed.filter(r => { return r.type == "undo" })) {
-        const undo = undos[result.action_id];
-        if (undo) {
-            delete undos[result.action_id];
-        } else {
-            undos[result.action_id] = true;
+        undos[result.txid] = result.action_id;
+    }
+
+    for (const dupe of Object.values(undos)) {
+        if (undos[dupe]) {
+            delete undos[dupe];
         }
     }
 
-    const undo_txids = Object.keys(undos);
+    const undo_txids = Object.values(undos);
 
     // category
     for (const result of processed.filter(r => { return r.type == "category" && r.action == "create" })) {
@@ -378,12 +379,7 @@ function processResults(results) {
         processing = processResult(result, processing, undo_txids)
     }
 
-    const final = updateCategoryEntryCounts(processing);
-    if (final.length != processed.length) {
-        console.log("Warning: Some initial results didn't get processed to final results");
-    }
-
-    return final;
+    return updateCategoryEntryCounts(processing);
 }
 
 function processCategoryResult(result, existing) {

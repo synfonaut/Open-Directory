@@ -9,7 +9,7 @@ class ChangeLog extends React.Component {
 
         return (
             <div id="changelog">
-                <h3>Changelog</h3>
+                <h3>Changelog <small>({this.props.items.length} entries)</small></h3>
                 <table>
                     <tbody>
                     {sorted.map(i => {
@@ -67,7 +67,7 @@ class ChangeLogItem extends React.Component {
                         setTimeout(() => {
                             this.clearForm();
                             this.setState({"isShowingWarning": false});
-                            this.props.onSuccessHandler("Successfully reversed transaction, please refresh the page.");
+                            this.props.onSuccessHandler("Successfully reversed transaction, it will appear automatically—please refresh the page if it doesn't.");
                         }, 3000);
                     }
                 }

@@ -171,10 +171,10 @@ class OpenDirectoryApp extends React.Component {
                               {(shouldShowAddNewEntryForm ? null : <div className="column"></div>)}
                           </div>
 
+                          {(shouldShowAddNewEntryForm || shouldShowAddNewCategoryForm) && <hr />}
                           {raw && 
                               <div className="row">
                                   <div className="column">
-                                    <hr />
                                     <ChangeLog items={raw} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
                                   </div>
                               </div>}
@@ -265,32 +265,37 @@ class OpenDirectoryApp extends React.Component {
                 const raw = this.state.raw;
                 raw[category_id] = rows;
 
+                const state = {
+                    "raw": raw,
+                    "networkActive": false,
+                    "isLoading": false,
+                    "isError": false
+                };
+
                 const results = processResults(rows);
-                if (this.state.category && this.state.category.needsdata) { // hacky...better way?
+                if (this.state.category && this.state.category.txid && this.state.category.needsdata) { // hacky...better way?
+                    var found = false;
                     for (const result of results) {
                         if (result.type == "category" && result.txid == this.state.category.txid) {
                             this.setState({category: result});
                             document.title = result.name + " — Open Directory";
+                            found = true;
                             break;
                         }
                     }
-                }
 
-                console.log("RESULTS", JSON.stringify(results));
+                    if (!found) {
+                        state["isError"] = true; // category deleted?
+                    }
+                }
 
 
                 const cache = this.state.cache;
                 cache[category_id] = results;
 
-                this.setState({
-                    "raw": raw,
-                    "cache": cache,
-                    "items": results,
-                    "networkActive": false,
-                    "isLoading": false,
-                    "isError": false
-                });
-
+                state["cache"] = cache;
+                state["items"] = results;
+                this.setState(state);
                 this.setupNetworkSocket();
 
             }).catch((e) => {

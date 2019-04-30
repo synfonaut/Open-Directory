@@ -1,16 +1,11 @@
 ## TODO
 
-* test does processResult work with undo
-
-
+* changelog design (purple color)
 * add recent changes (changelog)
-* undo
+* edit form design
 
 * catch all errors and show friendly message instead
 
-
-
-* edit form design
 * protocol for getting latest app version, put notice in app and point to new link (verify signature)
 * fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
 * use local storage for user-specific settings, like an alternative endpiont for bitdb genesis
@@ -37,6 +32,7 @@
 * optimize: don't fetch network request every single time
 * add themes that stick and work during forking
 * unit tests for core transformations
+* remove 2-undo limit
 
 ## FEEDBACK
 * bitdb bug: event stream is getting messages it shouldn't
