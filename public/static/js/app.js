@@ -19,7 +19,7 @@ class OpenDirectoryApp extends React.Component {
     }
 
     componentDidCatch(error, info) {
-        console.log("ERRR", error, info);
+        console.log("ERROR", error, info);
     }
 
     componentDidMount() {
@@ -97,7 +97,9 @@ class OpenDirectoryApp extends React.Component {
 
             raw = this.state.raw[this.state.category.txid];
 
-            body = <List items={this.state.items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
+            if (!this.state.isError) {
+                body = <List items={this.state.items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
+            }
 
             loading = <div className="loading">
                     <div className="spinner">
@@ -260,8 +262,6 @@ class OpenDirectoryApp extends React.Component {
             const category_id = (this.state.category ? this.state.category.txid : null);
             fetch_from_network(category_id).then((rows) => {
 
-                console.log("ROWS", JSON.stringify(rows));
-
                 const raw = this.state.raw;
                 raw[category_id] = rows;
 
@@ -288,7 +288,6 @@ class OpenDirectoryApp extends React.Component {
                         state["isError"] = true; // category deleted?
                     }
                 }
-
 
                 const cache = this.state.cache;
                 cache[category_id] = results;

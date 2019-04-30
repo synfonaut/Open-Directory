@@ -1,14 +1,23 @@
 ## TODO
 
+* need clean changelog (filter out?)
+
 * let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
 * have a chain of tips where everyone in the chain gets a % of the tip (condense tips)
 
 * fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
-* add themes that stick and work during forking
+* add themes that stick and work during forking (color logo with css)
 
 * protocol for getting latest app version, put notice in app and point to new link (verify signature)
 
+* add undo description (why are you changing this?)
+
+* undo warning word wrap should be by word not letter
+
+* messages should float at top of screen so they scroll
+
 * edit form design
+* on changelog show timestamp and relative time ago
 * catch all errors and show friendly message instead
 * use local storage for user-specific settings, like an alternative endpiont for bitdb genesis
 * bug: floating categories go right sometimes for some reason
@@ -29,6 +38,7 @@
 * add statistics, how many categories, how many entries
 * optimize: don't fetch network request every single time
 * remove 2-undo limit
+* idea: let categories aggregate their sub-categories to "pull up" interesting links
 
 ## FEEDBACK
 * bitdb bug: event stream is getting messages it shouldn't

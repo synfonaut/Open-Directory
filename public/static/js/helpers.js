@@ -201,20 +201,18 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 { "$replaceRoot": { "newRoot": "$items" } },
 
 
+                // confirmed meta
                 { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_meta" } },
-                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_meta" } },
 
                 {
                     "$project": {
                         "confirmed_meta": "$confirmed_meta",
-                        "unconfirmed_meta": "$unconfirmed_meta",
                         "object": ["$$ROOT"],
                     }
                 },
                 {
                     "$project": {
                         "object.confirmed_meta": 0,
-                        "object.unconfirmed_meta": 0,
                     }
                 },
                 {
@@ -223,6 +221,37 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                             "$concatArrays": [
                                 "$object",
                                 "$confirmed_meta",
+                            ]
+                        }
+                    }
+                },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$replaceRoot": { "newRoot": "$items" } },
+                { "$project": { "_id": 0, } },
+                { "$addFields": { "_id": "$tx.h", } },
+                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$replaceRoot": { "newRoot": "$items" } },
+
+                // unconfirmed meta
+                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_meta" } },
+
+                {
+                    "$project": {
+                        "unconfirmed_meta": "$unconfirmed_meta",
+                        "object": ["$$ROOT"],
+                    }
+                },
+                {
+                    "$project": {
+                        "object.unconfirmed_meta": 0,
+                    }
+                },
+                {
+                    "$project": {
+                        "items": {
+                            "$concatArrays": [
+                                "$object",
                                 "$unconfirmed_meta"
                             ]
                         }
@@ -235,6 +264,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
+
 
                 { "$skip": cursor },
                 { "$limit": limit },
@@ -260,6 +290,8 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
             ]
         });
     }
+
+    console.log(JSON.stringify(query, null, 4));
 
     return query;
 }
@@ -331,6 +363,34 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
     });
 }
 
+function processUndos(results) {
+
+    const reversed_undos = results.filter(r => { return r.type == "undo" }).reverse();
+    var undos = new Map();
+    for (const result of reversed_undos) {
+        undos[result.txid] = result.action_id;
+    }
+
+    // pop off undos one at a time
+    // better way to do this? need to undo undo undo undo..
+    while (vals = Object.values(undos)) {
+        var deleting = false;
+        for (const txid of vals) {
+            if (undos[txid]) {
+                delete undos[txid];
+                deleting = true;
+                break;
+            }
+        }
+
+        if (!deleting) {
+            break;
+        }
+    }
+
+    return Object.values(undos);
+}
+
 function processResults(results) {
     const processed = processOpenDirectoryTransactions(results);
     var processing = []
@@ -338,19 +398,7 @@ function processResults(results) {
     // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
     // split out create/update/delete incase they're in the same block
 
-    // undo — handle recursive undos
-    var undos = {};
-    for (const result of processed.filter(r => { return r.type == "undo" })) {
-        undos[result.txid] = result.action_id;
-    }
-
-    for (const dupe of Object.values(undos)) {
-        if (undos[dupe]) {
-            delete undos[dupe];
-        }
-    }
-
-    const undo_txids = Object.values(undos);
+    const undo_txids = processUndos(processed);
 
     // category
     for (const result of processed.filter(r => { return r.type == "category" && r.action == "create" })) {
