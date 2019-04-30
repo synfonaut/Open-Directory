@@ -324,12 +324,31 @@ function processResults(results) {
     var processing = []
 
     // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
-    for (const result of processed.filter(r => { return r.type == "category" })) {
+    // split out create/update/delete incase they're in the same block
+
+    // category
+    for (const result of processed.filter(r => { return r.type == "category" && r.action == "create" })) {
         processing = processResult(result, processing)
     }
-    for (const result of processed.filter(r => { return r.type == "entry" })) {
+    for (const result of processed.filter(r => { return r.type == "category" && r.action == "update" })) {
         processing = processResult(result, processing)
     }
+    for (const result of processed.filter(r => { return r.type == "category" && r.action == "delete" })) {
+        processing = processResult(result, processing)
+    }
+
+    // entry
+    for (const result of processed.filter(r => { return r.type == "entry" && r.action == "create" })) {
+        processing = processResult(result, processing)
+    }
+    for (const result of processed.filter(r => { return r.type == "entry" && r.action == "update" })) {
+        processing = processResult(result, processing)
+    }
+    for (const result of processed.filter(r => { return r.type == "entry" && r.action == "delete" })) {
+        processing = processResult(result, processing)
+    }
+
+    // vote
     for (const result of processed.filter(r => { return r.type == "vote" })) {
         processing = processResult(result, processing)
     }
@@ -391,6 +410,11 @@ function processEntryResult(result, existing) {
     if (result.action == "create") {
         const obj = result.change;
 
+        if (obj.description) {
+            const markdown = new markdownit();
+            obj.rendered_description = markdown.renderInline(obj.description);
+        }
+
         if (result.action_id) {
             obj.category = result.action_id;
         }
@@ -401,6 +425,21 @@ function processEntryResult(result, existing) {
         obj.height = result.height;
         obj.votes = 0;
         existing.push(obj);
+
+    } else if (result.action == "update") {
+        var obj = findObjectByTX(result.action_id, existing);
+        if (obj) {
+            for (const key in result.change) {
+                obj[key] = result.change[key];
+
+                if (key == "description") {
+                    const markdown = new markdownit();
+                    obj["rendered_description"] = markdown.renderInline(obj.description);
+                }
+            }
+        } else {
+            console.log("couldn't find category for update", obj, result, existing);
+        }
 
     } else if (result.action == "delete") {
         const obj = findObjectByTX(result.action_id, existing);

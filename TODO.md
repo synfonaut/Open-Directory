@@ -1,21 +1,11 @@
 ## TODO
 
-* edit category
-* edit item
-
 * add recent changes (changelog)
 * undo
 
 
 
-hide form after editing or at least repopulate it
-
 * edit form design
-should sort as best we can...creates always come first in a block...then updates....then votes...then deletes
-
-
-
-
 * protocol for getting latest app version, put notice in app and point to new link (verify signature)
 * fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
 * use local storage for user-specific settings, like an alternative endpiont for bitdb genesis
