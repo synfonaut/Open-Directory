@@ -479,4 +479,28 @@ class CategoryItem extends React.Component {
     }
 }
 
+class Changelog extends React.Component {
 
+    render() {
+        return (
+            <div id="changelog">
+                <table>
+                    <tbody>
+                    {this.props.items.length == 0 && <tr><td>Empty changelog</td></tr>}
+                    {this.props.items.map(i => {
+                        const txid = i.txid.substring(0, 25);
+                        return <React.Fragment key={"changelog-" + i.txid}><tr>
+                            <td className="height">{i.height ? i.height : "pending"}</td>
+                            <td className="action">{i.data.s2}</td>
+                            <td className="address">{i.address}</td>
+                            <td className="txid"><a href={"https://whatsonchain.com/tx/" + i.txid}>{txid}...</a></td></tr>
+                            <tr>
+                            <td className="data" colSpan="4"><pre><code>{JSON.stringify(i.data, null, 4)}</code></pre></td>
+                            </tr></React.Fragment>;
+                    })}
+                    </tbody>
+                </table>
+            </div>
+        )
+    }
+}

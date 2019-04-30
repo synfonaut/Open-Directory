@@ -2,6 +2,7 @@ class OpenDirectoryApp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            raw: {},
             cache: {},
             items: [],
             location: [""],
@@ -63,6 +64,7 @@ class OpenDirectoryApp extends React.Component {
         var body, loading, error;
         var shouldShowAddNewCategoryForm = false,
             shouldShowAddNewEntryForm = false;
+        var raw;
 
         if (hash == "about") {
             body = (
@@ -89,6 +91,8 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
+            raw = this.state.raw[this.state.category.txid];
+
             body = <List items={this.state.items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
 
             loading = <div className="loading">
@@ -107,6 +111,7 @@ class OpenDirectoryApp extends React.Component {
                 <p><button onClick={() => { location.reload() }} className="button button-outline">Refresh This Page</button></p>
            </div>
         }
+
 
         return (
             <div>
@@ -161,6 +166,13 @@ class OpenDirectoryApp extends React.Component {
                               </div>
                               {(shouldShowAddNewEntryForm ? null : <div className="column"></div>)}
                           </div>
+
+                          {raw && 
+                              <div className="row">
+                                  <div className="column">
+                                    <Changelog items={raw} />
+                                  </div>
+                              </div>}
                           <div className="row">
                               <div className="column">
                                   <p align="center">built by <a href="https://twitter.com/synfonaut">@synfonaut</a></p>
@@ -243,6 +255,9 @@ class OpenDirectoryApp extends React.Component {
             const category_id = (this.state.category ? this.state.category.txid : null);
             fetch_from_network(category_id).then((rows) => {
 
+                const raw = this.state.raw;
+                raw[category_id] = rows;
+
                 const results = processResults(rows);
                 if (this.state.category && this.state.category.needsdata) { // hacky...better way?
                     for (const result of results) {
@@ -255,10 +270,10 @@ class OpenDirectoryApp extends React.Component {
                 }
 
                 const cache = this.state.cache;
-
                 cache[category_id] = results;
 
                 this.setState({
+                    "raw": raw,
                     "cache": cache,
                     "items": results,
                     "networkActive": false,

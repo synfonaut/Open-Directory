@@ -1,5 +1,9 @@
 ## TODO
 
+* test does processResult work with undo
+* test processResult
+* test processResult regression
+
 * add recent changes (changelog)
 * undo
 
