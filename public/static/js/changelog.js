@@ -6,6 +6,7 @@ class ChangeLog extends React.Component {
 
         this.state = {
             "isExpanded": false,
+            "changelog": props.items.reverse(),
         };
     }
 
@@ -30,7 +31,7 @@ class ChangeLog extends React.Component {
                 <h3>Changelog</h3>
                 <table>
                     <tbody>
-                    {this.props.items.map(i => {
+                    {this.state.changelog.map(i => {
                         if ((idx++ <= max) || this.state.isExpanded) {
                             return <ChangeLogItem item={i} key={"changelog-" + i.txid} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />;
                         }
@@ -107,6 +108,8 @@ class ChangeLogItem extends React.Component {
     }
 
     render() {
+        const timestamp = (new Date()).getTime();
+
         return (<React.Fragment>
                     <tr>
                         <td className="height">
@@ -114,6 +117,7 @@ class ChangeLogItem extends React.Component {
                             {this.props.item.height ? <span className="block">#{this.props.item.height}</span> : <span className="pending">pending</span>}
                         </td>
                         <td className="action">{this.props.item.data.s2}</td>
+                        <td className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</td>
                         <td className="address">{this.props.item.address}</td>
                     </tr>
                     {this.state.isExpanded && <tr>

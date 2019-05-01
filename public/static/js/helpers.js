@@ -87,7 +87,7 @@ function processOpenDirectoryTransaction(result) {
     const txid = result.txid;
     const address = result.address;
     const height = (result.height ? result.height : Math.Infinity);
-    const satoshis = (result.satoshis ? result.satoshis : 0);
+    const time = (result.time ? result.time : 0);
     var args = Object.values(result.data);
     const protocol_id = args.shift();
     const opendir_action = args.shift();
@@ -117,7 +117,7 @@ function processOpenDirectoryTransaction(result) {
         txid: txid,
         address: address,
         height: height,
-        satoshis: satoshis
+        time: time
     };
 
     if (item_type == "category") {
@@ -269,8 +269,8 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
         "r": {
             "f": "[.[] | {                  \
                 \"height\": .blk.i?,        \
+                \"time\": .blk.t?,        \
                 \"address\": .in[0].e.a,    \
-                \"satoshis\": ([.out[] | .e.v ] | reduce .[] as $num (0; .+$num)), \
                 \"txid\": .tx.h,            \
                 \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}]"
         }
@@ -298,36 +298,47 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
     return query;
 }
 
-function filterChangelog(txids, items=[]) {
+// https://stackoverflow.com/a/6109105
+function timeDifference(current, previous) {
 
-    var processing;
+    var msPerMinute = 60 * 1000;
+    var msPerHour = msPerMinute * 60;
+    var msPerDay = msPerHour * 24;
+    var msPerMonth = msPerDay * 30;
+    var msPerYear = msPerDay * 365;
 
-    do {
-        processing = false;
+    var elapsed = current - previous;
 
-        for (const item of items) {
-            if (txids.indexOf(item.txid) !== -1 ) { continue; }
-            if (txids.indexOf(item.data.s3) !== -1) {
-                txids.push(item.txid);
-                processing = true;
-                break;
-            }
-        }
-
-    } while (processing);
-
-
-    const changelog = [];
-
-    for (const item of items) {
-        if (txids.indexOf(item.txid) !== -1) {
-            changelog.push(item);
-        } else {
-            console.log("filtered out changelog item", item);
-        }
+    if (elapsed < msPerMinute) {
+        return pluralze(Math.round(elapsed/1000), 'second', 'seconds') + ' ago';
     }
 
-    return changelog.reverse();
+    else if (elapsed < msPerHour) {
+        return pluralze(Math.round(elapsed/msPerMinute), 'minute', 'minutes') + ' ago';
+    }
+
+    else if (elapsed < msPerDay ) {
+        return pluralze(Math.round(elapsed/msPerHour), 'hour', 'hours') + ' ago';
+    }
+
+    else if (elapsed < msPerMonth) {
+        return pluralze(Math.round(elapsed/msPerDay), 'day', 'days') + ' ago';
+    }
+
+    else if (elapsed < msPerYear) {
+        return pluralze(Math.round(elapsed/msPerMonth), 'month', 'months') + ' ago';
+    }
+
+    else {
+        return pluralze(Math.round(elapsed/msPerYear ), 'year', 'years') + ' ago';
+    }
+}
+
+function pluralze(val, singular, plural) {
+    if (val == 1) {
+        return val + " " + singular;
+    }
+    return val + " " + plural;
 }
 
 function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
@@ -347,7 +358,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
         const rows = r.c.concat(r.u).reverse();
 
         /*
-        TODO: remove
+        //TODO: remove
         for (const row of rows) {
             console.log("ROW", JSON.stringify(row, null, 4));
         }
@@ -494,11 +505,11 @@ function processCategoryResult(result, existing) {
 
         obj.tipchain = tipchain;
 
-        obj.satoshis = result.satoshis;
         obj.type = result.type;
         obj.txid = result.txid;
         obj.address = result.address;
         obj.height = result.height;
+        obj.time = result.time;
         obj.votes = 0;
 
         existing.push(obj);
@@ -551,11 +562,11 @@ function processEntryResult(result, existing) {
 
         obj.tipchain = tipchain;
 
-        obj.satoshis = result.satoshis;
         obj.type = result.type;
         obj.txid = result.txid;
         obj.address = result.address;
         obj.height = result.height;
+        obj.time = result.time;
         obj.votes = 0;
         existing.push(obj);
 
@@ -592,7 +603,6 @@ function processVoteResult(result, existing) {
     const obj = findObjectByTX(result.action_id, existing);
     if (obj) {
         obj.votes += 1;
-        obj.satoshis += result.satoshis;
     } else {
         console.log("couldn't find object for vote", obj, result);
     }

@@ -1,12 +1,9 @@
 ## TODO
 
 * never collect a "0" tip...just filter those out (test for this)
-
 * each action should have variable tip (should each action have a specific amount?)
-
-* changelog doesn't show categories that have been deleted (at least on home page)
-
 * let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
+
 
 * fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
 * add themes that stick and work during forking (color logo with css)
@@ -14,11 +11,9 @@
 * protocol for getting latest app version, put notice in app and point to new link (verify signature)
 
 * add undo description (why are you changing this?)
-
 * undo warning word wrap should be by word not letter
 
 * messages should float at top of screen so they scroll
-
 * edit form design
 * on changelog show timestamp and relative time ago
 * catch all errors and show friendly message instead

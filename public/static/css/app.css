@@ -509,7 +509,7 @@ form {
 #changelog .action {
     word-break: none;
     white-space: nowrap;
-    width: 90px;
+    width: 110px;
     padding: 3px;
     font-weight: 400;
 }
@@ -519,10 +519,10 @@ form {
     color: #999;
 }
 
-#changelog .satoshis {
+#changelog .time {
     word-break: none;
     white-space: nowrap;
-    width: 110px;
+    width: 115px;
     padding: 4px;
     color: #999;
 }

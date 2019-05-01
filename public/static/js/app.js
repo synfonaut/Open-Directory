@@ -95,21 +95,7 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
-            const raw = this.state.raw[this.state.category.txid];
-
-            var filterIds = [];
-            if (this.state.category.txid) {
-                filterIds.push(this.state.category.txid);
-            } else {
-                for (const item of this.state.items) {
-                    if (item.type == "category" && !item.category) {
-                        filterIds.push(item.txid);
-                    }
-                }
-            }
-
-            changelog = filterChangelog(filterIds, raw);
-
+            changelog = this.state.raw[this.state.category.txid];
 
             if (!this.state.isError) {
                 body = <List items={this.state.items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
@@ -277,8 +263,8 @@ class OpenDirectoryApp extends React.Component {
             fetch_from_network(category_id).then((rows) => {
 
 
-                //console.log("ROWS", JSON.stringify(rows, null, 4));
-                //console.log("ROWS", rows.length);
+                console.log("ROWS", JSON.stringify(rows, null, 4));
+                console.log("ROWS", rows.length);
 
                 const raw = this.state.raw;
                 raw[category_id] = rows;
@@ -307,7 +293,7 @@ class OpenDirectoryApp extends React.Component {
                     }
                 }
 
-                //console.log("RESULTS", JSON.stringify(results, null, 4));
+                console.log("RESULTS", JSON.stringify(results, null, 4));
 
                 const cache = this.state.cache;
                 cache[category_id] = results;
