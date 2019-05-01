@@ -414,17 +414,25 @@ function processCategoryResult(result, existing) {
             obj.rendered_description = markdown.renderInline(obj.description);
         }
 
+        var tipchain = [result.address];
         if (result.action_id) {
             obj.category = result.action_id;
+
+            const category = findObjectByTX(obj.category, existing);
+            if (category && category.tipchain) {
+                tipchain = category.tipchain.concat([result.address]);
+            }
         }
+
+        obj.tipchain = tipchain;
 
         obj.type = result.type;
         obj.txid = result.txid;
         obj.address = result.address;
         obj.height = result.height;
         obj.votes = 0;
-        existing.push(obj);
 
+        existing.push(obj);
     } else if (result.action == "update") {
         var obj = findObjectByTX(result.action_id, existing);
         if (obj) {
@@ -463,9 +471,17 @@ function processEntryResult(result, existing) {
             obj.rendered_description = markdown.renderInline(obj.description);
         }
 
+        var tipchain = [result.address];
         if (result.action_id) {
             obj.category = result.action_id;
+
+            const category = findObjectByTX(obj.category, existing);
+            if (category && category.tipchain) {
+                tipchain = category.tipchain.concat([result.address]);
+            }
         }
+
+        obj.tipchain = tipchain;
 
         obj.type = result.type;
         obj.txid = result.txid;

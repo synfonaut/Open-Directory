@@ -129,3 +129,44 @@ describe('process open directory undo transactions', function() {
 
 });
 
+
+describe('tipchain', function() {
+
+    it('category includes self in tipchain', function() {
+        const txs = [
+            {"height":580286,"address":"1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A","txid":"2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"category.create","s3":"name","s4":"New directory","s5":"description","s6":"This is a new directory"}}
+        ];
+
+        const processedResults = helpers.processResults(txs);
+        assert.deepEqual(processedResults[0].tipchain, ["1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A"]);
+        assert.equal(processedResults[0].txid, "2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18");
+    });
+
+    it('entry includes category in tipchain', function() {
+        const txs = [
+            {"height":580286,"address":"1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A","txid":"2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"category.create","s3":"name","s4":"New directory","s5":"description","s6":"This is a new directory"}},
+            {"height":580286,"address":"1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp","txid":"f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"entry.create","s3":"2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","s4":"name","s5":"New link","s6":"link","s7":"bit://asdf","s8":"description","s9":"Desc goes here"}},
+
+            {"height":580286,"address":"1Juvf2KaCJearuF1zFRxrnRCocmjdh3DcC","txid":"a8b337d22a91f6a2c4263ee2e3bfae6bc88a91af5ce80d217c6b9cf1a0a534a3","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"entry.update","s3":"f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d","s4":"name","s5":"New link with edit","s6":"description","s7":"Desc goes here (edit)"}}, // currently tipchain ignores edits
+        ];
+
+        const processedResults = helpers.processResults(txs);
+        assert.deepEqual(processedResults[1].tipchain, ["1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp"]);
+        assert.equal(processedResults[1].txid, "f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d");
+    });
+
+    it('entry includes recursive category in tipchain', function() {
+        const txs = [
+            {"height":580284,"address":"1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B","txid":"2ccc57df740b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"category.create","s3":"name","s4":"Parent directory","s5":"description","s6":"This is a parent directory"}},
+            {"height":580286,"address":"1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A","txid":"2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"category.create","s3":"2ccc57df740b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","s4":"name","s5":"New directory","s6":"description","s7":"This is a new directory"}},
+            {"height":580286,"address":"1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp","txid":"f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"entry.create","s3":"2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","s4":"name","s5":"New link","s6":"link","s7":"bit://asdf","s8":"description","s9":"Desc goes here"}},
+
+        ];
+
+        const processedResults = helpers.processResults(txs);
+        assert.deepEqual(processedResults[2].tipchain, ["1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp"]);
+        assert.equal(processedResults[2].txid, "f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d");
+    });
+
+});
+
