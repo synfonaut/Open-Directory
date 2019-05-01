@@ -7,9 +7,14 @@ class EntryItem extends React.Component {
             "isExpanded": false,
             "isDeleting": false,
             "isEditing": false,
+            "isTipping": false,
+            "tip": "",
         };
 
         this._isMounted = false;
+
+        this.handleTipSubmit = this.handleTipSubmit.bind(this);
+        this.handleClickTip = this.handleClickTip.bind(this);
     }
 
     componentDidMount() {
@@ -29,6 +34,7 @@ class EntryItem extends React.Component {
                 "isExpanded": false,
                 "isDeleting": false,
                 "isEditing": false,
+                "isTipping": false,
             });
         }
 
@@ -55,39 +61,8 @@ class EntryItem extends React.Component {
     }
 
     handleUpvote(e) {
-        const OP_RETURN = [
-            OPENDIR_PROTOCOL,
-            "vote",
-            this.props.item.txid,
-        ];
+        this.setState({"isTipping": true});
 
-        var tipchain = this.props.item.tipchain;
-        if (!tipchain || tipchain.length == 0) {
-            if (!confirm("Tipchain is invalid, please refresh or press OK to continue anyway")) {
-                return;
-            }
-        }
-
-        console.log("tipchain", tipchain);
-        const payments = calculateTipPayment(tipchain, OPENDIR_TIP_AMOUNT, OPENDIR_TIP_CURRENCY);
-        console.log("payments", payments);
-
-        const button = document.getElementById(this.props.item.txid).querySelector(".entry-tip-money-button");
-        databutton.build({
-            data: OP_RETURN,
-            button: {
-                $el: button,
-                label: "upvote",
-                $pay: { to: payments, },
-                onPayment: (msg) => {
-                    console.log(msg);
-                    setTimeout(() => {
-                        this.clearForm();
-                        this.props.onSuccessHandler("Successfully upvoted link, it will appear automatically—please refresh the page if it doesn't");
-                    }, 5000);
-                }
-            }
-        });
     }
 
     handleToggleExpand(e) {
@@ -95,17 +70,20 @@ class EntryItem extends React.Component {
             "isExpanded": !this.state.isExpanded,
             "isDeleting": false,
             "isEditing": false,
+            "isTipping": false,
         });
     }
 
     handleEdit(e) {
-        this.setState({ "isEditing": true, "isDeleting": false });
+        this.setState({ "isEditing": true, "isDeleting": false, "isTipping": false });
     }
 
     handleDelete(e) {
         this.setState({
             "isDeleting": true,
             "isEditing": false,
+            "isTipping": false,
+            "isTipping": false,
         }, () => {
             const OP_RETURN = [
                 OPENDIR_PROTOCOL,
@@ -142,7 +120,71 @@ class EntryItem extends React.Component {
             "isExpanded": false,
             "isDeleting": false,
             "isEditing": false,
+            "isTipping": false,
         });
+    }
+
+    handleTipSubmit(e) {
+        if (e) {
+            e.preventDefault();
+        }
+
+        console.log("HANDLE TIP SUBMIT");
+
+        const OP_RETURN = [
+            OPENDIR_PROTOCOL,
+            "vote",
+            this.props.item.txid,
+        ];
+
+        var tipchain = this.props.item.tipchain;
+        if (!tipchain || tipchain.length == 0) {
+            if (!confirm("Tipchain is invalid, please refresh or press OK to continue anyway")) {
+                return;
+            }
+        }
+
+        var amount = OPENDIR_TIP_AMOUNT;
+        const tip = this.state.tip;
+        if (this.state.tip > 0) {
+            amount = this.state.tip;
+        }
+
+        console.log("tipchain", tipchain);
+        const payments = calculateTipPayment(tipchain, amount, OPENDIR_TIP_CURRENCY);
+        console.log("payments", payments);
+
+
+
+        const button = document.getElementById(this.props.item.txid).querySelector(".entry-tip-money-button");
+        databutton.build({
+            data: OP_RETURN,
+            button: {
+                $el: button,
+                label: "upvote",
+                $pay: { to: payments, },
+                onPayment: (msg) => {
+                    console.log(msg);
+                    setTimeout(() => {
+                        this.clearForm();
+                        this.props.onSuccessHandler("Successfully upvoted link, it will appear automatically—please refresh the page if it doesn't");
+                    }, 5000);
+                }
+            }
+        });
+    }
+
+    handleClickTip(e) {
+        const amt = e.currentTarget.dataset.value;
+        if (amt > 0) {
+            this.setState({"tip": amt}, () => {
+                this.handleTipSubmit();
+            });
+        }
+    }
+
+    handleChangeTip(e) {  
+        this.setState({"tip": e.target.value});
     }
 
     render() {
@@ -165,7 +207,17 @@ class EntryItem extends React.Component {
                         {this.state.isEditing && <div className="column"><EditEntryForm item={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} onSubmit={this.collapse.bind(this)} /></div>}
                         {this.state.isDeleting && <div className="notice"><span className="warning">You are about to delete this entry, are you sure you want to do this?</span><div className="explain"><p>If you remove this link you'll be permanently removing it from this directory for others to view. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently delete this link from this directory</strong></p><div className="entry-delete-money-button"></div> </div></div>}
 
-                        <div className="entry-tip-money-button"></div>
+                        {this.state.isTipping && <div className="tipping">
+                                <form onSubmit={this.handleTipSubmit.bind(this)}>
+                                <label>Tip &nbsp;<a className="suggested-tip" data-value="0.05" onClick={this.handleClickTip}>5¢</a>
+                                <a className="suggested-tip" data-value="0.10" onClick={this.handleClickTip}>10¢</a>
+                                <a className="suggested-tip" data-value="0.25" onClick={this.handleClickTip}>25¢</a>
+                                <a className="suggested-tip" data-value="1.00" onClick={this.handleClickTip}>$1.00</a>
+                                $</label>
+                                <input className="tip" type="text" placeholder="0.05" value={this.state.tip} onChange={this.handleChangeTip.bind(this)} /> <input type="submit" className="button button-outline" value="tip" />
+                                </form>
+                                <div className="entry-tip-money-button"></div>
+                                </div>}
                    </div>
                     <div className="clearfix"></div>
                 </div>

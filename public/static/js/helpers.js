@@ -304,6 +304,10 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
 // https://stackoverflow.com/a/6109105
 function timeDifference(current, previous) {
 
+    if (!current || !previous) {
+        return "just now";
+    }
+
     var msPerMinute = 60 * 1000;
     var msPerHour = msPerMinute * 60;
     var msPerDay = msPerHour * 24;

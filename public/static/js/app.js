@@ -25,6 +25,7 @@ class OpenDirectoryApp extends React.Component {
     componentDidMount() {
         this._isMounted = true;
         this.didUpdateLocation();
+        this.performCheckForUpdates();
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
     }
 
@@ -32,7 +33,20 @@ class OpenDirectoryApp extends React.Component {
         this._isMounted = false;
     }
 
-    addMessage(msg, type, cb=null) {
+    performCheckForUpdates() {
+        getLatestUpdate().then(update => {
+            if (document.location.origin != update.uri) {
+                console.log("Currenty location doesn't match latest update URI...new version available", update);
+                const redirect_url = <a href={update.url}>new version</a>;
+                this.addSuccessMessage(<div>Open Directory has a {redirect_url} available, check it out!</div>, null, 10000);
+            }
+        }).catch((e) => {
+            console.log("Error while checking for updates", e);
+            this.addErrorMessage("Error while checking for updates");
+        });
+    }
+
+    addMessage(msg, type, cb=null, timeout=5000) {
         const key = (new Date()).getTime();
         const messages = this.state.messages.concat([{
             "type": type, "message": msg, "key": key,
@@ -41,17 +55,17 @@ class OpenDirectoryApp extends React.Component {
         this.setState({ "messages": messages }, () => {
             setTimeout(() => {
                 this.hideMessage(key);
-            }, 5000);
+            }, timeout);
             if (cb) { cb(); }
         });
     }
 
-    addSuccessMessage(msg, cb=null) {
-        this.addMessage(msg, "success", cb);
+    addSuccessMessage(msg, cb=null, timeout=5000) {
+        this.addMessage(msg, "success", cb, timeout);
     }
 
-    addErrorMessage(msg, cb=null) {
-        this.addMessage(msg, "error");
+    addErrorMessage(msg, cb=null, timeout=5000) {
+        this.addMessage(msg, "error", cb, timeout);
     }
 
     hideMessage(key) {
@@ -263,8 +277,8 @@ class OpenDirectoryApp extends React.Component {
             fetch_from_network(category_id).then((rows) => {
 
 
-                console.log("ROWS", JSON.stringify(rows, null, 4));
-                console.log("ROWS", rows.length);
+                //console.log("ROWS", JSON.stringify(rows, null, 4));
+                //console.log("ROWS", rows.length);
 
                 const raw = this.state.raw;
                 raw[category_id] = rows;
@@ -293,7 +307,7 @@ class OpenDirectoryApp extends React.Component {
                     }
                 }
 
-                console.log("RESULTS", JSON.stringify(results, null, 4));
+                //console.log("RESULTS", JSON.stringify(results, null, 4));
 
                 const cache = this.state.cache;
                 cache[category_id] = results;

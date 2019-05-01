@@ -374,6 +374,11 @@ form {
     transition: 0.5s;
 }
 
+.message a {
+    color: white;
+    text-decoration: underline;
+}
+
 .error {
     background: #FF6384;
     border: 1px solid #FF6384;
@@ -548,6 +553,46 @@ form {
 
 #changelog .expand a:hover {
     color: #bbb;
+}
+
+.tipping {
+    background: white;
+    margin-top: 9px;
+    border: 1px solid #eee;
+    display: inline-block;
+    padding: 1px 12px;
+    border-radius: 10px;
+}
+
+.tipping label {
+    display: inline;
+    font-weight: 400;
+    font-size: 13px;
+    padding-right: 3px;
+    margin-bottom: 0;
+}
+
+.tipping .button {
+    padding: 6px 10px;
+    height: auto;
+    line-height: 11px;
+    font-size: 13px;
+    margin-bottom: 0;
+}
+
+
+.tipping .tip {
+    width: 40px;
+    font-size: 13px;
+    padding: 4px 5px;
+    line-height: 11px;
+    margin: 0;
+    height: auto;
+}
+
+.tipping .suggested-tip {
+    padding-left: 3px;
+    padding-right: 7px;
 }
 
 pre {
