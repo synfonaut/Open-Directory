@@ -156,7 +156,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 },
 
 
-                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children", "maxDepth": 2 } },
+                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children", "maxDepth": 3 } },
                 { "$project": { "unconfirmed_children": "$unconfirmed_children", "object": ["$$ROOT"], } },
                 { "$project": { "object.unconfirmed_children": 0, } },
                 { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_children", ] } } },
@@ -168,7 +168,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
-                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children", "maxDepth": 2 } },
+                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children", "maxDepth": 3 } },
                 { "$project": { "confirmed_children": "$confirmed_children", "object": ["$$ROOT"], } },
                 { "$project": { "object.confirmed_children": 0, } },
                 { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_children", ] } } },
@@ -236,7 +236,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
         });
     }
 
-    console.log("QUERY = ", JSON.stringify(query, null, 4));
+    //console.log("QUERY = ", JSON.stringify(query, null, 4));
 
     return query;
 }
@@ -437,7 +437,8 @@ function processCategoryResult(result, existing) {
                 }
             }
         } else {
-            console.log("couldn't find category for update", obj, result, existing);
+            // TODO: re-enable
+            //console.log("couldn't find category for update", obj, result, existing);
         }
     } else if (result.action == "delete") {
         const obj = findObjectByTX(result.action_id, existing);
@@ -507,7 +508,8 @@ function processVoteResult(result, existing) {
     if (obj) {
         obj.votes += 1;
     } else {
-        console.log("couldn't find object for vote", obj, result);
+        // TODO: re-enable
+        //console.log("couldn't find object for vote", obj, result);
     }
     return existing;
 }

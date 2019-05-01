@@ -60,6 +60,8 @@ class EntryItem extends React.Component {
             this.props.item.txid,
         ];
 
+        console.log("VOTE FOR", this.props.item);
+
         const button = document.getElementById(this.props.item.txid).querySelector(".entry-tip-money-button");
         databutton.build({
             data: OP_RETURN,

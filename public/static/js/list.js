@@ -10,7 +10,7 @@ class List extends React.Component {
     }
 
     getCategories() {
-        const category_id = (this.props.category ? this.props.category.txid: null);
+        const category_id = (this.props.category ? this.props.category.txid : null);
         const categories = this.props.items.filter(i => { return !i.deleted && i.type == "category" && i.category == category_id });
         return categories.sort((a, b) => {
             if (a.votes < b.votes) { return 1; }
@@ -65,6 +65,8 @@ class List extends React.Component {
     render() {
         const categories = this.getCategories();
         const entries = this.getEntries();
+
+        console.log("CATS", categories);
 
         var slice = entries.slice(this.state.cursor, this.state.cursor + this.state.limit);
 

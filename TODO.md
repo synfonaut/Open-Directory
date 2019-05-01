@@ -1,7 +1,9 @@
 ## TODO
 
-* let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
+* changelog doesn't show categories that have been deleted (at least on home page)
+
 * have a chain of tips where everyone in the chain gets a % of the tip (condense tips)
+* let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
 
 * fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
 * add themes that stick and work during forking (color logo with css)
