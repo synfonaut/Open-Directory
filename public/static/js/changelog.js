@@ -47,7 +47,7 @@ class ChangeLog extends React.Component {
                     </tbody>
                     {(!this.state.isShowingWarning && this.props.items.length > max) && <tbody><tr>
                         <td colSpan="5" className="expand">
-                            <a onClick={this.handleToggleShowAll.bind(this)}>Show all {this.props.items.length} changes from changelog</a>
+                            <a onClick={this.handleToggleShowAll.bind(this)}>{this.state.isShowAll ? "Hide" : "Show"} all {this.props.items.length} changes from changelog</a>
                             &nbsp;<a onClick={this.handleToggleExpand.bind(this)}>expanded</a>
                         </td>
                      </tr></tbody>}
@@ -124,7 +124,7 @@ class ChangeLogItem extends React.Component {
         return (<React.Fragment>
                     <tr>
                         <td className="height">
-                            <a onClick={this.handleToggleExpand.bind(this)} className="arrow">{this.state.isExpanded ? "▼" : "▶"}</a>
+                            <a onClick={this.handleToggleExpand.bind(this)} className="arrow">{(this.props.isExpanded || this.state.isExpanded) ? "▼" : "▶"}</a>
                             {this.props.item.height ? <span className="block">#{this.props.item.height}</span> : <span className="pending">pending</span>}
                         </td>
                         <td className="action">{this.props.item.data.s2}</td>
