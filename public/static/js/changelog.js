@@ -6,6 +6,7 @@ class ChangeLog extends React.Component {
 
         this.state = {
             "isExpanded": false,
+            "isShowAll": false,
             "changelog": props.items.reverse(),
         };
     }
@@ -14,6 +15,13 @@ class ChangeLog extends React.Component {
     handleToggleExpand(e) {
         this.setState({
             "isExpanded": !this.state.isExpanded,
+            "isShowAll": !this.state.isShowAll
+        });
+    }
+
+    handleToggleShowAll(e) {
+        this.setState({
+            "isShowAll": !this.state.isShowAll
         });
     }
 
@@ -32,13 +40,16 @@ class ChangeLog extends React.Component {
                 <table>
                     <tbody>
                     {this.state.changelog.map(i => {
-                        if ((idx++ <= max) || this.state.isExpanded) {
-                            return <ChangeLogItem item={i} key={"changelog-" + i.txid} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />;
+                        if ((idx++ <= max) || this.state.isShowAll) {
+                            return <ChangeLogItem item={i} key={"changelog-" + i.txid} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} isExpanded={this.state.isExpanded} />;
                         }
                     })}
                     </tbody>
-                    {(!this.state.isExpanded && this.props.items.length > max) && <tbody><tr>
-                        <td colSpan="3" className="expand"><a onClick={this.handleToggleExpand.bind(this)}>Show all {this.props.items.length} changes from changelog</a></td>
+                    {(!this.state.isShowingWarning && this.props.items.length > max) && <tbody><tr>
+                        <td colSpan="5" className="expand">
+                            <a onClick={this.handleToggleShowAll.bind(this)}>Show all {this.props.items.length} changes from changelog</a>
+                            &nbsp;<a onClick={this.handleToggleExpand.bind(this)}>expanded</a>
+                        </td>
                      </tr></tbody>}
                 </table>
             </div>
@@ -54,7 +65,7 @@ class ChangeLogItem extends React.Component {
         super(props);
         this.state = {
             isShowingWarning: false,
-            isExpanded: false,
+            isExpanded: props.isExpanded,
         };
     }
 
@@ -109,7 +120,6 @@ class ChangeLogItem extends React.Component {
 
     render() {
         const timestamp = (new Date()).getTime();
-        console.log(this.props.item);
 
         return (<React.Fragment>
                     <tr>
@@ -122,11 +132,11 @@ class ChangeLogItem extends React.Component {
                         <td className="satoshis">{this.props.item.satoshis}</td>
                         <td className="address">{this.props.item.address}</td>
                     </tr>
-                    {this.state.isExpanded && <tr>
-                        <td className="data" colSpan="4"><pre><code>{JSON.stringify(this.props.item.data, null, 4)}</code></pre></td>
+                    {(this.props.isExpanded || this.state.isExpanded) && <tr>
+                        <td className="data" colSpan="5"><pre><code>{JSON.stringify(this.props.item.data, null, 4)}</code></pre></td>
                         </tr>}
-                    {this.state.isExpanded && <tr>
-                            <td className="undo" colSpan="4" id={"changelog-action-" + this.props.item.txid}>
+                    {(this.props.isExpanded || this.state.isExpanded) && <tr>
+                            <td className="undo" colSpan="5" id={"changelog-action-" + this.props.item.txid}>
                             <a href={"https://whatsonchain.com/tx/" + this.props.item.txid}>{this.props.item.txid}</a>&nbsp;
                         <a onClick={this.handleUndo.bind(this)}>undo</a>
                             {this.state.isShowingWarning && <div className="notice"><span className="warning">You are undoing this change, are you sure you want to do this?</span><div className="explain"><p>If you undo this change, you'll be permanently undoing it in this directory for everyone else. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently undo this change?</strong></p><div className="undo-money-button"></div> </div></div>}

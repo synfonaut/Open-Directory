@@ -1,5 +1,9 @@
 ## TODO
 
+bug: entries is showing wrong number
+* category should have custom tip amount
+
+
 * fix minor bugs
 * forking
 * design
@@ -12,11 +16,9 @@
 * improved layout
 * readme
 
-* category should have custom tip amount
 * save whatever you tipped last as default (localstorage)
 * custom tip design
 
-* expand all changelogs
 * localStorage, want good defaults
 
 

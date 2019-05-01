@@ -199,7 +199,7 @@ class EntryItem extends React.Component {
         return (
             <li id={this.props.item.txid} className="entry">
                 <div className="upvoteContainer">
-                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number">{this.props.item.votes}</span></div>
+                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number">{this.props.item.satoshis}</span></div>
                     <div className="entry">
                         <h5><a href={this.props.item.link}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>} {actions}</h5>
                         <p className="description">{this.props.item.description}</p>
