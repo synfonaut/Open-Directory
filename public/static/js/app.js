@@ -37,7 +37,7 @@ class OpenDirectoryApp extends React.Component {
         getLatestUpdate().then(update => {
             if (document.location.origin != update.uri) {
                 console.log("Currenty location doesn't match latest update URI...new version available", update);
-                const redirect_url = <a href={update.url}>new version</a>;
+                const redirect_url = <a href={update.uri}>new version</a>;
                 this.addSuccessMessage(<div>Open Directory has a {redirect_url} available, check it out!</div>, null, 10000);
             }
         }).catch((e) => {
