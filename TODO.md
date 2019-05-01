@@ -1,5 +1,9 @@
 ## TODO
 
+* change the way tip is calculated
+* never collect a "0" tip...just filter those out (test for this)
+
+* each action should have variable tip (should each action have a specific amount?)
 * no outputs should have 0
 
 * changelog doesn't show categories that have been deleted (at least on home page)

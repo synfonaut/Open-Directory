@@ -68,9 +68,9 @@ class EntryItem extends React.Component {
             }
         }
 
-        const payments = calculateTipPayment(tipchain, OPENDIR_TIP_AMOUNT, OPENDIR_TIP_CURRENCY);
         console.log("tipchain", tipchain);
-        console.log("PAYMENTS", payments);
+        const payments = calculateTipPayment(tipchain, OPENDIR_TIP_AMOUNT, OPENDIR_TIP_CURRENCY);
+        console.log("payments", payments);
 
         const button = document.getElementById(this.props.item.txid).querySelector(".entry-tip-money-button");
         databutton.build({
@@ -78,9 +78,7 @@ class EntryItem extends React.Component {
             button: {
                 $el: button,
                 label: "upvote",
-                $pay: {
-                    to: payments,
-                },
+                $pay: { to: payments, },
                 onPayment: (msg) => {
                     console.log(msg);
                     setTimeout(() => {

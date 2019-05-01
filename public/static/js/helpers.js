@@ -7,7 +7,7 @@ if (isNode) {
     markdownit = require("markdown-it");
 }
 
-const OPENDIR_TIP_AMOUNT = 0.25;
+const OPENDIR_TIP_AMOUNT = 0.05;
 const OPENDIR_TIP_CURRENCY = "USD";
 const OPENDIR_TIP_ADDRESS = "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL";
 const OPENDIR_PROTOCOL = "1dirxA5oET8EmcdW4saKXzPqejmMXQwg2";

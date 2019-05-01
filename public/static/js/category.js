@@ -58,11 +58,24 @@ class CategoryItem extends React.Component {
             this.props.item.txid,
         ];
 
+        var tipchain = this.props.item.tipchain;
+        if (!tipchain || tipchain.length == 0) {
+            if (!confirm("Tipchain is invalid, please refresh or press OK to continue anyway")) {
+                return;
+            }
+        }
+
+        console.log("tipchain", tipchain);
+        const payments = calculateTipPayment(tipchain, OPENDIR_TIP_AMOUNT, OPENDIR_TIP_CURRENCY);
+        console.log("payments", payments);
+
         const button = document.getElementById(this.props.item.txid).querySelector(".category-tip-money-button");
         databutton.build({
             data: OP_RETURN,
             button: {
                 $el: button,
+                label: "upvote",
+                $pay: { to: payments, },
                 onPayment: (msg) => {
                     console.log(msg);
                     setTimeout(() => {
