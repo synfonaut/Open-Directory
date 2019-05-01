@@ -1,6 +1,5 @@
 ## TODO
 
-* never collect a "0" tip...just filter those out (test for this)
 * each action should have variable tip (should each action have a specific amount?)
 * let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
 

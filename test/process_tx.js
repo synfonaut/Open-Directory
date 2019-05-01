@@ -296,5 +296,16 @@ describe("tipchain split", function() {
         const total = payments.map(p => { return p.value }).reduce((a, b) => { return a+b });
         assert(Math.abs(total - 0.05) < FLOAT_TOLERANCE);
     });
+
+    it('tipchain removes empty outputs', function() {
+        const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B"];
+        const payments = helpers.calculateTipPayment(tipchain, 0.0001, "USD");
+        assert.deepEqual(payments, [
+            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 0.0001, currency: "USD" },
+        ]);
+        const total = payments.map(p => { return p.value }).reduce((a, b) => { return a+b });
+        assert(Math.abs(total - 0.0001) < FLOAT_TOLERANCE);
+    });
+
 });
 

@@ -68,11 +68,14 @@ function calculateTipPayment(tipchain, amount, currency) {
         const tip_address = tipchain[i];
         const weight = weights[i];
         const tip_amount = Math.round((weight * amount) * 10000) / 10000;
-        tips.push({
-            address: tip_address,
-            value: tip_amount,
-            currency: currency
-        });
+
+        if (tip_amount > 0) {
+            tips.push({
+                address: tip_address,
+                value: tip_amount,
+                currency: currency
+            });
+        }
     }
 
     return tips;
