@@ -185,8 +185,8 @@ describe("tipchain split", function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B"];
         const splits = helpers.calculateTipchainSplits(tipchain);
         assert.equal(tipchain.length, splits.length);
-        assert(Math.abs(splits[0] - 0.333) < FLOAT_TOLERANCE);
-        assert(Math.abs(splits[1] - 0.666) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[0] - 0.371) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[1] - 0.629) < FLOAT_TOLERANCE);
         assert(splits.reduce((a, b) => { return a+b }) == 1);
     });
 
@@ -194,9 +194,9 @@ describe("tipchain split", function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A"];
         const splits = helpers.calculateTipchainSplits(tipchain);
         assert.equal(tipchain.length, splits.length);
-        assert(Math.abs(splits[0] - 0.142) < FLOAT_TOLERANCE);
-        assert(Math.abs(splits[1] - 0.285) < FLOAT_TOLERANCE);
-        assert(Math.abs(splits[2] - 0.571) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[0] - 0.209) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[1] - 0.353) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[2] - 0.438) < FLOAT_TOLERANCE);
         assert(splits.reduce((a, b) => { return a+b }) == 1);
     });
 
@@ -204,10 +204,10 @@ describe("tipchain split", function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp"];
         const splits = helpers.calculateTipchainSplits(tipchain);
         assert.equal(tipchain.length, splits.length);
-        assert(Math.abs(splits[0] - 0.066) < FLOAT_TOLERANCE);
-        assert(Math.abs(splits[1] - 0.133) < FLOAT_TOLERANCE);
-        assert(Math.abs(splits[2] - 0.266) < FLOAT_TOLERANCE);
-        assert(Math.abs(splits[3] - 0.533) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[0] - 0.139) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[1] - 0.235) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[2] - 0.292) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[3] - 0.332) < FLOAT_TOLERANCE);
         assert(splits.reduce((a, b) => { return a+b }) == 1);
     });
 
@@ -222,48 +222,52 @@ describe("tipchain split", function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B"];
         const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
         assert.deepEqual(payments, [
-            { address: helpers.OPENDIR_TIP_ADDRESS, value: 16666.67, currency: "BSV" },
-            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 33333.33, currency: "BSV" },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 18565.64, currency: 'BSV' },
+            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 31434.36, currency: "BSV" },
         ]);
-        assert.equal(payments.map(p => { return p.value }).reduce((a, b) => { return a+b }), 50000);
+        const total = payments.map(p => { return p.value }).reduce((a, b) => { return a+b });
+        assert(Math.abs(total - 50000) < FLOAT_TOLERANCE);
     });
 
     it('tipchain payment for three address', function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A"];
         const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
         assert.deepEqual(payments, [
-            { address: helpers.OPENDIR_TIP_ADDRESS, value: 7142.86, currency: "BSV" },
-            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 14285.71, currency: "BSV" },
-            { address: "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", value: 28571.43, currency: "BSV" },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 10434.581, currency: 'BSV' },
+            { address: '1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B', value: 17667.281, currency: 'BSV' },
+            { address: '1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A', value: 21898.139, currency: 'BSV' }
         ]);
-        assert.equal(payments.map(p => { return p.value }).reduce((a, b) => { return a+b }), 50000);
+        const total = payments.map(p => { return p.value }).reduce((a, b) => { return a+b });
+        assert(Math.abs(total - 50000) < FLOAT_TOLERANCE);
     });
 
     it('tipchain payment for four address', function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp"];
         const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
         assert.deepEqual(payments, [
-            { address: helpers.OPENDIR_TIP_ADDRESS, value: 3333.33, currency: "BSV" },
-            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 6666.67, currency: "BSV" },
-            { address: "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", value: 13333.33, currency: "BSV" },
-            { address: "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp", value: 26666.67, currency: "BSV" },
+            { address: "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", value: 6965.676, currency: "BSV" },
+            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 11793.915, currency: "BSV" },
+            { address: "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", value: 14618.254, currency: "BSV" },
+            { address: "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp", value: 16622.154, currency: "BSV" },
         ]);
-        assert.equal(payments.map(p => { return p.value }).reduce((a, b) => { return a+b }), 50000);
+        const total = payments.map(p => { return p.value }).reduce((a, b) => { return a+b });
+        assert(Math.abs(total - 50000) < FLOAT_TOLERANCE);
     });
 
     it('tipchain works for very large chains', function() {
         const tipchain = Array(15).fill(helpers.OPENDIR_TIP_ADDRESS);
         const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
         assert.equal(tipchain.length, payments.length);
-        assert.equal(payments.map(p => { return p.value }).reduce((a, b) => { return a+b }), 50000);
+        const total = payments.map(p => { return p.value }).reduce((a, b) => { return a+b });
+        assert(Math.abs(total - 50000) < FLOAT_TOLERANCE);
     });
 
     it('tipchain payment for two address (usd)', function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B"];
         const payments = helpers.calculateTipPayment(tipchain, 1, "USD");
         assert.deepEqual(payments, [
-            { address: helpers.OPENDIR_TIP_ADDRESS, value: 0.33, currency: "USD" },
-            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 0.67, currency: "USD" },
+            { address: "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", value: 0.371, currency: "USD" },
+            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 0.629, currency: "USD" },
         ]);
         assert.equal(payments.map(p => { return p.value }).reduce((a, b) => { return a+b }), 1);
     });

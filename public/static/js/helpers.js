@@ -32,9 +32,8 @@ function toBase64(str) {
 
 function calculateTipchainSplits(tipchain) {
     const weights = [];
-    for (var i = 1, idx = 1; i <= tipchain.length; i++) {
-        weights.push(idx);
-        idx *= 2;
+    for (var i = 1; i <= tipchain.length; i++) {
+        weights.push(1 + Math.log(i));
     }
 
     const total = weights.reduce((a, b) => { return a + b });
@@ -68,7 +67,7 @@ function calculateTipPayment(tipchain, amount, currency) {
     for (var i = 0; i < tipchain.length; i++) {
         const tip_address = tipchain[i];
         const weight = weights[i];
-        const tip_amount = Math.round((weight * amount) * 100, 2) / 100;
+        const tip_amount = Math.round((weight * amount) * 1000, 2) / 1000;
         tips.push({
             address: tip_address,
             value: tip_amount,
