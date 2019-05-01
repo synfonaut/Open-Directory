@@ -26,7 +26,22 @@ function toBase64(str) {
     }
 
     return btoa(str);
+}
 
+function calculateTipchainSplits(tipchain) {
+
+    const weights = [];
+    for (var i = 1, idx = 1; i <= tipchain.length; i++) {
+        weights.push(idx);
+        idx *= 2;
+    }
+
+    const total = weights.reduce((a, b) => { return a + b });
+    const splits = weights.map(w => {
+        return w / total;
+    });
+
+    return splits;
 }
 
 function processOpenDirectoryTransaction(result) {
@@ -586,6 +601,7 @@ if (typeof window == "undefined") {
     module.exports = {
         "fetch_from_network": fetch_from_network,
         "processResults": processResults,
+        "calculateTipchainSplits": calculateTipchainSplits,
         "OPENDIR_TIP_ADDRESS": OPENDIR_TIP_ADDRESS,
         "OPENDIR_PROTOCOL": OPENDIR_PROTOCOL,
         "OPENDIR_ACTIONS": OPENDIR_ACTIONS,

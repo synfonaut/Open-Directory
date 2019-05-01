@@ -6,6 +6,8 @@ function readFileTXs(filepath) {
     return JSON.parse(fs.readFileSync(__dirname + "/" + filepath, 'utf8'));
 }
 
+const FLOAT_TOLERANCE = 0.005;
+
 describe('basic tx processing', function() {
 
     it('convert txs to results', function() {
@@ -168,5 +170,41 @@ describe('tipchain', function() {
         assert.equal(processedResults[2].txid, "f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d");
     });
 
+});
+
+describe("tipchain split", function() {
+    it('tipchain split for one address', function() {
+        const tipchain = [helpers.OPENDIR_TIP_ADDRESS];
+        const splits = helpers.calculateTipchainSplits(tipchain);
+        assert.equal(tipchain.length, splits.length);
+        assert.equal(splits[0], 1);
+    });
+
+    it('tipchain split for two addresses', function() {
+        const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B"];
+        const splits = helpers.calculateTipchainSplits(tipchain);
+        assert.equal(tipchain.length, splits.length);
+        assert(Math.abs(splits[0] - 0.333) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[1] - 0.666) < FLOAT_TOLERANCE);
+    });
+
+    it('tipchain split for three addresses', function() {
+        const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A"];
+        const splits = helpers.calculateTipchainSplits(tipchain);
+        assert.equal(tipchain.length, splits.length);
+        assert(Math.abs(splits[0] - 0.142) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[1] - 0.285) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[2] - 0.571) < FLOAT_TOLERANCE);
+    });
+
+    it('tipchain split for four addresses', function() {
+        const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp"];
+        const splits = helpers.calculateTipchainSplits(tipchain);
+        assert.equal(tipchain.length, splits.length);
+        assert(Math.abs(splits[0] - 0.066) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[1] - 0.133) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[2] - 0.266) < FLOAT_TOLERANCE);
+        assert(Math.abs(splits[3] - 0.533) < FLOAT_TOLERANCE);
+    });
 });
 
