@@ -222,8 +222,8 @@ describe("tipchain split", function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B"];
         const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
         assert.deepEqual(payments, [
-            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 18565.64, currency: 'BSV' },
-            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 31434.36, currency: "BSV" },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 18565.6396, currency: 'BSV' },
+            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 31434.3604, currency: "BSV" },
         ]);
         const total = payments.map(p => { return p.value }).reduce((a, b) => { return a+b });
         assert(Math.abs(total - 50000) < FLOAT_TOLERANCE);
@@ -233,9 +233,9 @@ describe("tipchain split", function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A"];
         const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
         assert.deepEqual(payments, [
-            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 10434.581, currency: 'BSV' },
-            { address: '1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B', value: 17667.281, currency: 'BSV' },
-            { address: '1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A', value: 21898.139, currency: 'BSV' }
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 10434.5805, currency: 'BSV' },
+            { address: '1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B', value: 17667.2806, currency: 'BSV' },
+            { address: '1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A', value: 21898.1389, currency: 'BSV' }
         ]);
         const total = payments.map(p => { return p.value }).reduce((a, b) => { return a+b });
         assert(Math.abs(total - 50000) < FLOAT_TOLERANCE);
@@ -245,10 +245,10 @@ describe("tipchain split", function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp"];
         const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
         assert.deepEqual(payments, [
-            { address: "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", value: 6965.676, currency: "BSV" },
-            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 11793.915, currency: "BSV" },
+            { address: "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", value: 6965.6764, currency: "BSV" },
+            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 11793.9153, currency: "BSV" },
             { address: "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", value: 14618.254, currency: "BSV" },
-            { address: "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp", value: 16622.154, currency: "BSV" },
+            { address: "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp", value: 16622.1543, currency: "BSV" },
         ]);
         const total = payments.map(p => { return p.value }).reduce((a, b) => { return a+b });
         assert(Math.abs(total - 50000) < FLOAT_TOLERANCE);
@@ -266,11 +266,35 @@ describe("tipchain split", function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B"];
         const payments = helpers.calculateTipPayment(tipchain, 1, "USD");
         assert.deepEqual(payments, [
-            { address: "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", value: 0.371, currency: "USD" },
-            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 0.629, currency: "USD" },
+            { address: "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", value: 0.3713, currency: "USD" },
+            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 0.6287, currency: "USD" },
         ]);
-        assert.equal(payments.map(p => { return p.value }).reduce((a, b) => { return a+b }), 1);
+        const total = payments.map(p => { return p.value }).reduce((a, b) => { return a+b });
+        assert(Math.abs(total - 1) < FLOAT_TOLERANCE);
     });
 
+    it('large tipchain with small payment (usd)', function() {
+        const tipchain = Array(15).fill(helpers.OPENDIR_TIP_ADDRESS);
+        const payments = helpers.calculateTipPayment(tipchain, 0.05, "USD");
+        assert.deepEqual(payments, [
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.0012, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.002, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.0024, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.0028, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.003, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.0033, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.0034, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.0036, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.0037, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.0038, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.004, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.0041, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.0042, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.0042, currency: 'USD' },
+            { address: '1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL', value: 0.0043, currency: 'USD' } 
+        ]);
+        const total = payments.map(p => { return p.value }).reduce((a, b) => { return a+b });
+        assert(Math.abs(total - 0.05) < FLOAT_TOLERANCE);
+    });
 });
 
