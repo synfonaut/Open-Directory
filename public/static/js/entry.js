@@ -61,6 +61,23 @@ class EntryItem extends React.Component {
             this.props.item.txid,
         ];
 
+        var tipchain = this.props.item.tipchain;
+        if (!tipchain || tipchain.length == 0) {
+            if (!confirm("Tipchain is invalid, please refresh or press OK to continue anyway")) {
+                return;
+            }
+        }
+
+        console.log("tipchain", tipchain);
+
+        const weights = calculateTipchainSplits(tipchain);
+        const amounts = weights.map(w => {
+            return w * OPENDIR_TIP_AMOUNT;
+        });
+
+        console.log("weights", weights);
+        console.log("amounts", amounts);
+
         console.log("VOTE FOR", this.props.item);
 
         const button = document.getElementById(this.props.item.txid).querySelector(".entry-tip-money-button");

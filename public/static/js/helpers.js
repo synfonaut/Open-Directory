@@ -7,6 +7,7 @@ if (isNode) {
     markdownit = require("markdown-it");
 }
 
+const OPENDIR_TIP_AMOUNT = 0.05;
 const OPENDIR_TIP_ADDRESS = "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL";
 const OPENDIR_PROTOCOL = "1dirxA5oET8EmcdW4saKXzPqejmMXQwg2";
 const OPENDIR_ACTIONS = [
@@ -29,7 +30,6 @@ function toBase64(str) {
 }
 
 function calculateTipchainSplits(tipchain) {
-
     const weights = [];
     for (var i = 1, idx = 1; i <= tipchain.length; i++) {
         weights.push(idx);
@@ -42,6 +42,34 @@ function calculateTipchainSplits(tipchain) {
     });
 
     return splits;
+}
+
+function calculateTipPayment(tipchain, amount) {
+
+    if (!amount) {
+        console.log("error while calculating tip payment, invalid amount");
+        return null;
+    }
+
+    const weights = calculateTipchainSplits(tipchain);
+    if (weights.length != tipchain.length) {
+        console.log("error while calculating tip payment, weights didn't match tipchain length");
+        return null;
+    }
+
+
+    const tips = [];
+    for (var i = 0; i < tipchain.length; i++) {
+        const tip_address = tipchain[i];
+        const weight = weights[i];
+        const tip_amount = Math.round(weight * amount);
+        tips.push({
+            address: tip_address,
+            value: tip_amount,
+        });
+    }
+
+    return tips;
 }
 
 function processOpenDirectoryTransaction(result) {
@@ -602,7 +630,9 @@ if (typeof window == "undefined") {
         "fetch_from_network": fetch_from_network,
         "processResults": processResults,
         "calculateTipchainSplits": calculateTipchainSplits,
+        "calculateTipPayment": calculateTipPayment,
         "OPENDIR_TIP_ADDRESS": OPENDIR_TIP_ADDRESS,
+        "OPENDIR_TIP_AMOUNT": OPENDIR_TIP_AMOUNT,
         "OPENDIR_PROTOCOL": OPENDIR_PROTOCOL,
         "OPENDIR_ACTIONS": OPENDIR_ACTIONS,
     };
