@@ -13,7 +13,6 @@ helpers.fetch_from_network(category_id).then(rows => {
         console.log("=".repeat(80));
     }
 
-    /*
     console.log("\n");
 
     const results = helpers.processResults(rows);
@@ -44,7 +43,6 @@ helpers.fetch_from_network(category_id).then(rows => {
     results.filter(r => { return r.type == "vote" }).map(r => {
         console.log("VOTE", r);
     });
-    */
 
 }).catch(e => {
     console.log("error", e);

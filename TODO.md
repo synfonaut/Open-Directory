@@ -1,10 +1,25 @@
 ## TODO
 
-* expand all changelogs
+* fix minor bugs
+* forking
+* design
+* launch / content / submissions
+
+* if b:// link, then include them in tipchain or bit:// b link (how to verify bitcoin address?)
+
+
+* auto update is broken...wrong order
+* improved layout
+* readme
+
 * category should have custom tip amount
 * save whatever you tipped last as default (localstorage)
-
 * custom tip design
+
+* expand all changelogs
+* localStorage, want good defaults
+
+
 * each action should have variable tip (should each action have a specific amount?)
 * let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
 
@@ -14,6 +29,8 @@
 
 * add undo description (why are you changing this?)
 * undo warning word wrap should be by word not letter
+
+* HELP: How can you figure out how much tips are in a tx without calculating funds that are being sent back
 
 * messages should float at top of screen so they scroll
 * edit form design
@@ -39,6 +56,8 @@
 * optimize: don't fetch network request every single time
 * remove 2-undo limit
 * idea: let categories aggregate their sub-categories to "pull up" interesting links
+* idea: pay people whose websites you're submitting
+* idea: include people in tipchain whose content you're submitting
 
 ## FEEDBACK
 * bitdb bug: event stream is getting messages it shouldn't

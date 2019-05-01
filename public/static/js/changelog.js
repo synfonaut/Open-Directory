@@ -109,6 +109,7 @@ class ChangeLogItem extends React.Component {
 
     render() {
         const timestamp = (new Date()).getTime();
+        console.log(this.props.item);
 
         return (<React.Fragment>
                     <tr>
@@ -118,6 +119,7 @@ class ChangeLogItem extends React.Component {
                         </td>
                         <td className="action">{this.props.item.data.s2}</td>
                         <td className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</td>
+                        <td className="satoshis">{this.props.item.satoshis}</td>
                         <td className="address">{this.props.item.address}</td>
                     </tr>
                     {this.state.isExpanded && <tr>

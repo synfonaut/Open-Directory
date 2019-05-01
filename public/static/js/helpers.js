@@ -91,6 +91,7 @@ function processOpenDirectoryTransaction(result) {
     const address = result.address;
     const height = (result.height ? result.height : Math.Infinity);
     const time = (result.time ? result.time : 0);
+    const outputs = (result.outputs ? result.outputs : []);
     var args = Object.values(result.data);
     const protocol_id = args.shift();
     const opendir_action = args.shift();
@@ -120,7 +121,8 @@ function processOpenDirectoryTransaction(result) {
         txid: txid,
         address: address,
         height: height,
-        time: time
+        time: time,
+        outputs: outputs
     };
 
     if (item_type == "category") {
@@ -274,6 +276,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 \"height\": .blk.i?,        \
                 \"time\": .blk.t?,        \
                 \"address\": .in[0].e.a,    \
+                \"outputs\": [.out[] | {\"address\": .e.a, \"sats\": .e.v}], \
                 \"txid\": .tx.h,            \
                 \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}]"
         }
@@ -488,7 +491,30 @@ function processResults(results) {
         processing = processResult(result, processing, undo_txids)
     }
 
-    return updateCategoryEntryCounts(processing);
+    return updateCategoryEntryCounts(processOutputs(processing));
+}
+
+function processOutputs(results) {
+    const addresses = [];
+    for (const result of results) {
+        addresses.push(result.address);
+    }
+
+    return results.map(result => {
+        const outputs = result.outputs.filter(r => {
+            return addresses.indexOf(r.address) != -1;
+        });
+
+        const satoshis = outputs.map(o => {
+            return o.sats;
+        }).reduce((a, b) => {
+            return a + b;
+        }, 0);
+
+        result.satoshis = satoshis;
+        delete result.outputs;
+        return result;
+    });
 }
 
 function processCategoryResult(result, existing) {
@@ -517,6 +543,7 @@ function processCategoryResult(result, existing) {
         obj.address = result.address;
         obj.height = result.height;
         obj.time = result.time;
+        obj.outputs = result.outputs;
         obj.votes = 0;
 
         existing.push(obj);
@@ -574,6 +601,7 @@ function processEntryResult(result, existing) {
         obj.address = result.address;
         obj.height = result.height;
         obj.time = result.time;
+        obj.outputs = result.outputs;
         obj.votes = 0;
         existing.push(obj);
 
@@ -610,6 +638,7 @@ function processVoteResult(result, existing) {
     const obj = findObjectByTX(result.action_id, existing);
     if (obj) {
         obj.votes += 1;
+        obj.outputs = obj.outputs.concat(result.outputs);
     } else {
         console.log("couldn't find object for vote", obj, result);
     }

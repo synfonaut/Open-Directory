@@ -2,7 +2,7 @@ function getLatestUpdate() {
     return new Promise((resolve, reject) => {
         getUpdates().then(updates => {
             if (updates.length > 0) {
-                resolve(updates[0]);
+                resolve(updates[updates.length-1]);
             } else {
                 reject("Error while fetching latest updates");
             }

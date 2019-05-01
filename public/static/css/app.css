@@ -524,6 +524,11 @@ form {
     color: #999;
 }
 
+#changelog .satoshis {
+    padding: 4px;
+    color: #999;
+}
+
 #changelog .time {
     word-break: none;
     white-space: nowrap;
