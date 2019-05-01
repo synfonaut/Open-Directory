@@ -188,12 +188,7 @@ class OpenDirectoryApp extends React.Component {
                           </div>
 
                           {(shouldShowAddNewEntryForm || shouldShowAddNewCategoryForm) && <hr />}
-                          {changelog && 
-                              <div className="row">
-                                  <div className="column">
-                                    <ChangeLog items={changelog} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
-                                  </div>
-                              </div>}
+                            <ChangeLog items={changelog} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
                           <div className="row">
                               <div className="column">
                                   <p align="center">built by <a href="https://twitter.com/synfonaut">@synfonaut</a></p>

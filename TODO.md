@@ -2,6 +2,7 @@
 
 bug: entries is showing wrong number
 * category should have custom tip amount
+* sort by satoshis (default?)
 
 
 * fix minor bugs

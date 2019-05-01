@@ -7,7 +7,6 @@ class ChangeLog extends React.Component {
         this.state = {
             "isExpanded": false,
             "isShowAll": false,
-            "changelog": props.items.reverse(),
         };
     }
 
@@ -15,7 +14,6 @@ class ChangeLog extends React.Component {
     handleToggleExpand(e) {
         this.setState({
             "isExpanded": !this.state.isExpanded,
-            "isShowAll": !this.state.isShowAll
         });
     }
 
@@ -30,29 +28,31 @@ class ChangeLog extends React.Component {
         var idx = 0;
         const max = 5;
 
-        if (this.props.items.length == 0) {
-            return null;
-        }
+        const items = (this.props.items ? this.props.items.slice(0).reverse() : []);
 
-        return (
-            <div id="changelog">
-                <h3>Changelog</h3>
-                <table>
-                    <tbody>
-                    {this.state.changelog.map(i => {
-                        if ((idx++ <= max) || this.state.isShowAll) {
-                            return <ChangeLogItem item={i} key={"changelog-" + i.txid} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} isExpanded={this.state.isExpanded} />;
-                        }
-                    })}
-                    </tbody>
-                    {(!this.state.isShowingWarning && this.props.items.length > max) && <tbody><tr>
-                        <td colSpan="5" className="expand">
-                            <a onClick={this.handleToggleShowAll.bind(this)}>{this.state.isShowAll ? "Hide" : "Show"} all {this.props.items.length} changes from changelog</a>
-                            &nbsp;<a onClick={this.handleToggleExpand.bind(this)}>expanded</a>
-                        </td>
-                     </tr></tbody>}
-                </table>
-            </div>
+        return (items && 
+                  <div className="row">
+                      <div className="column">
+                        <div id="changelog">
+                            <h3>Changelog</h3>
+                            <table>
+                                <tbody>
+                                {items.map(i => {
+                                    if ((idx++ <= max) || this.state.isShowAll) {
+                                        return <ChangeLogItem item={i} key={"changelog-" + i.txid} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} isExpanded={this.state.isExpanded} />;
+                                    }
+                                })}
+                                </tbody>
+                                {(!this.state.isShowingWarning && items.length > max) && <tbody><tr>
+                                    <td colSpan="5" className="expand">
+                                        <a onClick={this.handleToggleShowAll.bind(this)}>{this.state.isShowAll ? "Hide" : "Show"} all {items.length} changes from changelog</a>
+                                        &nbsp;<a onClick={this.handleToggleExpand.bind(this)}>expanded</a>
+                                    </td>
+                                 </tr></tbody>}
+                            </table>
+                        </div>
+                      </div>
+                  </div>
         )
     }
 
@@ -65,7 +65,7 @@ class ChangeLogItem extends React.Component {
         super(props);
         this.state = {
             isShowingWarning: false,
-            isExpanded: props.isExpanded,
+            isExpanded: false,
         };
     }
 

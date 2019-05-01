@@ -212,8 +212,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                     }
                 },
 
-
-                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children", "maxDepth": 3 } },
+                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children", "maxDepth": 5 } },
                 { "$project": { "unconfirmed_children": "$unconfirmed_children", "object": ["$$ROOT"], } },
                 { "$project": { "object.unconfirmed_children": 0, } },
                 { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_children", ] } } },
@@ -225,7 +224,8 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
-                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children", "maxDepth": 3 } },
+
+                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children", "maxDepth": 5 } },
                 { "$project": { "confirmed_children": "$confirmed_children", "object": ["$$ROOT"], } },
                 { "$project": { "object.confirmed_children": 0, } },
                 { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_children", ] } } },
