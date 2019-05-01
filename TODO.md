@@ -1,5 +1,7 @@
 ## TODO
 
+* no outputs should have 0
+
 * changelog doesn't show categories that have been deleted (at least on home page)
 
 * have a chain of tips where everyone in the chain gets a % of the tip (condense tips)

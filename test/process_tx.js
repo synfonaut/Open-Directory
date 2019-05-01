@@ -213,49 +213,60 @@ describe("tipchain split", function() {
 
     it('tipchain payment for one address', function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS];
-        const payments = helpers.calculateTipPayment(tipchain, 50000);
-        assert.deepEqual(payments, [ { address: "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", value: 50000 } ]);
+        const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
+        assert.deepEqual(payments, [ { address: "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", value: 50000, currency: "BSV" } ]);
         assert.equal(payments.map(p => { return p.value }).reduce((a, b) => { return a+b }), 50000);
     });
 
     it('tipchain payment for two address', function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B"];
-        const payments = helpers.calculateTipPayment(tipchain, 50000);
+        const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
         assert.deepEqual(payments, [
-            { address: helpers.OPENDIR_TIP_ADDRESS, value: 16667 },
-            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 33333 },
+            { address: helpers.OPENDIR_TIP_ADDRESS, value: 16666.67, currency: "BSV" },
+            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 33333.33, currency: "BSV" },
         ]);
         assert.equal(payments.map(p => { return p.value }).reduce((a, b) => { return a+b }), 50000);
     });
 
     it('tipchain payment for three address', function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A"];
-        const payments = helpers.calculateTipPayment(tipchain, 50000);
+        const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
         assert.deepEqual(payments, [
-            { address: helpers.OPENDIR_TIP_ADDRESS, value: 7143 },
-            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 14286 },
-            { address: "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", value: 28571 },
+            { address: helpers.OPENDIR_TIP_ADDRESS, value: 7142.86, currency: "BSV" },
+            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 14285.71, currency: "BSV" },
+            { address: "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", value: 28571.43, currency: "BSV" },
         ]);
         assert.equal(payments.map(p => { return p.value }).reduce((a, b) => { return a+b }), 50000);
     });
 
     it('tipchain payment for four address', function() {
         const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp"];
-        const payments = helpers.calculateTipPayment(tipchain, 50000);
+        const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
         assert.deepEqual(payments, [
-            { address: helpers.OPENDIR_TIP_ADDRESS, value: 3333 },
-            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 6667 },
-            { address: "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", value: 13333 },
-            { address: "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp", value: 26667 },
+            { address: helpers.OPENDIR_TIP_ADDRESS, value: 3333.33, currency: "BSV" },
+            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 6666.67, currency: "BSV" },
+            { address: "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", value: 13333.33, currency: "BSV" },
+            { address: "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp", value: 26666.67, currency: "BSV" },
         ]);
         assert.equal(payments.map(p => { return p.value }).reduce((a, b) => { return a+b }), 50000);
     });
 
     it('tipchain works for very large chains', function() {
         const tipchain = Array(15).fill(helpers.OPENDIR_TIP_ADDRESS);
-        const payments = helpers.calculateTipPayment(tipchain, 50000);
+        const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
         assert.equal(tipchain.length, payments.length);
         assert.equal(payments.map(p => { return p.value }).reduce((a, b) => { return a+b }), 50000);
     });
+
+    it('tipchain payment for two address (usd)', function() {
+        const tipchain = [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B"];
+        const payments = helpers.calculateTipPayment(tipchain, 1, "USD");
+        assert.deepEqual(payments, [
+            { address: helpers.OPENDIR_TIP_ADDRESS, value: 0.33, currency: "USD" },
+            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 0.67, currency: "USD" },
+        ]);
+        assert.equal(payments.map(p => { return p.value }).reduce((a, b) => { return a+b }), 1);
+    });
+
 });
 

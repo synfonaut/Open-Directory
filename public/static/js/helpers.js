@@ -7,7 +7,8 @@ if (isNode) {
     markdownit = require("markdown-it");
 }
 
-const OPENDIR_TIP_AMOUNT = 0.05;
+const OPENDIR_TIP_AMOUNT = 0.25;
+const OPENDIR_TIP_CURRENCY = "USD";
 const OPENDIR_TIP_ADDRESS = "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL";
 const OPENDIR_PROTOCOL = "1dirxA5oET8EmcdW4saKXzPqejmMXQwg2";
 const OPENDIR_ACTIONS = [
@@ -44,10 +45,15 @@ function calculateTipchainSplits(tipchain) {
     return splits;
 }
 
-function calculateTipPayment(tipchain, amount) {
+function calculateTipPayment(tipchain, amount, currency) {
 
     if (!amount) {
         console.log("error while calculating tip payment, invalid amount");
+        return null;
+    }
+
+    if (!currency) {
+        console.log("error while calculating tip payment, invalid currency");
         return null;
     }
 
@@ -62,10 +68,11 @@ function calculateTipPayment(tipchain, amount) {
     for (var i = 0; i < tipchain.length; i++) {
         const tip_address = tipchain[i];
         const weight = weights[i];
-        const tip_amount = Math.round(weight * amount);
+        const tip_amount = Math.round((weight * amount) * 100, 2) / 100;
         tips.push({
             address: tip_address,
             value: tip_amount,
+            currency: currency
         });
     }
 
@@ -622,9 +629,6 @@ function findObjectByTX(txid, results=[]) {
     return null;
 }
 
-
-
-
 if (typeof window == "undefined") {
     module.exports = {
         "fetch_from_network": fetch_from_network,
@@ -633,6 +637,7 @@ if (typeof window == "undefined") {
         "calculateTipPayment": calculateTipPayment,
         "OPENDIR_TIP_ADDRESS": OPENDIR_TIP_ADDRESS,
         "OPENDIR_TIP_AMOUNT": OPENDIR_TIP_AMOUNT,
+        "OPENDIR_TIP_CURRENCY": OPENDIR_TIP_CURRENCY,
         "OPENDIR_PROTOCOL": OPENDIR_PROTOCOL,
         "OPENDIR_ACTIONS": OPENDIR_ACTIONS,
     };

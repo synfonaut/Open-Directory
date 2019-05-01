@@ -68,29 +68,19 @@ class EntryItem extends React.Component {
             }
         }
 
+        const payments = calculateTipPayment(tipchain, OPENDIR_TIP_AMOUNT, OPENDIR_TIP_CURRENCY);
         console.log("tipchain", tipchain);
-
-        const weights = calculateTipchainSplits(tipchain);
-        const amounts = weights.map(w => {
-            return w * OPENDIR_TIP_AMOUNT;
-        });
-
-        console.log("weights", weights);
-        console.log("amounts", amounts);
-
-        console.log("VOTE FOR", this.props.item);
+        console.log("PAYMENTS", payments);
 
         const button = document.getElementById(this.props.item.txid).querySelector(".entry-tip-money-button");
         databutton.build({
             data: OP_RETURN,
             button: {
                 $el: button,
-                /*$pay: {
-                    to: [{
-                        address: OPENDIR_PROTOCOL,
-                        value: 50000,
-                    }]
-                },*/
+                label: "upvote",
+                $pay: {
+                    to: payments,
+                },
                 onPayment: (msg) => {
                     console.log(msg);
                     setTimeout(() => {
