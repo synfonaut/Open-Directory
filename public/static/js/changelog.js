@@ -117,10 +117,10 @@ class ChangeLogItem extends React.Component {
                         <td className="address">{this.props.item.address}</td>
                     </tr>
                     {this.state.isExpanded && <tr>
-                        <td className="data" colSpan="3"><pre><code>{JSON.stringify(this.props.item.data, null, 4)}</code></pre></td>
+                        <td className="data" colSpan="4"><pre><code>{JSON.stringify(this.props.item.data, null, 4)}</code></pre></td>
                         </tr>}
                     {this.state.isExpanded && <tr>
-                            <td className="undo" colSpan="3" id={"changelog-action-" + this.props.item.txid}>
+                            <td className="undo" colSpan="4" id={"changelog-action-" + this.props.item.txid}>
                             <a href={"https://whatsonchain.com/tx/" + this.props.item.txid}>{this.props.item.txid}</a>&nbsp;
                         <a onClick={this.handleUndo.bind(this)}>undo</a>
                             {this.state.isShowingWarning && <div className="notice"><span className="warning">You are undoing this change, are you sure you want to do this?</span><div className="explain"><p>If you undo this change, you'll be permanently undoing it in this directory for everyone else. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently undo this change?</strong></p><div className="undo-money-button"></div> </div></div>}

@@ -82,6 +82,20 @@ Open Directory protocols have two primary forms, creating new items (categories 
     vote
     <txid>
 
+### Undo
+
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    undo
+    <txid>
+
+### Forking (proposed)
+
+    # fork
+    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    fork
+    <category_txid>
+
+
 ### Moderation (proposed)
 
 There are three kinds of moderation
@@ -175,25 +189,6 @@ Step 5. Delete a moderator
     <publickey>
 
 TODO: Does this solve moderation in a way that can be used with AIP?
-
-### Forking (proposed)
-
-    # fork
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    fork
-    <category_txid>
-
-### Undo (proposed)
-
-    # undo 
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    undo
-    <txid>
-
-    # undoing an undo is a no-op, but you can re-do an undo
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    redo
-    <undo_txid>
 
 ## About
 

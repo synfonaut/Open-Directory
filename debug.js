@@ -2,7 +2,7 @@ const helpers = require("./public/static/js/helpers.js");
 
 var category_id;
 category_id = null;
-//category_id = "aa5b6ead99b7ed4a6debbb606d82992917b6a9378d1608d7885c466cbd3dfee8";
+category_id = "8a1cb246c9710554891478c0afaeeba1fb1e99ea0904315578694cf04f6ba01b";
 helpers.fetch_from_network(category_id).then(rows => {
     console.log("found " + rows.length + " total rows");
 
