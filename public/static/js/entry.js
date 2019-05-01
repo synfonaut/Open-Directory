@@ -1,3 +1,4 @@
+
 class EntryItem extends React.Component {
 
     constructor(props) {

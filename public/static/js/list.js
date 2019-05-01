@@ -66,8 +66,6 @@ class List extends React.Component {
         const categories = this.getCategories();
         const entries = this.getEntries();
 
-        console.log("CATS", categories);
-
         var slice = entries.slice(this.state.cursor, this.state.cursor + this.state.limit);
 
         var numPages = Math.ceil(entries.length / this.state.limit);

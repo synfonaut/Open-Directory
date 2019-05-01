@@ -7,6 +7,7 @@ if (isNode) {
     markdownit = require("markdown-it");
 }
 
+const OPENDIR_TIP_ADDRESS = "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL";
 const OPENDIR_PROTOCOL = "1dirxA5oET8EmcdW4saKXzPqejmMXQwg2";
 const OPENDIR_ACTIONS = [
     "category.create",
@@ -414,7 +415,7 @@ function processCategoryResult(result, existing) {
             obj.rendered_description = markdown.renderInline(obj.description);
         }
 
-        var tipchain = [result.address];
+        var tipchain = [OPENDIR_TIP_ADDRESS, result.address];
         if (result.action_id) {
             obj.category = result.action_id;
 
@@ -445,8 +446,7 @@ function processCategoryResult(result, existing) {
                 }
             }
         } else {
-            // TODO: re-enable
-            //console.log("couldn't find category for update", obj, result, existing);
+            console.log("couldn't find category for update", obj, result, existing);
         }
     } else if (result.action == "delete") {
         const obj = findObjectByTX(result.action_id, existing);
@@ -471,7 +471,7 @@ function processEntryResult(result, existing) {
             obj.rendered_description = markdown.renderInline(obj.description);
         }
 
-        var tipchain = [result.address];
+        var tipchain = [OPENDIR_TIP_ADDRESS, result.address];
         if (result.action_id) {
             obj.category = result.action_id;
 
@@ -524,8 +524,7 @@ function processVoteResult(result, existing) {
     if (obj) {
         obj.votes += 1;
     } else {
-        // TODO: re-enable
-        //console.log("couldn't find object for vote", obj, result);
+        console.log("couldn't find object for vote", obj, result);
     }
     return existing;
 }
@@ -585,7 +584,10 @@ function findObjectByTX(txid, results=[]) {
 
 if (typeof window == "undefined") {
     module.exports = {
-        fetch_from_network: fetch_from_network,
-        processResults: processResults
+        "fetch_from_network": fetch_from_network,
+        "processResults": processResults,
+        "OPENDIR_TIP_ADDRESS": OPENDIR_TIP_ADDRESS,
+        "OPENDIR_PROTOCOL": OPENDIR_PROTOCOL,
+        "OPENDIR_ACTIONS": OPENDIR_ACTIONS,
     };
 }
