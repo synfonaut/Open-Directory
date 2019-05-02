@@ -109,8 +109,8 @@ function processOpenDirectoryTransaction(result) {
         return null;
     }
 
-    if (opendir_action == "vote") {
-        item_type = item_action = "vote";
+    if (opendir_action == "vote" || opendir_action == "undo") {
+        item_type = item_action = opendir_action;
     } else {
         [item_type, item_action] = opendir_action.split(".");
     }
@@ -429,30 +429,66 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
 
 function processUndos(results) {
 
-    const reversed_undos = results.filter(r => { return r.type == "undo" }).reverse();
-    var undos = new Map();
-    for (const result of reversed_undos) {
-        undos[result.txid] = result.action_id;
-    }
+    var roots = new Map(results.filter(r => { return r.type != "undo" }).map(r => { return [r.txid, r] }));
+    var undos = results.filter(r => { return r.type == "undo" });
 
-    // pop off undos one at a time
-    // better way to do this? need to undo undo undo undo..
-    while (vals = Object.values(undos)) {
-        var deleting = false;
-        for (const txid of vals) {
-            if (undos[txid]) {
-                delete undos[txid];
-                deleting = true;
-                break;
+    while (roots.size != results.length) {
+        for (const root of roots.values()) {
+            for (const undo of undos) {
+                if (undo.action_id == root.txid && !roots[undo.txid]) {
+                    roots.set(undo.txid, undo);
+                }
             }
         }
+    }
 
-        if (!deleting) {
-            break;
+    const reversed = Array.from(roots.values()).slice(0).reverse();
+    const undos_txids = {};
+
+    for (const result of reversed) {
+        if (result.type == "undo") {
+            if (!undos_txids[result.txid]) {
+                undos_txids[result.action_id] = result.txid;
+            }
         }
     }
 
-    return Object.values(undos);
+    return Object.keys(undos_txids);
+
+    /*
+    var undos = new Map();
+    for (const result of results) {
+        if (result.type == "undo") {
+            undos[result.txid] = result.action_id;
+        }
+    }
+
+    const reversed_undos = new Map(Object.entries(undos).reverse());
+
+    for (const undo of reversed_undos) {
+        const [undo_txid, action_id] = undo;
+        if (undos[action_id]) {
+            delete undos[action_id];
+            //delete undos[undo_txid];
+        }
+        console.log("-", undo_txid, action_id);
+    }
+    return [];
+
+    const undo_txids = Object.values(undos);
+    */
+
+    /*
+    for (const result of results) {
+        if (result.type == "undo") {
+            if (undos[result.txid]) {
+                console.log("FOUND UNDO UNDO", result);
+                delete undos[result.action_id];
+            }
+        }
+    }
+    */
+
 }
 
 function processResults(results) {

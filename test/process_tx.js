@@ -94,7 +94,7 @@ describe('process open directory undo transactions', function() {
             {"height":580286,"address":"1Juvf2KaCJearuF1zFRxrnRCocmjdh3DcC","txid":"a8b337d22a91f6a2c4263ee2e3bfae6bc88a91af5ce80d217c6b9cf1a0a534a3","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"entry.update","s3":"f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d","s4":"name","s5":"New link with edit","s6":"description","s7":"Desc goes here (edit)"}},
             {"height":null,"address":"1LLzzUcjT6Gb2eW24cXSTYnQjw3EhA6Cds","txid":"8b5cc3cd1a7ddd3aae32b7e21c623c99027ff885af68a7fd5ae47062fc18dce8","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"undo","s3":"a8b337d22a91f6a2c4263ee2e3bfae6bc88a91af5ce80d217c6b9cf1a0a534a3"}},
             {"height":null,"address":"1LLzzUcjT6Gb2eW24cXSTYnQjw3EhA6Cds","txid":"7b5cc3cd1a7ddd3aae32b7e21c623c99027ff885af68a7fd5ae47062fc18dce9","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"undo","s3":"8b5cc3cd1a7ddd3aae32b7e21c623c99027ff885af68a7fd5ae47062fc18dce8"}},
-            {"height":null,"address":"1LLzzUcjT6Gb2eW24cXSTYnQjw3EhA6Cds","txid":"6b5cc3cd1a7ddd3aae32b7e21c623c99027ff885af68a7fd5ae47062fc18dce0","data":{"os1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"undo","s3":"7b5cc3cd1a7ddd3aae32b7e21c623c99027ff885af68a7fd5ae47062fc18dce9"}}
+            {"height":null,"address":"1LLzzUcjT6Gb2eW24cXSTYnQjw3EhA6Cds","txid":"6b5cc3cd1a7ddd3aae32b7e21c623c99027ff885af68a7fd5ae47062fc18dce0","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"undo","s3":"7b5cc3cd1a7ddd3aae32b7e21c623c99027ff885af68a7fd5ae47062fc18dce9"}}
         ];
 
         const results = [
@@ -102,6 +102,7 @@ describe('process open directory undo transactions', function() {
         ];
 
         const processedResults = helpers.processResults(txs);
+
         assert.equal(processedResults[0].type, "entry");
         assert.equal(processedResults[0].name, "New link");
         assert.equal(processedResults[0].link, "bit://asdf");
@@ -127,6 +128,24 @@ describe('process open directory undo transactions', function() {
         assert.equal(processedResults[0].name, "New directory");
         assert.equal(processedResults[0].description, "This is a new directory");
         assert.equal(processedResults[0].txid, "2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18");
+    });
+
+    it('converts 4x undo regression', function() {
+        const txs = readFileTXs("undo_undo_undo_undo_entry_regression.json");
+        const processedResults = helpers.processResults(txs);
+
+        assert.equal(processedResults.length, 2);
+
+        assert.equal(processedResults[0].type, "category");
+        assert.equal(processedResults[0].name, "Test Grounds");
+        assert.equal(processedResults[0].description, "Testing...");
+        assert.equal(processedResults[0].txid, "bc238d5779bbb7cb38290c54ca4ba3e5863976e4948173128ae081368807c1e3");
+
+        assert.equal(processedResults[1].type, "entry");
+        assert.equal(processedResults[1].name, "New test grounds link");
+        assert.equal(processedResults[1].link, "bit://??");
+        assert.equal(processedResults[1].description, "new test grounds link");
+        assert.equal(processedResults[1].txid, "aa505711f2acb032cc63977ad422fc3a72542483de4da412146dbe000e54e899");
     });
 
 });

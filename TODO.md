@@ -13,6 +13,8 @@ bug: entries is showing wrong number
 * if b:// link, then include them in tipchain or bit:// b link (how to verify bitcoin address?)
 
 
+* should be able to toggle all, then close individually
+
 * auto update is broken...wrong order
 * improved layout
 * readme
