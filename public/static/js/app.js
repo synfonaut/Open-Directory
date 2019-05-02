@@ -109,7 +109,10 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
-            changelog = this.state.raw[this.state.category.txid];
+            const raw = this.state.raw[this.state.category.txid];
+            if (raw) {
+                changelog = raw.filter(r => { return r.data.s1 == OPENDIR_PROTOCOL });
+            }
 
             if (!this.state.isError) {
                 body = <List items={this.state.items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
@@ -276,7 +279,8 @@ class OpenDirectoryApp extends React.Component {
                 //console.log("ROWS", rows.length);
 
                 const raw = this.state.raw;
-                raw[category_id] = rows;
+                const prepared = preprocessing(rows);
+                raw[category_id] = prepared;
 
                 const state = {
                     "raw": raw,
@@ -285,7 +289,7 @@ class OpenDirectoryApp extends React.Component {
                     "isError": false
                 };
 
-                const results = processResults(rows);
+                const results = processResults(prepared);
                 if (this.state.category && this.state.category.txid && this.state.category.needsdata) { // hacky...better way?
                     var found = false;
                     for (const result of results) {

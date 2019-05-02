@@ -170,14 +170,18 @@ form {
 
 .navigation {
     width: 100%;
-    background: #efece577;
+    /*background: #efece577;*/
+    background-image: linear-gradient(to right, #ff6384, #ff6e79, #ff7b70, #ff8769, #ff9464);
     border-bottom: 1px solid #ddd;
     padding: 11px;
-    color: #444;
+    /*color: #444;*/
+    border-bottom: 1px solid #FF6384;
+    color: white;
 }
 
 .navigation a {
     color: #666;
+    color: white;
 }
 
 .navigation-title {

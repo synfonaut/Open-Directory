@@ -7,6 +7,8 @@ if (isNode) {
     markdownit = require("markdown-it");
 }
 
+const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
+
 const OPENDIR_TIP_AMOUNT = 0.05;
 const OPENDIR_TIP_CURRENCY = "USD";
 const OPENDIR_TIP_ADDRESS = "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL";
@@ -91,7 +93,7 @@ function processOpenDirectoryTransaction(result) {
     const address = result.address;
     const height = (result.height ? result.height : Math.Infinity);
     const time = (result.time ? result.time : 0);
-    const outputs = (result.outputs ? result.outputs : []);
+    const satoshis = (result.satoshis ? result.satoshis : 0);
     var args = Object.values(result.data);
     const protocol_id = args.shift();
     const opendir_action = args.shift();
@@ -100,10 +102,17 @@ function processOpenDirectoryTransaction(result) {
         console.log("Error while processing open directory transaction: no txid", result);
         return null;
     }
+
     if (protocol_id !== OPENDIR_PROTOCOL) {
-        console.log("Error while processing open directory transaction: invalid protocol", result);
-        return null;
+        return {
+            txid: result.txid,
+            address: result.address,
+            height: height,
+            time: time,
+            type: "other",
+        };
     }
+
     if (OPENDIR_ACTIONS.indexOf(opendir_action) == -1) {
         console.log("Error while processing open directory transaction: invalid action", result);
         return null;
@@ -117,12 +126,13 @@ function processOpenDirectoryTransaction(result) {
 
     var obj = {
         type: item_type,
+        type: item_type,
         action: item_action,
         txid: txid,
         address: address,
         height: height,
         time: time,
-        outputs: outputs
+        satoshis: satoshis
     };
 
     if (item_type == "category") {
@@ -164,6 +174,29 @@ function processOpenDirectoryTransaction(result) {
 
 
     return obj;
+}
+
+function convertOutputs(results) {
+
+    const address_space = results.map(r => { return r.address });
+
+    return results.map(r => {
+        const satoshis = r.outputs.filter(r => {
+                return address_space.indexOf(r.address) != -1;
+            }).map(o => {
+                return o.sats;
+            }).reduce((a, b) => {
+                return a + b;
+            }, 0);
+
+        r.satoshis = satoshis;
+        delete r["outputs"];
+        return r;
+    });
+}
+
+function preprocessing(results) {
+    return convertOutputs(results);
 }
 
 function convertKeyValues(orig_args) {
@@ -250,6 +283,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
+                // unconfirmed parent
                 { "$graphLookup": { "from": "u", "startWith": "$out.s3", "connectFromField": "out.s3", "connectToField": "tx.h", "as": "unconfirmed_parent" } },
                 { "$project": { "unconfirmed_parent": "$unconfirmed_parent", "object": ["$$ROOT"], } },
                 { "$project": { "object.unconfirmed_parent": 0, } },
@@ -262,11 +296,48 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
-                // dedupe
+                // TODO for Planaria version: Brittle—not guaranteed link will always be s7
+                {
+                    "$addFields": {
+                        "b_txid": {
+                            "$arrayElemAt": [
+                                {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "bit://19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut/" ]}, 1 
+                            ]
+                        }
+                    }
+                },
+
+                // confirmed b:// media
+                { "$lookup": { "from": "c", "localField": "b_txid", "foreignField": "tx.h", "as": "confirmed_bmediatx" } },
+                { "$project": { "confirmed_bmediatx": "$confirmed_bmediatx", "object": ["$$ROOT"], } },
+                { "$project": { "object.confirmed_bmediatx": 0, } },
+                { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_bmediatx", ] } } },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$replaceRoot": { "newRoot": "$items" } },
+                { "$project": { "_id": 0, } },
+                { "$addFields": { "_id": "$tx.h", } },
                 { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
+                // unconfirmed b:// media
+                { "$lookup": { "from": "c", "localField": "b_txid", "foreignField": "tx.h", "as": "unconfirmed_bmediatx" } },
+                { "$project": { "unconfirmed_bmediatx": "$unconfirmed_bmediatx", "object": ["$$ROOT"], } },
+                { "$project": { "object.unconfirmed_bmediatx": 0, } },
+                { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_bmediatx", ] } } },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$replaceRoot": { "newRoot": "$items" } },
+                { "$project": { "_id": 0, } },
+                { "$addFields": { "_id": "$tx.h", } },
+                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$replaceRoot": { "newRoot": "$items" } },
+
+
+                // dedupe
+                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$replaceRoot": { "newRoot": "$items" } },
 
                 { "$skip": cursor },
             ]
@@ -454,106 +525,50 @@ function processUndos(results) {
     }
 
     return Object.keys(undos_txids);
-
-    /*
-    var undos = new Map();
-    for (const result of results) {
-        if (result.type == "undo") {
-            undos[result.txid] = result.action_id;
-        }
-    }
-
-    const reversed_undos = new Map(Object.entries(undos).reverse());
-
-    for (const undo of reversed_undos) {
-        const [undo_txid, action_id] = undo;
-        if (undos[action_id]) {
-            delete undos[action_id];
-            //delete undos[undo_txid];
-        }
-        console.log("-", undo_txid, action_id);
-    }
-    return [];
-
-    const undo_txids = Object.values(undos);
-    */
-
-    /*
-    for (const result of results) {
-        if (result.type == "undo") {
-            if (undos[result.txid]) {
-                console.log("FOUND UNDO UNDO", result);
-                delete undos[result.action_id];
-            }
-        }
-    }
-    */
-
 }
 
 function processResults(results) {
     const processed = processOpenDirectoryTransactions(results);
-    var processing = []
+    var processing = [];
 
     // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
     // split out create/update/delete incase they're in the same block
 
     const undo_txids = processUndos(processed);
 
+    const txpool = processed.filter(r => { return r.type == "other" } );
+
     // category
     for (const result of processed.filter(r => { return r.type == "category" && r.action == "create" })) {
-        processing = processResult(result, processing, undo_txids)
+        processing = processResult(result, processing, txpool, undo_txids)
     }
     for (const result of processed.filter(r => { return r.type == "category" && r.action == "update" })) {
-        processing = processResult(result, processing, undo_txids)
+        processing = processResult(result, processing, txpool, undo_txids)
     }
     for (const result of processed.filter(r => { return r.type == "category" && r.action == "delete" })) {
-        processing = processResult(result, processing, undo_txids)
+        processing = processResult(result, processing, txpool, undo_txids)
     }
 
     // entry
     for (const result of processed.filter(r => { return r.type == "entry" && r.action == "create" })) {
-        processing = processResult(result, processing, undo_txids)
+        processing = processResult(result, processing, txpool, undo_txids)
     }
     for (const result of processed.filter(r => { return r.type == "entry" && r.action == "update" })) {
-        processing = processResult(result, processing, undo_txids)
+        processing = processResult(result, processing, txpool, undo_txids)
     }
     for (const result of processed.filter(r => { return r.type == "entry" && r.action == "delete" })) {
-        processing = processResult(result, processing, undo_txids)
+        processing = processResult(result, processing, txpool, undo_txids)
     }
 
     // vote
     for (const result of processed.filter(r => { return r.type == "vote" })) {
-        processing = processResult(result, processing, undo_txids)
+        processing = processResult(result, processing, txpool, undo_txids)
     }
 
-    return updateCategoryEntryCounts(processOutputs(processing));
+    return updateCategoryEntryCounts(processing);
 }
 
-function processOutputs(results) {
-    const addresses = [];
-    for (const result of results) {
-        addresses.push(result.address);
-    }
-
-    return results.map(result => {
-        const outputs = result.outputs.filter(r => {
-            return addresses.indexOf(r.address) != -1;
-        });
-
-        const satoshis = outputs.map(o => {
-            return o.sats;
-        }).reduce((a, b) => {
-            return a + b;
-        }, 0);
-
-        result.satoshis = satoshis;
-        delete result.outputs;
-        return result;
-    });
-}
-
-function processCategoryResult(result, existing) {
+function processCategoryResult(result, existing, txpool) {
     if (result.action == "create") {
         const obj = result.change;
 
@@ -579,7 +594,7 @@ function processCategoryResult(result, existing) {
         obj.address = result.address;
         obj.height = result.height;
         obj.time = result.time;
-        obj.outputs = result.outputs;
+        obj.satoshis = result.satoshis;
         obj.votes = 0;
 
         existing.push(obj);
@@ -611,7 +626,7 @@ function processCategoryResult(result, existing) {
     return existing;
 }
 
-function processEntryResult(result, existing) {
+function processEntryResult(result, existing, txpool) {
     if (result.action == "create") {
         const obj = result.change;
 
@@ -628,6 +643,17 @@ function processEntryResult(result, existing) {
             if (category && category.tipchain) {
                 tipchain = category.tipchain.concat([result.address]);
             }
+
+            const bmedia_parts = result.change.link.split("bit://" + B_MEDIA_PROTOCOL + "/");
+            if (bmedia_parts.length >= 2) {
+                const bmedia_txid = bmedia_parts[1];
+                if (bmedia_txid.length == 64) {
+                    const bmedia = findObjectByTX(bmedia_txid, txpool);
+                    if (bmedia && bmedia.address) {
+                        tipchain.push(bmedia.address);
+                    }
+                }
+            }
         }
 
         obj.tipchain = tipchain;
@@ -637,8 +663,9 @@ function processEntryResult(result, existing) {
         obj.address = result.address;
         obj.height = result.height;
         obj.time = result.time;
-        obj.outputs = result.outputs;
+        obj.satoshis = result.satoshis;
         obj.votes = 0;
+
         existing.push(obj);
 
     } else if (result.action == "update") {
@@ -670,29 +697,29 @@ function processEntryResult(result, existing) {
     return existing;
 }
 
-function processVoteResult(result, existing) {
+function processVoteResult(result, existing, txpool) {
     const obj = findObjectByTX(result.action_id, existing);
     if (obj) {
         obj.votes += 1;
-        obj.outputs = obj.outputs.concat(result.outputs);
+        obj.satoshis += result.satoshis;
     } else {
         console.log("couldn't find object for vote", obj, result);
     }
     return existing;
 }
 
-function processResult(result, existing, undo) {
+function processResult(result, existing, txpool, undo) {
     if (undo.indexOf(result.txid) !== -1) {
         return existing;
     }
 
     switch (result.type) {
         case "category":
-            return processCategoryResult(result, existing, undo);
+            return processCategoryResult(result, existing, txpool, undo);
         case "entry":
-            return processEntryResult(result, existing, undo);
+            return processEntryResult(result, existing, txpool, undo);
         case "vote":
-            return processVoteResult(result, existing, undo);
+            return processVoteResult(result, existing, txpool, undo);
         default:
             console.log("error processing result", result);
             return existing;

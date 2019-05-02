@@ -129,8 +129,6 @@ class EntryItem extends React.Component {
             e.preventDefault();
         }
 
-        console.log("HANDLE TIP SUBMIT");
-
         const OP_RETURN = [
             OPENDIR_PROTOCOL,
             "vote",
@@ -153,8 +151,6 @@ class EntryItem extends React.Component {
         console.log("tipchain", tipchain);
         const payments = calculateTipPayment(tipchain, amount, OPENDIR_TIP_CURRENCY);
         console.log("payments", payments);
-
-
 
         const button = document.getElementById(this.props.item.txid).querySelector(".entry-tip-money-button");
         databutton.build({

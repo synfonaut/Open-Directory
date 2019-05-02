@@ -1,14 +1,40 @@
 ## TODO
 
-bug: entries is showing wrong number
-* category should have custom tip amount
-* sort by satoshis (default?)
+* idea: can you grab b:// txids in query and join them in the graph so you can graph their addresses and include them in the tipchain?
+* idea: can you sort outputs and use tip address as "book end"?
+* bug: no changelog on about page
 
+
+// first on-chain upload should be a fork from the website
+
+
+* add links / hover information on description to give more details
+
+* expose tipchain so people know who is getting what
+
+* category should have custom tip amount
+* search
+
+* sort by satoshis (default?)
+ - sort in usd, convert bsv to usd price
 
 * fix minor bugs
 * forking
+ - main template parameters split out in HTML/JSON
+
 * design
 * launch / content / submissions
+ - on-chain app
+ - tipchain
+ - market based moderation
+ - open source
+ - forking
+ - protocol spec
+ - faq, thought process
+ - for users, surf the blockchain
+ - for contributors, earn money
+ - for developers, build on top of open directory
+ - experiments with tipping and user incentives
 
 * if b:// link, then include them in tipchain or bit:// b link (how to verify bitcoin address?)
 
@@ -24,7 +50,6 @@ bug: entries is showing wrong number
 
 * localStorage, want good defaults
 
-
 * each action should have variable tip (should each action have a specific amount?)
 * let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
 
@@ -36,6 +61,7 @@ bug: entries is showing wrong number
 * undo warning word wrap should be by word not letter
 
 * HELP: How can you figure out how much tips are in a tx without calculating funds that are being sent back
+* HELP: Is it safe to assume someone can always recover funds sent to their input utxo?
 
 * messages should float at top of screen so they scroll
 * edit form design
@@ -50,6 +76,12 @@ bug: entries is showing wrong number
 * refactor code as much as possible so it's easier to organize
 * create good examples (collab with bsvdevs, onchain games, onchain art, onchain utilities)
 * stress test server, see if aggregate is putting too much load
+
+## v0.2
+* Planaria to reduce load on client
+* Planaria use b:// to grab address from transactions
+* Planaria use Bitcoin Sticker to grab txid from websites
+
 
 ## FUTURE
 * include edits in the tipchain?
