@@ -272,8 +272,8 @@ class OpenDirectoryApp extends React.Component {
             fetch_from_network(category_id).then((rows) => {
 
 
-                console.log("ROWS", JSON.stringify(rows, null, 4));
-                console.log("ROWS", rows.length);
+                //console.log("ROWS", JSON.stringify(rows, null, 4));
+                //console.log("ROWS", rows.length);
 
                 const raw = this.state.raw;
                 raw[category_id] = rows;
@@ -302,7 +302,7 @@ class OpenDirectoryApp extends React.Component {
                     }
                 }
 
-                console.log("RESULTS", JSON.stringify(results, null, 4));
+                //console.log("RESULTS", JSON.stringify(results, null, 4));
 
                 const cache = this.state.cache;
                 cache[category_id] = results;
