@@ -573,6 +573,10 @@ form {
     border-radius: 10px;
 }
 
+.tipping strong {
+    font-weight: 600;
+}
+
 .tipping form {
     margin: 0;
 }

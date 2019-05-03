@@ -159,7 +159,8 @@ describe('tipchain', function() {
         ];
 
         const processedResults = helpers.processResults(txs);
-        assert.deepEqual(processedResults[0].tipchain, [helpers.OPENDIR_TIP_ADDRESS, "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A"]);
+        assert.equal(processedResults[0].tipchain[0].address, helpers.OPENDIR_TIP_ADDRESS);
+        assert.equal(processedResults[0].tipchain[1].address, "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A");
         assert.equal(processedResults[0].txid, "2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18");
     });
 
@@ -172,7 +173,9 @@ describe('tipchain', function() {
         ];
 
         const processedResults = helpers.processResults(txs);
-        assert.deepEqual(processedResults[1].tipchain, [helpers.OPENDIR_TIP_ADDRESS, "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp"]);
+        assert.equal(processedResults[1].tipchain[0].address, helpers.OPENDIR_TIP_ADDRESS);
+        assert.equal(processedResults[1].tipchain[1].address, "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A");
+        assert.equal(processedResults[1].tipchain[2].address, "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp");
         assert.equal(processedResults[1].txid, "f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d");
     });
 
@@ -185,7 +188,10 @@ describe('tipchain', function() {
         ];
 
         const processedResults = helpers.processResults(txs);
-        assert.deepEqual(processedResults[2].tipchain, [helpers.OPENDIR_TIP_ADDRESS, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp"]);
+        assert.equal(processedResults[2].tipchain[0].address, helpers.OPENDIR_TIP_ADDRESS);
+        assert.equal(processedResults[2].tipchain[1].address, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B");
+        assert.equal(processedResults[2].tipchain[2].address, "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A");
+        assert.equal(processedResults[2].tipchain[3].address, "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp");
         assert.equal(processedResults[2].txid, "f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d");
     });
 

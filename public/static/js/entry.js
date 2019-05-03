@@ -8,7 +8,7 @@ class EntryItem extends React.Component {
             "isDeleting": false,
             "isEditing": false,
             "isTipping": false,
-            "tip": "",
+            "tip": 0.05,
             "isShowingTipChain": false
         };
 
@@ -194,9 +194,35 @@ class EntryItem extends React.Component {
 
     render() {
 
-        const splits = calculateTipchainSplits(this.props.item.tipchain).reverse();
+        const tips = this.props.item.tipchain.slice(0).reverse();
+        const tipchain_addresses = tips.map(t => { return t.address; });
+        const splits = calculateTipchainSplits(tips).reverse();
 
-        const tipchain = this.props.item.tipchain.slice(0).reverse();
+        const tipchain = [];
+        for (var i = 0; i < tipchain_addresses.length; i++) {
+            const tip = tips[i];
+            var name = tip.name;
+            if (!name && tip.txid) {
+                const obj = findObjectByTX(tip.txid, this.props.items);
+                if (obj) {
+                    name = obj.name;
+                }
+            }
+            if (!name) {
+                name = tip.address;
+            }
+
+            const split = splits[i];
+            const tipAmount = (this.state.tip ? this.state.tip : 0);
+            const amount = tipAmount * split;
+            tipchain.push({
+                "address": tip.address,
+                "type": tip.type,
+                "split": split,
+                "amount": amount,
+                "name": name
+            });
+        }
 
         var actions = (
             <span className="actions">
@@ -205,14 +231,17 @@ class EntryItem extends React.Component {
                 {this.state.isExpanded && <a className="action" onClick={this.handleDelete.bind(this)}>delete</a>}
             </span>);
 
+        const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE);
+
         return (
             <li id={this.props.item.txid} className="entry">
                 <div className="upvoteContainer">
-                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number"><span className="symbol">$</span>{((this.props.item.satoshis / 1000000000) * BSV_PRICE).toFixed(2).toLocaleString()}</span><br /><span className="number">{this.props.item.votes}</span></div>
+                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number">{price}</span><br /><span className="number">{this.props.item.votes}</span></div>
                     <div className="entry">
                         <h5><a href={this.props.item.link}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>} {actions}</h5>
                         <p className="description">{this.props.item.description}</p>
                         <p className="url"><a href={this.props.item.link}>{this.props.item.link}</a></p>
+                        <p className="txid">{this.props.item.txid}</p>
                         {this.state.isEditing && <div className="column"><EditEntryForm item={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} onSubmit={this.collapse.bind(this)} /></div>}
                         {this.state.isDeleting && <div className="notice"><span className="warning">You are about to delete this entry, are you sure you want to do this?</span><div className="explain"><p>If you remove this link you'll be permanently removing it from this directory for others to view. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently delete this link from this directory</strong></p><div className="entry-delete-money-button"></div> </div></div>}
 
@@ -230,7 +259,23 @@ class EntryItem extends React.Component {
                                     <p><a onClick={this.handleClickTipchain.bind(this)}>{pluralize(tipchain.length, "address", "addresses")}</a> in this tipchain</p>
                                     {this.state.isShowingTipChain && <ul>
                                         {tipchain.map((t, i) => {
-                                            return <li key={t}>{(Number(splits[i]) * 100).toFixed(2)}% {t}</li>
+                                            const split = (Number(t.split) * 100).toFixed(2);
+                                            var amount = Number(t.amount).toFixed(2);
+                                            var symbol = "$";
+                                            if (t.amount > 0 && amount == "0.00") {
+                                                amount = Number(t.amount).toFixed(3);
+                                            }
+                                            if (t.type == "opendirectory") {
+                                                return <li key={t.address}>{symbol}{amount} to <strong>{t.name}</strong> {t.address}</li>;
+                                            } else if (t.type == "media") {
+                                                return <li key={t.address}>{symbol}{amount} to original content owner <strong>{t.address}</strong></li>;
+                                            } else if (t.type == "category") {
+                                                return <li key={t.address}>{symbol}{amount} to <strong>{t.name}</strong> category creator {t.address}</li>;
+                                            } else if (t.type == "entry") {
+                                                return <li key={t.address}>{symbol}{amount} to <strong>{t.name}</strong> entry submitter {t.address}</li>;
+                                            } else {
+                                                return <li key={t.address}>{symbol}{amount} <strong>{t.name}</strong> {t.address}</li>;
+                                            }
                                         })}
                                         <li key="desc"><a href="#about">Learn more</a></li>
                                         </ul>}

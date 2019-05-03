@@ -34,6 +34,18 @@ function toBase64(str) {
     return btoa(str);
 }
 
+function satoshisToDollars(satoshis, bitcoin_price=BSV_PRICE) {
+    var amount;
+    if (satoshis > 0) {
+        var val = ((satoshis / 100000000) * bitcoin_price).toFixed(2).toLocaleString();
+        if (val == "0.00" || val == "0.01") {
+            val = ((satoshis / 100000000) * bitcoin_price).toFixed(3).toLocaleString();
+        }
+        amount = "$" + val;
+    }
+    return amount;
+}
+
 function calculateTipchainSplits(tipchain) {
     const weights = [];
     for (var i = 1; i <= tipchain.length; i++) {
@@ -69,7 +81,7 @@ function calculateTipPayment(tipchain, amount, currency) {
 
     const tips = [];
     for (var i = 0; i < tipchain.length; i++) {
-        const tip_address = tipchain[i];
+        const tip_address = tipchain[i].address;
         const weight = weights[i];
         const tip_amount = Math.round((weight * amount) * 10000) / 10000;
 
@@ -180,22 +192,32 @@ function processOpenDirectoryTransaction(result) {
 
 function convertOutputs(results) {
     const address_space = results.map(r => { return r.address });
+    address_space.push("1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL");
     return results.map(r => { return convertOutput(r, address_space) });
 }
 
 function convertOutput(result, address_space=[]) {
-    var started = false;
+    var started = true;
     var satoshis = 0;
+    console.log("----");
+    console.log("FINDING OUTPUTS FOR", JSON.stringify(result));
+
     for (const output of result.outputs) {
         if (output.address == OPENDIR_TIP_ADDRESS) {
             started = true;
         }
-
+        if (address_space.indexOf(output.address) == -1) {
+            started = false;
+        }
         if (started) {
+            console.log("ADDING OUTPUT", output);
             satoshis += output.sats;
+        } else {
+            console.log("SKIPPING OUTPUT", output);
         }
     }
 
+    console.log("SATS = ", satoshis);
     result.satoshis = satoshis;
     delete result["outputs"];
     return result;
@@ -647,7 +669,11 @@ function processBMediaTipChainResult(result, txpool=[]) {
             if (bmedia_txid.length == 64) {
                 const bmedia = findObjectByTX(bmedia_txid, txpool);
                 if (bmedia && bmedia.address) {
-                    result.tipchain.push(bmedia.address);
+                    result.tipchain.push({
+                        "type": "media",
+                        "address": bmedia.address,
+                        "txid": bmedia.txid
+                    });
                     break;
                 }
             }
@@ -667,13 +693,19 @@ function processCategoryResult(result, existing, txpool) {
             obj.rendered_description = markdown.renderInline(obj.description);
         }
 
-        var tipchain = [OPENDIR_TIP_ADDRESS, result.address];
+        const result_tip = {"address": result.address, txid: result.txid, "type": "category"};
+
+        var tipchain = [
+            {"address": OPENDIR_TIP_ADDRESS, "name": "Open Directory", "type": "opendirectory"},
+            result_tip,
+        ];
+
         if (result.action_id) {
             obj.category = result.action_id;
 
             const category = findObjectByTX(obj.category, existing);
             if (category && category.tipchain) {
-                tipchain = category.tipchain.concat([result.address]);
+                tipchain = category.tipchain.concat([result_tip]);
             }
         }
 
@@ -725,13 +757,18 @@ function processEntryResult(result, existing, txpool) {
             obj.rendered_description = markdown.renderInline(obj.description);
         }
 
-        var tipchain = [OPENDIR_TIP_ADDRESS, result.address];
+        const result_tip = {address: result.address, txid: result.txid, type: "entry"};
+        var tipchain = [
+            {"address": OPENDIR_TIP_ADDRESS, "name": "Open Directory"},
+            result_tip,
+        ];
+
         if (result.action_id) {
             obj.category = result.action_id;
 
             const category = findObjectByTX(obj.category, existing);
             if (category && category.tipchain) {
-                tipchain = category.tipchain.concat([result.address]);
+                tipchain = category.tipchain.concat([result_tip]);
             }
         }
 

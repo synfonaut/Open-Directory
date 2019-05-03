@@ -125,10 +125,7 @@ class ChangeLogItem extends React.Component {
     render() {
         const timestamp = (new Date()).getTime();
 
-        var amount;
-        if (this.props.item.satoshis > 0) {
-            amount = "$" + ((this.props.item.satoshis / 1000000000) * BSV_PRICE).toFixed(2).toLocaleString();
-        }
+        var amount = satoshisToDollars(this.props.item.satoshis, BSV_PRICE);
 
         return (<React.Fragment>
                     <tr>
@@ -139,8 +136,6 @@ class ChangeLogItem extends React.Component {
                         <td className="action">{this.props.item.data.s2}</td>
                         <td className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</td>
                         <td className="amount">{amount}</td>
-
-                        <td className="address">{this.props.item.address}</td>
                     </tr>
                     {(this.props.isExpanded || this.state.isExpanded) && <tr>
                         <td className="data" colSpan="5"><pre><code>{JSON.stringify(this.props.item.data, null, 4)}</code></pre></td>

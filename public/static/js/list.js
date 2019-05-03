@@ -120,7 +120,7 @@ class List extends React.Component {
 
                     <ul className="entry list">
                         {slice.map(entry => (
-                            <EntryItem key={"entry-" + entry.txid} item={entry} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />
+                            <EntryItem key={"entry-" + entry.txid} item={entry} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />
                         ))}
                     </ul>
                     {pages.length > 1 && <div className="pages">{pages}</div>}

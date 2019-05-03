@@ -1,14 +1,26 @@
 ## TODO
 
+* categories should be a sum of their economic activity + entry activity below it
+ - need to sum votes in order then....sum votes to entries, votes to categories, then entries to categories
+
+* 8a1cb246c9710554891478c0afaeeba1fb1e99ea0904315578694cf04f6ba01b tip sums are wrong
+* fix satoshi -> dollar rounding
+* dynamically download bsv price (cache it? once per day don't have to do it every single download)
+* investigate why tipping isn't summing properly
+* bug where changelog with $0.0 is showing
+
 * don't download B://media outputs..don't need them
 * show more info on tipchain..what specifically is being tipped?
 * add "hot" sort, which essentially velocity, or (time * money)
+* header loader should be white
 
 * is undo limited to 5 because of max depth?
 
 * oracle: push the bitcoin price once per week?
 QUESTION: MoneyButton, can I rely on order of outputs for my application. Ie. Can I add a "bookstop", before which I know the tips are related to my app (I am going to use an output anyway for my tip)
 * QUESTION: Is it safe to assume someone can always recover funds sent to their input utxo? like a random b:// input?
+
+* split out helpers into business logic
 
 favicon
 
