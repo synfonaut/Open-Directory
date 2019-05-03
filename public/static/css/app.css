@@ -356,6 +356,10 @@ form {
     animation: sk-bouncedelay 1.4s infinite ease-in-out both;
 }
 
+.spinner.white > div {
+    background-color: #ffffffcc;
+}
+
 .loading .spinner {
     margin: 7px 0;
 }

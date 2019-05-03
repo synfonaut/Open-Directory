@@ -100,12 +100,6 @@ class EntryItem extends React.Component {
                 data: OP_RETURN,
                 button: {
                     $el: button,
-                    /*$pay: {
-                    to: [{
-                        address: OPENDIR_PROTOCOL,
-                        value: 50000,
-                    }]
-                },*/
                     onPayment: (msg) => {
                         console.log(msg);
                         setTimeout(() => {
@@ -147,11 +141,7 @@ class EntryItem extends React.Component {
             }
         }
 
-        var amount = OPENDIR_TIP_AMOUNT;
-        const tip = this.state.tip;
-        if (this.state.tip > 0) {
-            amount = this.state.tip;
-        }
+        const amount = Number(this.state.tip);
 
         console.log("tipchain", tipchain);
         const payments = calculateTipPayment(tipchain, amount, OPENDIR_TIP_CURRENCY);
@@ -194,35 +184,7 @@ class EntryItem extends React.Component {
 
     render() {
 
-        const tips = this.props.item.tipchain.slice(0).reverse();
-        const tipchain_addresses = tips.map(t => { return t.address; });
-        const splits = calculateTipchainSplits(tips).reverse();
-
-        const tipchain = [];
-        for (var i = 0; i < tipchain_addresses.length; i++) {
-            const tip = tips[i];
-            var name = tip.name;
-            if (!name && tip.txid) {
-                const obj = findObjectByTX(tip.txid, this.props.items);
-                if (obj) {
-                    name = obj.name;
-                }
-            }
-            if (!name) {
-                name = tip.address;
-            }
-
-            const split = splits[i];
-            const tipAmount = (this.state.tip ? this.state.tip : 0);
-            const amount = tipAmount * split;
-            tipchain.push({
-                "address": tip.address,
-                "type": tip.type,
-                "split": split,
-                "amount": amount,
-                "name": name
-            });
-        }
+        const tipchain = expandTipchainInformation(this.props.item.tipchain, this.state.tip, this.props.items);
 
         var actions = (
             <span className="actions">
@@ -231,7 +193,7 @@ class EntryItem extends React.Component {
                 {this.state.isExpanded && <a className="action" onClick={this.handleDelete.bind(this)}>delete</a>}
             </span>);
 
-        const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE);
+        const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE, true);
 
         return (
             <li id={this.props.item.txid} className="entry">

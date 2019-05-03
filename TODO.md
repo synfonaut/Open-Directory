@@ -1,5 +1,8 @@
 ## TODO
 
+* add category amounts
+* sort by HOT
+
 * categories should be a sum of their economic activity + entry activity below it
  - need to sum votes in order then....sum votes to entries, votes to categories, then entries to categories
 
@@ -15,6 +18,7 @@
 * header loader should be white
 
 * is undo limited to 5 because of max depth?
+* about, link back to data providers for bitcoin price
 
 * oracle: push the bitcoin price once per week?
 QUESTION: MoneyButton, can I rely on order of outputs for my application. Ie. Can I add a "bookstop", before which I know the tips are related to my app (I am going to use an output anyway for my tip)
@@ -112,6 +116,7 @@ should $0.00 just be 0?
 * Use Planaria to grab Bitcoin Stickers from websites for tipchaining C:// and other protocols
 * Moderation tools
 * Statistics (money, categories, links, votes)
+* Custom currency support
 
 ## FUTURE
 * AIP to sign data by author

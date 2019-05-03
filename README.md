@@ -190,6 +190,19 @@ Step 5. Delete a moderator
 
 TODO: Does this solve moderation in a way that can be used with AIP?
 
+## Plan for v0.2
+
+The plan for the next version of Open Directory introduces two new experiments
+
+1. Add moderation controls described above (likely need identity support in MoneyButton/Bottle)
+2. Experiment with economic-based rules for moderation
+
+
+For the second one, if a link has $100 invested in it, should you be able to delete it for $0.01?
+
+You can easily undelete it for $0.01, but if you made it $100 to delete, you may have just incentivized spam.
+
+
 ## About
 
 @synfonaut

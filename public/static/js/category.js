@@ -6,9 +6,14 @@ class CategoryItem extends React.Component {
             "isExpanded": false,
             "isDeleting": false,
             "isEditing": false,
+            "isTipping": false,
+            "tip": 0.05,
+            "isShowingTipChain": false
         };
 
         this._isMounted = false;
+        this.handleTipSubmit = this.handleTipSubmit.bind(this);
+        this.handleClickTip = this.handleClickTip.bind(this);
     }
 
     componentDidMount() {
@@ -26,6 +31,8 @@ class CategoryItem extends React.Component {
             "isExpanded": false,
             "isDeleting": false,
             "isEditing": false,
+            "isTipping": false,
+            "isShowingTipChain": false,
         });
     }
 
@@ -35,6 +42,8 @@ class CategoryItem extends React.Component {
                 "isExpanded": false,
                 "isDeleting": false,
                 "isEditing": false,
+                "isTipping": false,
+                "isShowingTipChain": false,
             });
 
             const el = document.getElementById(this.props.item.txid).querySelector(".category-tip-money-button");
@@ -50,41 +59,8 @@ class CategoryItem extends React.Component {
         }
     }
 
-    // this is the same as EntryItem above ...share code?
     handleUpvote(e) {
-        const OP_RETURN = [
-            OPENDIR_PROTOCOL,
-            "vote",
-            this.props.item.txid,
-        ];
-
-        var tipchain = this.props.item.tipchain;
-        if (!tipchain || tipchain.length == 0) {
-            if (!confirm("Tipchain is invalid, please refresh or press OK to continue anyway")) {
-                return;
-            }
-        }
-
-        console.log("tipchain", tipchain);
-        const payments = calculateTipPayment(tipchain, OPENDIR_TIP_AMOUNT, OPENDIR_TIP_CURRENCY);
-        console.log("payments", payments);
-
-        const button = document.getElementById(this.props.item.txid).querySelector(".category-tip-money-button");
-        databutton.build({
-            data: OP_RETURN,
-            button: {
-                $el: button,
-                label: "upvote",
-                $pay: { to: payments, },
-                onPayment: (msg) => {
-                    console.log(msg);
-                    setTimeout(() => {
-                        this.clearForm();
-                    }, 5000);
-                }
-            }
-        });
-        e.preventDefault();
+        this.setState({"isTipping": true});
     }
 
     handleLink(e) {
@@ -99,11 +75,13 @@ class CategoryItem extends React.Component {
             "isExpanded": !this.state.isExpanded,
             "isDeleting": false,
             "isEditing": false,
+            "isTipping": false,
+            "isShowingTipChain": false,
         });
     }
 
     handleEdit(e) {
-        this.setState({"isEditing": true, "isDeleting": false});
+        this.setState({ "isEditing": true, "isDeleting": false, "isTipping": false, "isShowingTipChain": false });
     }
 
 
@@ -111,6 +89,9 @@ class CategoryItem extends React.Component {
         this.setState({
             "isDeleting": true,
             "isEditing": false,
+            "isTipping": false,
+            "isTipping": false,
+            "isShowingTipChain": false,
         }, () => {
             const OP_RETURN = [
                 OPENDIR_PROTOCOL,
@@ -142,6 +123,69 @@ class CategoryItem extends React.Component {
             });
         });
 
+    }
+
+    handleTipSubmit(e) {
+        if (e) {
+            e.preventDefault();
+        }
+
+        const OP_RETURN = [
+            OPENDIR_PROTOCOL,
+            "vote",
+            this.props.item.txid,
+        ];
+
+        var tipchain = this.props.item.tipchain;
+        if (!tipchain || tipchain.length == 0) {
+            if (!confirm("Tipchain is invalid, please refresh or press OK to continue anyway")) {
+                return;
+            }
+        }
+
+        var amount = OPENDIR_TIP_AMOUNT;
+        const tip = this.state.tip;
+        if (this.state.tip > 0) {
+            amount = this.state.tip;
+        }
+
+        console.log("tipchain", tipchain);
+        const payments = calculateTipPayment(tipchain, amount, OPENDIR_TIP_CURRENCY);
+        console.log("payments", payments);
+
+        const button = document.getElementById(this.props.item.txid).querySelector(".category-tip-money-button");
+        databutton.build({
+            data: OP_RETURN,
+            button: {
+                $el: button,
+                label: "upvote",
+                $pay: { to: payments, },
+                onPayment: (msg) => {
+                    console.log(msg);
+                    setTimeout(() => {
+                        this.clearForm();
+                        this.props.onSuccessHandler("Successfully upvoted category, it will appear automatically—please refresh the page if it doesn't");
+                    }, 5000);
+                }
+            }
+        });
+    }
+
+    handleClickTip(e) {
+        const amt = e.currentTarget.dataset.value;
+        if (amt > 0) {
+            this.setState({"tip": amt}, () => {
+                this.handleTipSubmit();
+            });
+        }
+    }
+
+    handleChangeTip(e) {  
+        this.setState({"tip": e.target.value});
+    }
+
+    handleClickTipchain(e) {  
+        this.setState({"isShowingTipChain": !this.state.isShowingTipChain});
     }
 
     render() {

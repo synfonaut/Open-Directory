@@ -7,7 +7,7 @@ if (isNode) {
     markdownit = require("markdown-it");
 }
 
-const BSV_PRICE = 54.00;
+var BSV_PRICE = 30.00;
 const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
 const BCAT_MEDIA_PROTOCOL = "15DHFxWZJT58f9nhyGnsRBqrgwK4W6h4Up";
 
@@ -34,16 +34,19 @@ function toBase64(str) {
     return btoa(str);
 }
 
-function satoshisToDollars(satoshis, bitcoin_price=BSV_PRICE) {
-    var amount;
+function satoshisToDollars(satoshis, bitcoin_price=BSV_PRICE, show_zero=false) {
     if (satoshis > 0) {
-        var val = ((satoshis / 100000000) * bitcoin_price).toFixed(2).toLocaleString();
+        var val = ((satoshis / 100000000.0) * bitcoin_price).toLocaleString(undefined, {'minimumFractionDigits':2, 'maximumFractionDigits':2});
+
         if (val == "0.00" || val == "0.01") {
-            val = ((satoshis / 100000000) * bitcoin_price).toFixed(3).toLocaleString();
+            val = ((satoshis / 100000000.0) * bitcoin_price).toLocaleString(undefined, {'minimumFractionDigits':3, 'maximumFractionDigits':3});
         }
-        amount = "$" + val;
+        return "$" + val;
+    } else {
+        if (show_zero) {
+            return "$0.00";
+        }
     }
-    return amount;
 }
 
 function calculateTipchainSplits(tipchain) {
@@ -78,10 +81,9 @@ function calculateTipPayment(tipchain, amount, currency) {
         return null;
     }
 
-
     const tips = [];
     for (var i = 0; i < tipchain.length; i++) {
-        const tip_address = tipchain[i].address;
+        const tip_address = (typeof tipchain[i] == "object" ? tipchain[i].address : tipchain[i]);
         const weight = weights[i];
         const tip_amount = Math.round((weight * amount) * 10000) / 10000;
 
@@ -199,25 +201,20 @@ function convertOutputs(results) {
 function convertOutput(result, address_space=[]) {
     var started = true;
     var satoshis = 0;
-    console.log("----");
-    console.log("FINDING OUTPUTS FOR", JSON.stringify(result));
 
     for (const output of result.outputs) {
         if (output.address == OPENDIR_TIP_ADDRESS) {
             started = true;
         }
+
         if (address_space.indexOf(output.address) == -1) {
             started = false;
         }
         if (started) {
-            console.log("ADDING OUTPUT", output);
             satoshis += output.sats;
-        } else {
-            console.log("SKIPPING OUTPUT", output);
         }
     }
 
-    console.log("SATS = ", satoshis);
     result.satoshis = satoshis;
     delete result["outputs"];
     return result;
@@ -511,6 +508,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
 
         if (r.errors) {
             reject("error during query " + r.errors);
+            return;
         }
 
         var items = {};
@@ -546,8 +544,6 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
                 }
             }
 
-            console.log("ITEMS", items);
-
             const values = Array.from(items.values());
             resolve(values);
         }
@@ -561,6 +557,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
             axios(url, header).then(r => {
                 if (r.status !== 200) {
                     reject("Error while retrieving response from server " + r.status);
+                    return;
                 }
 
                 handleResponse(resolve, reject, r.data)
@@ -569,6 +566,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
             fetch(url, header).then(function(r) {
                 if (r.status !== 200) {
                     reject("Error while retrieving response from server " + r.status);
+                    return;
                 }
                 return r.json();
             }).then(r => { handleResponse(resolve, reject, r) }).catch(reject);
@@ -872,6 +870,39 @@ function findObjectByTX(txid, results=[]) {
         }
     }
     return null;
+}
+
+function expandTipchainInformation(tipchain, tipAmount=0, results=[]) {
+    const tips = tipchain.slice(0).reverse();
+    const tipchain_addresses = tips.map(t => { return t.address; });
+    const splits = calculateTipchainSplits(tips).reverse();
+
+    const expanded_tipchain = [];
+    for (var i = 0; i < tipchain_addresses.length; i++) {
+        const tip = tips[i];
+        var name = tip.name;
+        if (!name && tip.txid) {
+            const obj = findObjectByTX(tip.txid, results);
+            if (obj) {
+                name = obj.name;
+            }
+        }
+        if (!name) {
+            name = tip.address;
+        }
+
+        const split = splits[i];
+        const amount = tipAmount * split;
+        expanded_tipchain.push({
+            "address": tip.address,
+            "type": tip.type,
+            "split": split,
+            "amount": amount,
+            "name": name
+        });
+    }
+
+    return expanded_tipchain;
 }
 
 if (typeof window == "undefined") {

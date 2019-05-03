@@ -332,5 +332,24 @@ describe("tipchain split", function() {
         assert(Math.abs(total - 0.0001) < FLOAT_TOLERANCE);
     });
 
+    it('tipchain payment for four address and complex input', function() {
+        const tipchain = [
+            {"address": helpers.OPENDIR_TIP_ADDRESS},
+            {"address": "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B"},
+            {"address": "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A"},
+            {"address": "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp"}
+        ];
+
+        const payments = helpers.calculateTipPayment(tipchain, 50000, "BSV");
+        assert.deepEqual(payments, [
+            { address: "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", value: 6965.6764, currency: "BSV" },
+            { address: "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B", value: 11793.9153, currency: "BSV" },
+            { address: "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A", value: 14618.254, currency: "BSV" },
+            { address: "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp", value: 16622.1543, currency: "BSV" },
+        ]);
+        const total = payments.map(p => { return p.value }).reduce((a, b) => { return a+b });
+        assert(Math.abs(total - 50000) < FLOAT_TOLERANCE);
+    });
+
 });
 

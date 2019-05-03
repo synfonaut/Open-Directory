@@ -26,6 +26,7 @@ class OpenDirectoryApp extends React.Component {
         this._isMounted = true;
         this.didUpdateLocation();
         this.performCheckForUpdates();
+        updateBitcoinSVPrice();
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
     }
 
@@ -137,7 +138,7 @@ class OpenDirectoryApp extends React.Component {
                 <nav className="navigation">
                   <section className="container">
                     <a href="/#" className="navigation-title">Open Directory</a>
-                    <div className={this.state.networkActive ? "spinner active" : "spinner"}>
+                    <div className={this.state.networkActive ? "spinner white active" : "spinner white"}>
                         <div className="bounce1"></div>
                         <div className="bounce2"></div>
                         <div className="bounce3"></div>
@@ -272,7 +273,7 @@ class OpenDirectoryApp extends React.Component {
 
 
                 //console.log("ROWS", JSON.stringify(rows, null, 4));
-                console.log("ROWS LENGTH", rows.length);
+                //console.log("ROWS LENGTH", rows.length);
 
                 const raw = this.state.raw;
                 const prepared = preprocessing(rows);
