@@ -1,24 +1,42 @@
 ## TODO
 
-* idea: can you grab b:// txids in query and join them in the graph so you can graph their addresses and include them in the tipchain?
-* idea: can you sort outputs and use tip address as "book end"?
+* don't download B://media outputs..don't need them
+* show more info on tipchain..what specifically is being tipped?
+* add "hot" sort, which essentially velocity, or (time * money)
+
+* is undo limited to 5 because of max depth?
+
+* oracle: push the bitcoin price once per week?
+QUESTION: MoneyButton, can I rely on order of outputs for my application. Ie. Can I add a "bookstop", before which I know the tips are related to my app (I am going to use an output anyway for my tip)
+* QUESTION: Is it safe to assume someone can always recover funds sent to their input utxo? like a random b:// input?
+
+favicon
+
+
+* QUESTION: how to verify transactions in same block will always have same order?
+
+* BUG: BMEdia is in changelog 39d
+
+* default model should be economic, sort by economic
+* admin console that can "detach" certain directories incase they become problematic
+
+* almost every interaction should have a custom tip (create entry, create category) because this helps them rank better
+
 * bug: no changelog on about page
+* beta..stuff could break. might go to wrong place
+
+categories need new tipping mechanism and new money mechanism
+
+should $0.00 just be 0?
 
 
-// first on-chain upload should be a fork from the website
 
 
 * add links / hover information on description to give more details
 
-* expose tipchain so people know who is getting what
-
 * category should have custom tip amount
 * search
 
-* sort by satoshis (default?)
- - sort in usd, convert bsv to usd price
-
-* fix minor bugs
 * forking
  - main template parameters split out in HTML/JSON
 
@@ -26,6 +44,8 @@
 * launch / content / submissions
  - on-chain app
  - tipchain
+   - BCAT:// and B:// protocol compatible (including forwards comptaible with bit://)
+ - economically based
  - market based moderation
  - open source
  - forking
@@ -35,13 +55,11 @@
  - for contributors, earn money
  - for developers, build on top of open directory
  - experiments with tipping and user incentives
-
-* if b:// link, then include them in tipchain or bit:// b link (how to verify bitcoin address?)
+ - first on-chain upload should be a fork from the website
 
 
 * should be able to toggle all, then close individually
 
-* auto update is broken...wrong order
 * improved layout
 * readme
 
@@ -59,9 +77,9 @@
 
 * add undo description (why are you changing this?)
 * undo warning word wrap should be by word not letter
+* Plug into bit:// for genesis bitdb so we don't have to hardcode it
+* pretty bitcom links, so Bottle has bit://<OPENDIR_PROTOCOL>/<txid>
 
-* HELP: How can you figure out how much tips are in a tx without calculating funds that are being sent back
-* HELP: Is it safe to assume someone can always recover funds sent to their input utxo?
 
 * messages should float at top of screen so they scroll
 * edit form design
@@ -79,32 +97,18 @@
 
 ## v0.2
 * Planaria to reduce load on client
-* Planaria use b:// to grab address from transactions
-* Planaria use Bitcoin Sticker to grab txid from websites
-
+* Use Planaria to grab Bitcoin Stickers from websites for tipchaining C:// and other protocols
+* Moderation tools
+* Statistics (money, categories, links, votes)
 
 ## FUTURE
-* include edits in the tipchain?
 * AIP to sign data by author
-* Moderation
-* Plug into bit:// for genesis bitdb so we don't have to hardcode it
-* pretty bitcom links, so Bottle has bit://<OPENDIR_PROTOCOL>/<txid>
-* add statistics, how many categories, how many entries
-* optimize: don't fetch network request every single time
-* remove 2-undo limit
-* idea: let categories aggregate their sub-categories to "pull up" interesting links
-* idea: pay people whose websites you're submitting
-* idea: include people in tipchain whose content you're submitting
+* Categories "pull up" and aggregate their sub-categories
 
 ## FEEDBACK
 * bitdb bug: event stream is getting messages it shouldn't
-* bitdb suggestion: weird edge case with bitdb on u/c when joining on both, it doubles the download data even if you try to de-duplicate
 * bitdb suggestion: nice to just say "give me OP_RETURN string array" in addition to s1,s2,s3,s4,s5—useful for variable length protocols like MAP
 * on-chain planaria... end up doing similar "state processing" code to bring "objects" up to date, eventually will need full Planaria, but for lighter apps, planarium.js?
 * protocol processor that's a planaria state machine transformer, but embedded in a bitcoin tx, so everything is still onchain
 * enable regex in jq for more advanced filtering
-* how to verify transactions in same block will always have same order?
 
-## Launch
-- experiment with on-chain apps
-- tipchain

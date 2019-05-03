@@ -9,6 +9,7 @@ class EntryItem extends React.Component {
             "isEditing": false,
             "isTipping": false,
             "tip": "",
+            "isShowingTipChain": false
         };
 
         this._isMounted = false;
@@ -35,6 +36,7 @@ class EntryItem extends React.Component {
                 "isDeleting": false,
                 "isEditing": false,
                 "isTipping": false,
+                "isShowingTipChain": false,
             });
         }
 
@@ -71,11 +73,12 @@ class EntryItem extends React.Component {
             "isDeleting": false,
             "isEditing": false,
             "isTipping": false,
+            "isShowingTipChain": false,
         });
     }
 
     handleEdit(e) {
-        this.setState({ "isEditing": true, "isDeleting": false, "isTipping": false });
+        this.setState({ "isEditing": true, "isDeleting": false, "isTipping": false, "isShowingTipChain": false });
     }
 
     handleDelete(e) {
@@ -84,6 +87,7 @@ class EntryItem extends React.Component {
             "isEditing": false,
             "isTipping": false,
             "isTipping": false,
+            "isShowingTipChain": false,
         }, () => {
             const OP_RETURN = [
                 OPENDIR_PROTOCOL,
@@ -121,6 +125,7 @@ class EntryItem extends React.Component {
             "isDeleting": false,
             "isEditing": false,
             "isTipping": false,
+            "isShowingTipChain": false,
         });
     }
 
@@ -183,7 +188,15 @@ class EntryItem extends React.Component {
         this.setState({"tip": e.target.value});
     }
 
+    handleClickTipchain(e) {  
+        this.setState({"isShowingTipChain": !this.state.isShowingTipChain});
+    }
+
     render() {
+
+        const splits = calculateTipchainSplits(this.props.item.tipchain).reverse();
+
+        const tipchain = this.props.item.tipchain.slice(0).reverse();
 
         var actions = (
             <span className="actions">
@@ -195,7 +208,7 @@ class EntryItem extends React.Component {
         return (
             <li id={this.props.item.txid} className="entry">
                 <div className="upvoteContainer">
-                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number">{this.props.item.satoshis}</span></div>
+                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number"><span className="symbol">$</span>{((this.props.item.satoshis / 1000000000) * BSV_PRICE).toFixed(2).toLocaleString()}</span><br /><span className="number">{this.props.item.votes}</span></div>
                     <div className="entry">
                         <h5><a href={this.props.item.link}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>} {actions}</h5>
                         <p className="description">{this.props.item.description}</p>
@@ -212,7 +225,19 @@ class EntryItem extends React.Component {
                                 $</label>
                                 <input className="tip" type="text" placeholder="0.05" value={this.state.tip} onChange={this.handleChangeTip.bind(this)} /> <input type="submit" className="button button-outline" value="tip" />
                                 </form>
-                                <div className="entry-tip-money-button"></div>
+                                <hr />
+                                <div className="tipchain">
+                                    <p><a onClick={this.handleClickTipchain.bind(this)}>{pluralize(tipchain.length, "address", "addresses")}</a> in this tipchain</p>
+                                    {this.state.isShowingTipChain && <ul>
+                                        {tipchain.map((t, i) => {
+                                            return <li key={t}>{(Number(splits[i]) * 100).toFixed(2)}% {t}</li>
+                                        })}
+                                        <li key="desc"><a href="#about">Learn more</a></li>
+                                        </ul>}
+                                </div>
+                                <div className="money-button-wrapper">
+                                    <div className="entry-tip-money-button"></div>
+                                </div>
                                 </div>}
                    </div>
                     <div className="clearfix"></div>

@@ -3,7 +3,7 @@ class List extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "sort": "votes",
+            "sort": "money",
             "limit": 10,
             "cursor": 0,
         };
@@ -13,6 +13,8 @@ class List extends React.Component {
         const category_id = (this.props.category ? this.props.category.txid : null);
         const categories = this.props.items.filter(i => { return !i.deleted && i.type == "category" && i.category == category_id });
         return categories.sort((a, b) => {
+            if (a.satoshis < b.satoshis) { return 1; }
+            if (a.satoshis > b.satoshis) { return -1; }
             if (a.votes < b.votes) { return 1; }
             if (a.votes > b.votes) { return -1; }
             if (a.entries < b.entries) { return 1; }
@@ -31,7 +33,14 @@ class List extends React.Component {
                     if (!a.height) { return -1; }
                     if (a.height < b.height) { return 1; }
                     if (a.height > b.height) { return -1; }
+                } else if (this.state.sort == "votes") {
+                    if (a.votes < b.votes) { return 1; }
+                    if (a.votes > b.votes) { return -1; }
+                    if (a.height < b.height) { return 1; }
+                    if (a.height > b.height) { return -1; }
                 } else {
+                    if (a.satoshis < b.satoshis) { return 1; }
+                    if (a.satoshis > b.satoshis) { return -1; }
                     if (a.votes < b.votes) { return 1; }
                     if (a.votes > b.votes) { return -1; }
                     if (a.height < b.height) { return 1; }
@@ -51,8 +60,10 @@ class List extends React.Component {
     handleChangeSortOrder(order) {
         if (order == "time") {
             this.setState({"sort": "time"});
-        } else {
+        } else if (order == "votes") {
             this.setState({"sort": "votes"});
+        } else {
+            this.setState({"sort": "money"});
         }
     }
 
@@ -100,7 +111,8 @@ class List extends React.Component {
                     <div className="sort">
                         <span className="label">sort by</span>
                         <ul>
-                            <li><a onClick={() => { this.handleChangeSortOrder("vote") }} className={this.state.sort == "votes" ? "active" : ""}>votes</a></li>
+                            <li><a onClick={() => { this.handleChangeSortOrder("money") }} className={this.state.sort == "money" ? "active" : ""}>$</a></li>
+                            <li><a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.state.sort == "votes" ? "active" : ""}>votes</a></li>
                             <li><a onClick={() => { this.handleChangeSortOrder("time") }} className={this.state.sort == "time" ? "active" : ""}>time</a></li>
                         </ul>
                         <div className="clearfix"></div>

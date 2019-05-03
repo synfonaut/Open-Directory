@@ -4,6 +4,7 @@ var category_id;
 category_id = null;
 category_id = "2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18";
 helpers.fetch_from_network(category_id).then(rows => {
+    console.log("ROWS", rows);
     console.log("found " + rows.length + " total rows");
 
     var idx = 1;

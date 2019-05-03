@@ -528,7 +528,7 @@ form {
     color: #999;
 }
 
-#changelog .satoshis {
+#changelog .amount {
     padding: 4px;
     color: #999;
 }
@@ -569,8 +569,12 @@ form {
     margin-top: 9px;
     border: 1px solid #eee;
     display: inline-block;
-    padding: 1px 12px;
+    padding: 6px 12px;
     border-radius: 10px;
+}
+
+.tipping form {
+    margin: 0;
 }
 
 .tipping label {
@@ -604,8 +608,46 @@ form {
     padding-right: 7px;
 }
 
+.tipping .tipchain {
+    font-size: 11px;
+    color: #aaa;
+    padding: 2px 2px 2px 2px;
+}
+
+.tipping .tipchain ul {
+    list-style: none;
+    margin: 0;
+}
+
+.tipping .tipchain li {
+    margin: 0;
+    padding: 0;
+}
+
+.tipping .tipchain p {
+    margin: 0;
+}
+
+.tipping .tipchain a {
+    color: #aaa;
+    text-decoration: underline;
+}
+
+.tipping .money-button-wrapper {
+}
+
+.tipping hr {
+    margin: 0px;
+    margin-top: 5px;
+    margin-bottom: 2px;
+}
+
 pre {
     border-color: #FF6384;
+}
+
+.number .symbol {
+    color: #999;
 }
 
 /* Larger than mobile screen */

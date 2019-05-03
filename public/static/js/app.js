@@ -109,10 +109,7 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
-            const raw = this.state.raw[this.state.category.txid];
-            if (raw) {
-                changelog = raw.filter(r => { return r.data.s1 == OPENDIR_PROTOCOL });
-            }
+            changelog = this.state.raw[this.state.category.txid];
 
             if (!this.state.isError) {
                 body = <List items={this.state.items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
@@ -134,7 +131,6 @@ class OpenDirectoryApp extends React.Component {
                 <p><button onClick={() => { location.reload() }} className="button button-outline">Refresh This Page</button></p>
            </div>
         }
-
 
         return (
             <div>
@@ -194,7 +190,7 @@ class OpenDirectoryApp extends React.Component {
                             <ChangeLog items={changelog} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
                           <div className="row">
                               <div className="column">
-                                  <p align="center">built by <a href="https://twitter.com/synfonaut">@synfonaut</a></p>
+                                  <p align="center"><a href="https://twitter.com/synfonaut">@synfonaut</a></p>
                               </div>
                           </div>
                       </div>
@@ -276,7 +272,7 @@ class OpenDirectoryApp extends React.Component {
 
 
                 //console.log("ROWS", JSON.stringify(rows, null, 4));
-                //console.log("ROWS", rows.length);
+                console.log("ROWS LENGTH", rows.length);
 
                 const raw = this.state.raw;
                 const prepared = preprocessing(rows);

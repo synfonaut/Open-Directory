@@ -28,7 +28,11 @@ class ChangeLog extends React.Component {
         var idx = 0;
         const max = 5;
 
-        const items = (this.props.items ? this.props.items.slice(0).reverse() : []);
+        // For now only show open directory protocol changes in changelog—in future may want to
+        // pull in related bitcoin media
+        const items = (this.props.items ? this.props.items.slice(0).reverse() : []).filter(i => {
+            return i.data.s1 == OPENDIR_PROTOCOL;
+        });
 
         return (items && 
                   <div className="row">
@@ -121,6 +125,11 @@ class ChangeLogItem extends React.Component {
     render() {
         const timestamp = (new Date()).getTime();
 
+        var amount;
+        if (this.props.item.satoshis > 0) {
+            amount = "$" + ((this.props.item.satoshis / 1000000000) * BSV_PRICE).toFixed(2).toLocaleString();
+        }
+
         return (<React.Fragment>
                     <tr>
                         <td className="height">
@@ -129,7 +138,8 @@ class ChangeLogItem extends React.Component {
                         </td>
                         <td className="action">{this.props.item.data.s2}</td>
                         <td className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</td>
-                        <td className="satoshis">{this.props.item.satoshis}</td>
+                        <td className="amount">{amount}</td>
+
                         <td className="address">{this.props.item.address}</td>
                     </tr>
                     {(this.props.isExpanded || this.state.isExpanded) && <tr>

@@ -7,7 +7,9 @@ if (isNode) {
     markdownit = require("markdown-it");
 }
 
+const BSV_PRICE = 54.00;
 const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
+const BCAT_MEDIA_PROTOCOL = "15DHFxWZJT58f9nhyGnsRBqrgwK4W6h4Up";
 
 const OPENDIR_TIP_AMOUNT = 0.05;
 const OPENDIR_TIP_CURRENCY = "USD";
@@ -177,22 +179,26 @@ function processOpenDirectoryTransaction(result) {
 }
 
 function convertOutputs(results) {
-
     const address_space = results.map(r => { return r.address });
+    return results.map(r => { return convertOutput(r, address_space) });
+}
 
-    return results.map(r => {
-        const satoshis = r.outputs.filter(r => {
-                return address_space.indexOf(r.address) != -1;
-            }).map(o => {
-                return o.sats;
-            }).reduce((a, b) => {
-                return a + b;
-            }, 0);
+function convertOutput(result, address_space=[]) {
+    var started = false;
+    var satoshis = 0;
+    for (const output of result.outputs) {
+        if (output.address == OPENDIR_TIP_ADDRESS) {
+            started = true;
+        }
 
-        r.satoshis = satoshis;
-        delete r["outputs"];
-        return r;
-    });
+        if (started) {
+            satoshis += output.sats;
+        }
+    }
+
+    result.satoshis = satoshis;
+    delete result["outputs"];
+    return result;
 }
 
 function preprocessing(results) {
@@ -230,118 +236,162 @@ function processOpenDirectoryTransactions(results) {
 
 function get_bitdb_query(category_id=null, cursor=0, limit=200) {
 
+    // this is a monster query. if you're thinking of building a query this complex, you might
+    // reconsider and build a Planaria instead—future versions will
+
     const query = {
         "v": 3,
         "q": {
+
+            // querying both confirmed and unconfirmed transactions
+            // mongodb doesn't have a clean way to join on both so nearly every query below is doubled, on for each db
             "db": ["u", "c"],
             "limit": limit,
+
+            // aggregate is where most of the magic happens. it's the pipeline where we
+            //  1. filter for Open Directory data
+            //  2. join on related data (links, subcategories, votes)
+            //  3. join on bitcoin media
             "aggregate": [
                 {
+                    // global filter on the OPENDIR_PROTOCOL
+                    // the other "$and" clause gets dynamically inserted below,
+                    // depending on whether it's a category view or home page view
                     "$match": {
                         "$and": [
                             {"out.s1": OPENDIR_PROTOCOL},
-                            // other clause gets dynamically inserted below
                         ]
                     }
                 },
 
-                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children", "maxDepth": 5 } },
+                //
+                // Crawl confirmed children (entries, votes, undos)
+
+                // perform recursive join, connecting s3 to txid
+                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children" } },
+
+                // mongo doesn't have an easy way to bring sub-documents up to the parent, so it requires a few steps
+                // copy both to surrounding container so they're siblings
+                { "$project": { "confirmed_children": "$confirmed_children", "object": ["$$ROOT"], } },
+                // delete old copy from sibling in main object
+                { "$project": { "object.confirmed_children": 0, } },
+                // add siblings arrays together
+                { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_children", ] } } },
+                // flatten sibling arrays
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                // remove surrounding container
+                { "$replaceRoot": { "newRoot": "$items" } },
+
+                //
+                // Crawl confirmed children (entries, votes, undos)
+                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children" } },
                 { "$project": { "unconfirmed_children": "$unconfirmed_children", "object": ["$$ROOT"], } },
                 { "$project": { "object.unconfirmed_children": 0, } },
                 { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_children", ] } } },
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
-                { "$project": { "_id": 0, } },
-                { "$addFields": { "_id": "$tx.h", } },
-                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
 
 
-                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children", "maxDepth": 5 } },
-                { "$project": { "confirmed_children": "$confirmed_children", "object": ["$$ROOT"], } },
-                { "$project": { "object.confirmed_children": 0, } },
-                { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_children", ] } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
-                { "$project": { "_id": 0, } },
-                { "$addFields": { "_id": "$tx.h", } },
-                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
-
-                // confirmed parent
+                //
+                // Crawl confirmed parents (tipchain needs path to root), so recursive join up
                 { "$graphLookup": { "from": "c", "startWith": "$out.s3", "connectFromField": "out.s3", "connectToField": "tx.h", "as": "confirmed_parent" } },
                 { "$project": { "confirmed_parent": "$confirmed_parent", "object": ["$$ROOT"], } },
                 { "$project": { "object.confirmed_parent": 0, } },
                 { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_parent", ] } } },
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
-                { "$project": { "_id": 0, } },
-                { "$addFields": { "_id": "$tx.h", } },
-                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
 
-                // unconfirmed parent
+                //
+                // Crawl unconfirmed parents (tipchain needs path to root), so recursive join up
                 { "$graphLookup": { "from": "u", "startWith": "$out.s3", "connectFromField": "out.s3", "connectToField": "tx.h", "as": "unconfirmed_parent" } },
                 { "$project": { "unconfirmed_parent": "$unconfirmed_parent", "object": ["$$ROOT"], } },
                 { "$project": { "object.unconfirmed_parent": 0, } },
                 { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_parent", ] } } },
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
-                { "$project": { "_id": 0, } },
-                { "$addFields": { "_id": "$tx.h", } },
-                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
 
-                // TODO for Planaria version: Brittle—not guaranteed link will always be s7
+                //
+                // Crawl associated b:// and bcat:// media so we can include author in the tipchain
                 {
                     "$addFields": {
-                        "b_txid": {
-                            "$arrayElemAt": [
-                                {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "bit://19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut/" ]}, 1 
-                            ]
-                        }
+                       "b_txid": [
+                           // Split out different versions of b:// and bcat:// txids, works with bit:// general protocol too
+                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "bit://" + B_MEDIA_PROTOCOL + "/" ]}, 1 ] } },
+                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "b://" ]}, 1 ] } },
+
+                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "bit://" + BCAT_MEDIA_PROTOCOL + "/" ]}, 1 ] } },
+                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "bcat://" ]}, 1 ] } },
+                        ]
                     }
                 },
 
-                // confirmed b:// media
-                { "$lookup": { "from": "c", "localField": "b_txid", "foreignField": "tx.h", "as": "confirmed_bmediatx" } },
+                //
+                // Crawl confirmed media
+                { "$lookup": { "from": "c", "localField": "b_txid.txid", "foreignField": "tx.h", "as": "confirmed_bmediatx" } },
                 { "$project": { "confirmed_bmediatx": "$confirmed_bmediatx", "object": ["$$ROOT"], } },
-                { "$project": { "object.confirmed_bmediatx": 0, } },
+                { "$project": { "object.confirmed_bmediatx": 0, "object.b_txid": 0} },
+                // including b:// files could make queries very large, so filter out data—we only need metadata
+                {
+                    "$project": {
+                        "confirmed_bmediatx.tx": 1,
+                        "confirmed_bmediatx.blk": 1,
+                        "confirmed_bmediatx.in": 1,
+                        "confirmed_bmediatx.out.s1": 1,
+                        "confirmed_bmediatx.out.e": 1,
+                        "object": 1,
+                    }
+                },
                 { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_bmediatx", ] } } },
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
-                { "$project": { "_id": 0, } },
-                { "$addFields": { "_id": "$tx.h", } },
-                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
 
-                // unconfirmed b:// media
-                { "$lookup": { "from": "c", "localField": "b_txid", "foreignField": "tx.h", "as": "unconfirmed_bmediatx" } },
-                { "$project": { "unconfirmed_bmediatx": "$unconfirmed_bmediatx", "object": ["$$ROOT"], } },
-                { "$project": { "object.unconfirmed_bmediatx": 0, } },
+
+
+                //
+                // Crawl unconfirmed media
+                { "$lookup": { "from": "u", "localField": "b_txid.txid", "foreignField": "tx.h", "as": "unconfirmed_bmediatx" } },
+                {
+                    "$project": {
+                        "unconfirmed_bmediatx": "$unconfirmed_bmediatx",
+                        "object": ["$$ROOT"],
+                    }
+                },
+                { "$project": { "object.unconfirmed_bmediatx": 0, "object.b_txid": 0} },
+                {
+                    "$project": {
+                        "unconfirmed_bmediatx.tx": 1,
+                        "unconfirmed_bmediatx.blk": 1,
+                        "unconfirmed_bmediatx.in": 1,
+                        "unconfirmed_bmediatx.out.s1": 1,
+                        "unconfirmed_bmediatx.out.e": 1,
+                        "object": 1,
+                    }
+                },
                 { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_bmediatx", ] } } },
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
+
+
+                //
+                // mongo will dedupe based on exact document rather than id, so unfortunately some duplicates will slip through
+                // this should stop majority of them though—rest will get filtered out on client
                 { "$project": { "_id": 0, } },
                 { "$addFields": { "_id": "$tx.h", } },
                 { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$unwind": { "path": "$items" } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
 
-                // dedupe
-                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
-
+                //
+                // let users page results
                 { "$skip": cursor },
             ]
         },
+
+        //
+        // we can clean up the response to return exactly what we need, saving bandwidth
+        // the jq filter below says take all the elements in the array and return this object
+        // data is a little tricky, but it grabs all s1,s2,s3,s4 data no matter how many
         "r": {
             "f": "[.[] | {                  \
                 \"height\": .blk.i?,        \
@@ -353,6 +403,8 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
         }
     };
 
+    //
+    // For an explicit category_id we can filter on the txid itself and anything that references the txid
     if (category_id) {
         query["q"]["aggregate"][0]["$match"]["$and"].push({
             "$or": [
@@ -360,6 +412,10 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 {"out.s3": category_id},
             ]
         });
+
+    //
+    // For the homepage, we grab all categories without parents.
+    // This is a bit less stable as the order of properties aren't set in stone, what we really need is != BITCOIN_TRANSACTION
     } else {
         // only select categories that don't have a subcategory id
         query["q"]["aggregate"][0]["$match"]["$and"].push({
@@ -391,31 +447,31 @@ function timeDifference(current, previous) {
     var elapsed = current - previous;
 
     if (elapsed < msPerMinute) {
-        return pluralze(Math.round(elapsed/1000), 'second', 'seconds') + ' ago';
+        return pluralize(Math.round(elapsed/1000), 'second', 'seconds') + ' ago';
     }
 
     else if (elapsed < msPerHour) {
-        return pluralze(Math.round(elapsed/msPerMinute), 'minute', 'minutes') + ' ago';
+        return pluralize(Math.round(elapsed/msPerMinute), 'minute', 'minutes') + ' ago';
     }
 
     else if (elapsed < msPerDay ) {
-        return pluralze(Math.round(elapsed/msPerHour), 'hour', 'hours') + ' ago';
+        return pluralize(Math.round(elapsed/msPerHour), 'hour', 'hours') + ' ago';
     }
 
     else if (elapsed < msPerMonth) {
-        return pluralze(Math.round(elapsed/msPerDay), 'day', 'days') + ' ago';
+        return pluralize(Math.round(elapsed/msPerDay), 'day', 'days') + ' ago';
     }
 
     else if (elapsed < msPerYear) {
-        return pluralze(Math.round(elapsed/msPerMonth), 'month', 'months') + ' ago';
+        return pluralize(Math.round(elapsed/msPerMonth), 'month', 'months') + ' ago';
     }
 
     else {
-        return pluralze(Math.round(elapsed/msPerYear ), 'year', 'years') + ' ago';
+        return pluralize(Math.round(elapsed/msPerYear ), 'year', 'years') + ' ago';
     }
 }
 
-function pluralze(val, singular, plural) {
+function pluralize(val, singular, plural) {
     if (val == 1) {
         return val + " " + singular;
     }
@@ -437,7 +493,6 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
 
         var items = {};
         const rows = r.c.concat(r.u).reverse();
-
         /*
         //TODO: remove
         for (const row of rows) {
@@ -468,6 +523,8 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
                     items.set(item.txid, item)
                 }
             }
+
+            console.log("ITEMS", items);
 
             const values = Array.from(items.values());
             resolve(values);
@@ -565,8 +622,41 @@ function processResults(results) {
         processing = processResult(result, processing, txpool, undo_txids)
     }
 
-    return updateCategoryEntryCounts(processing);
+
+    return updateCategoryEntryCounts(processing.map(r => {
+        return processBMediaTipChainResult(r, txpool);
+    }));
 }
+
+// Convert b:// links into the tipchain if possible
+function processBMediaTipChainResult(result, txpool=[]) {
+
+    if (result.type !== "entry") { return result; }
+
+    const supported_protocols = [
+        "bit://" + B_MEDIA_PROTOCOL + "/",
+        "b://",
+        "bit://" + BCAT_MEDIA_PROTOCOL + "/",
+        "bcat://",
+    ];
+
+    for (const protocol of supported_protocols) {
+        const bmedia_parts = result.link.split(protocol);
+        if (bmedia_parts.length == 2) {
+            const bmedia_txid = bmedia_parts[1];
+            if (bmedia_txid.length == 64) {
+                const bmedia = findObjectByTX(bmedia_txid, txpool);
+                if (bmedia && bmedia.address) {
+                    result.tipchain.push(bmedia.address);
+                    break;
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
 
 function processCategoryResult(result, existing, txpool) {
     if (result.action == "create") {
@@ -642,17 +732,6 @@ function processEntryResult(result, existing, txpool) {
             const category = findObjectByTX(obj.category, existing);
             if (category && category.tipchain) {
                 tipchain = category.tipchain.concat([result.address]);
-            }
-
-            const bmedia_parts = result.change.link.split("bit://" + B_MEDIA_PROTOCOL + "/");
-            if (bmedia_parts.length >= 2) {
-                const bmedia_txid = bmedia_parts[1];
-                if (bmedia_txid.length == 64) {
-                    const bmedia = findObjectByTX(bmedia_txid, txpool);
-                    if (bmedia && bmedia.address) {
-                        tipchain.push(bmedia.address);
-                    }
-                }
             }
         }
 
