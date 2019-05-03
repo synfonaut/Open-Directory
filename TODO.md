@@ -1,39 +1,23 @@
 ## TODO
 
-* add category amounts
-* sort by HOT
-
+* add category price amounts
+* add custom tippping on categories
+* add default "hot" sort, which essentially velocity, or (time * money)
 * categories should be a sum of their economic activity + entry activity below it
  - need to sum votes in order then....sum votes to entries, votes to categories, then entries to categories
-
-* 8a1cb246c9710554891478c0afaeeba1fb1e99ea0904315578694cf04f6ba01b tip sums are wrong
-* fix satoshi -> dollar rounding
-* dynamically download bsv price (cache it? once per day don't have to do it every single download)
-* investigate why tipping isn't summing properly
-* bug where changelog with $0.0 is showing
-
-* don't download B://media outputs..don't need them
-* show more info on tipchain..what specifically is being tipped?
-* add "hot" sort, which essentially velocity, or (time * money)
-* header loader should be white
+* search
 
 * is undo limited to 5 because of max depth?
-* about, link back to data providers for bitcoin price
+* does max depth cause issues not being set?
 
-* oracle: push the bitcoin price once per week?
-QUESTION: MoneyButton, can I rely on order of outputs for my application. Ie. Can I add a "bookstop", before which I know the tips are related to my app (I am going to use an output anyway for my tip)
-* QUESTION: Is it safe to assume someone can always recover funds sent to their input utxo? like a random b:// input?
+* about, link back to data providers for bitcoin price (coinmarketplace, coingecko, cryptonator, cors.io, cors-anywhere
 
 * split out helpers into business logic
 
 favicon
 
-
 * QUESTION: how to verify transactions in same block will always have same order?
 
-* BUG: BMEdia is in changelog 39d
-
-* default model should be economic, sort by economic
 * admin console that can "detach" certain directories incase they become problematic
 
 * almost every interaction should have a custom tip (create entry, create category) because this helps them rank better
@@ -43,15 +27,10 @@ favicon
 
 categories need new tipping mechanism and new money mechanism
 
-should $0.00 just be 0?
-
-
-
-
 * add links / hover information on description to give more details
 
-* category should have custom tip amount
-* search
+* better separation in design like megan suggested
+
 
 * forking
  - main template parameters split out in HTML/JSON
