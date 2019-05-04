@@ -1,42 +1,66 @@
 ## TODO
 
-* add category price amounts
-* add custom tippping on categories
-* add default "hot" sort, which essentially velocity, or (time * money)
-* categories should be a sum of their economic activity + entry activity below it
- - need to sum votes in order then....sum votes to entries, votes to categories, then entries to categories
-* search
+### protocol changes
+* change undo protocol to specify original action_id always
+* add undo description (why are you changing this?)
+* PROTOCOL.md
 
-* is undo limited to 5 because of max depth?
-* does max depth cause issues not being set?
-
-* about, link back to data providers for bitcoin price (coinmarketplace, coingecko, cryptonator, cors.io, cors-anywhere
-
+### code changes
+* possible to only sort results once instead of every time?
+* convert txpool to hashtable? See if anywhere depends on order
+* have debug mode that shows how big network requests are...so we know if we are bloating the replies accidentally
+* check everything with slow connection again
 * split out helpers into business logic
 
-favicon
+* forking
+ - project for self-forking a webpage
+ - main template parameters split out in HTML/JSON
+ - fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
+ - add themes that stick and work during forking (color logo with css)
 
-* QUESTION: how to verify transactions in same block will always have same order?
+* use local storage for user-specific settings, like an alternative endpiont for bitdb genesis and api key
+* save whatever you tipped last as default (localstorage)
+* customize bitdb server
 
-* admin console that can "detach" certain directories incase they become problematic
+* Plug bitdb into bit:// for genesis bitdb so we don't have to hardcode it
+
+* compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output
+* refactor code as much as possible so it's easier to organize
+* stress test server with beta and test transactions, see if aggregate is putting too much load
+
+### ux changes
+* add default "hot" sort, which essentially velocity, or (time * money)
 
 * almost every interaction should have a custom tip (create entry, create category) because this helps them rank better
+* allow tip amount when submitting a link and a category... since it now contributes to economic activity
+ * test that we're accounting for this, so far only votes have been tested
+* add custom tippping on upvoting categories
+* each action should have variable tip (should each action have a specific amount?)
 
-* bug: no changelog on about page
-* beta..stuff could break. might go to wrong place
+* search
 
-categories need new tipping mechanism and new money mechanism
+* dedicated add directory page...homepage might get too big and you'd still want to be able to easily create new ones
+* changelog should be able to toggle all, then close individually
+* favicon
 
-* add links / hover information on description to give more details
+### admin changes
+* admin console that can "detach" certain directories incase they become problematic
 
-* better separation in design like megan suggested
+### marketing and design
+* add to home page links / hover information on description to give more details
+* readme
+* better homepage description (benefits and how you can make money)
+* bug: floating categories go right sometimes for some reason
+* better separation in design like suggested
+* improved layout
+* undo warning word wrap should be by word not letter
+* messages should float at top of screen so they scroll
+* edit form design
+* hide create category by default
+* better iconography and graphics
 
-
-* forking
- - main template parameters split out in HTML/JSON
-
-* design
-* launch / content / submissions
+### launch / content / submissions
+ - create good examples (collab with bsvdevs, onchain games, onchain art, onchain utilities)
  - on-chain app
  - tipchain
    - BCAT:// and B:// protocol compatible (including forwards comptaible with bit://)
@@ -52,50 +76,13 @@ categories need new tipping mechanism and new money mechanism
  - experiments with tipping and user incentives
  - first on-chain upload should be a fork from the website
 
-
-* should be able to toggle all, then close individually
-
-* improved layout
-* readme
-
-* save whatever you tipped last as default (localstorage)
-* custom tip design
-
-* localStorage, want good defaults
-
-* each action should have variable tip (should each action have a specific amount?)
-* let users tip a custom amount to someone who contributed a link and entire tip chain (tip slider?)
-
-* fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
-* add themes that stick and work during forking (color logo with css)
-
-
-* add undo description (why are you changing this?)
-* undo warning word wrap should be by word not letter
-* Plug into bit:// for genesis bitdb so we don't have to hardcode it
-* pretty bitcom links, so Bottle has bit://<OPENDIR_PROTOCOL>/<txid>
-
-
-* messages should float at top of screen so they scroll
-* edit form design
-* on changelog show timestamp and relative time ago
-* catch all errors and show friendly message instead
-* use local storage for user-specific settings, like an alternative endpiont for bitdb genesis and api key
-* bug: floating categories go right sometimes for some reason
-* hide create category by default
-* better iconography and graphics
-* better homepage description (benefits and how you can make money)
-* compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output
-* refactor code as much as possible so it's easier to organize
-* create good examples (collab with bsvdevs, onchain games, onchain art, onchain utilities)
-* stress test server, see if aggregate is putting too much load
-
-## v0.2
+## Open Directory v2
 * Planaria to reduce load on client
-* Use Planaria to grab Bitcoin Stickers from websites for tipchaining C:// and other protocols
+* Crawl Bitcoin Stickers from websites for including C:// and other protocols in tipchain
 * Moderation tools
 * Statistics (money, categories, links, votes)
 * Custom currency support
+* Pretty Bitcom links like bit://<OPENDIR_PROTOCOL>/<txid>
 
 ## FUTURE
 * AIP to sign data by author

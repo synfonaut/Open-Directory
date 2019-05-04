@@ -135,7 +135,7 @@ class ChangeLogItem extends React.Component {
                         </td>
                         <td className="action">{this.props.item.data.s2}</td>
                         <td className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</td>
-                        <td className="amount">{amount}</td>
+                        <td className="amount" title={this.props.item.satoshis + " sats"}>{amount}</td>
                     </tr>
                     {(this.props.isExpanded || this.state.isExpanded) && <tr>
                         <td className="data" colSpan="5"><pre><code>{JSON.stringify(this.props.item.data, null, 4)}</code></pre></td>

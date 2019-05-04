@@ -189,9 +189,13 @@ class CategoryItem extends React.Component {
     }
 
     render() {
+
+        const tipchain = expandTipchainInformation(this.props.item.tipchain, this.state.tip, this.props.items);
+        const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE, true);
+
         var actions = (
             <span className="actions">
-                <a onClick={this.handleToggleExpand.bind(this)} className="arrow">{this.state.isExpanded ? "▶" : "▼"}</a>
+                <a onClick={this.handleToggleExpand.bind(this)} className="arrow" title={"txid " + this.props.item.txid}>{this.state.isExpanded ? "▶" : "▼"}</a>
                 {this.state.isExpanded && <a className="action" onClick={this.handleEdit.bind(this)}>edit</a>}
                 {this.state.isExpanded && <a className="action" onClick={this.handleDelete.bind(this)}>delete</a>}
             </span>);
@@ -201,10 +205,7 @@ class CategoryItem extends React.Component {
             <li id={this.props.item.txid} className="category">
 
                 <div className="upvoteContainer">
-                    <div className="upvote">
-                        <a onClick={this.handleUpvote.bind(this)}>▲</a>
-                        <span className="number">{this.props.item.votes}</span>
-                    </div>
+                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number" title={this.props.item.satoshis + " sats"}>{price}</span><br /><span className="number">{this.props.item.votes}</span></div>
                     <div className="category">
                         <h3>
                             <a href={"#" + this.props.item.txid} onClick={this.handleLink.bind(this)}>{this.props.item.name}</a>

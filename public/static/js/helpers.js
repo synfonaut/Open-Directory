@@ -10,6 +10,12 @@ if (isNode) {
 var BSV_PRICE = 30.00;
 const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
 const BCAT_MEDIA_PROTOCOL = "15DHFxWZJT58f9nhyGnsRBqrgwK4W6h4Up";
+const SUPPORTED_TIPCHAIN_PROTOCOLS = [
+    "bit://" + B_MEDIA_PROTOCOL + "/",
+    "b://",
+    "bit://" + BCAT_MEDIA_PROTOCOL + "/",
+    "bcat://",
+];
 
 const OPENDIR_TIP_AMOUNT = 0.05;
 const OPENDIR_TIP_CURRENCY = "USD";
@@ -40,6 +46,10 @@ function satoshisToDollars(satoshis, bitcoin_price=BSV_PRICE, show_zero=false) {
 
         if (val == "0.00" || val == "0.01") {
             val = ((satoshis / 100000000.0) * bitcoin_price).toLocaleString(undefined, {'minimumFractionDigits':3, 'maximumFractionDigits':3});
+
+            if (val == "0.000") {
+                val = "0.00";
+            }
         }
         return "$" + val;
     } else {
@@ -109,7 +119,7 @@ function processOpenDirectoryTransaction(result) {
     const address = result.address;
     const height = (result.height ? result.height : Math.Infinity);
     const time = (result.time ? result.time : 0);
-    const satoshis = (result.satoshis ? result.satoshis : 0);
+    const outputs = (result.outputs ? result.outputs : []);
     var args = Object.values(result.data);
     const protocol_id = args.shift();
     const opendir_action = args.shift();
@@ -148,7 +158,7 @@ function processOpenDirectoryTransaction(result) {
         address: address,
         height: height,
         time: time,
-        satoshis: satoshis
+        outputs: outputs
     };
 
     if (item_type == "category") {
@@ -192,36 +202,15 @@ function processOpenDirectoryTransaction(result) {
     return obj;
 }
 
-function convertOutputs(results) {
-    const address_space = results.map(r => { return r.address });
-    address_space.push("1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL");
-    return results.map(r => { return convertOutput(r, address_space) });
-}
-
-function convertOutput(result, address_space=[]) {
-    var started = true;
+function convertOutputs(outputs, address_space=[]) {
     var satoshis = 0;
-
-    for (const output of result.outputs) {
-        if (output.address == OPENDIR_TIP_ADDRESS) {
-            started = true;
-        }
-
-        if (address_space.indexOf(output.address) == -1) {
-            started = false;
-        }
-        if (started) {
+    for (const output of outputs) {
+        if (address_space.indexOf(output.address) !== -1) {
             satoshis += output.sats;
         }
     }
 
-    result.satoshis = satoshis;
-    delete result["outputs"];
-    return result;
-}
-
-function preprocessing(results) {
-    return convertOutputs(results);
+    return satoshis;
 }
 
 function convertKeyValues(orig_args) {
@@ -258,6 +247,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
     // this is a monster query. if you're thinking of building a query this complex, you might
     // reconsider and build a Planaria instead—future versions will
 
+    const max_depth = 5;
     const query = {
         "v": 3,
         "q": {
@@ -287,7 +277,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 // Crawl confirmed children (entries, votes, undos)
 
                 // perform recursive join, connecting s3 to txid
-                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children" } },
+                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children", "maxDepth": max_depth } },
 
                 // mongo doesn't have an easy way to bring sub-documents up to the parent, so it requires a few steps
                 // copy both to surrounding container so they're siblings
@@ -303,7 +293,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
 
                 //
                 // Crawl confirmed children (entries, votes, undos)
-                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children" } },
+                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children", "maxDepth": max_depth } },
                 { "$project": { "unconfirmed_children": "$unconfirmed_children", "object": ["$$ROOT"], } },
                 { "$project": { "object.unconfirmed_children": 0, } },
                 { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_children", ] } } },
@@ -604,85 +594,101 @@ function processUndos(results) {
     return Object.keys(undos_txids);
 }
 
-function processResults(results) {
-    const processed = processOpenDirectoryTransactions(results);
+function processResults(raw) {
+    const txpool = processOpenDirectoryTransactions(raw);
     var processing = [];
+
+    const undo_txids = processUndos(txpool);
+
+    function process(result) {
+        return processResult(result, processing, undo_txids, raw);
+    }
 
     // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
     // split out create/update/delete incase they're in the same block
 
-    const undo_txids = processUndos(processed);
-
-    const txpool = processed.filter(r => { return r.type == "other" } );
-
     // category
-    for (const result of processed.filter(r => { return r.type == "category" && r.action == "create" })) {
-        processing = processResult(result, processing, txpool, undo_txids)
-    }
-    for (const result of processed.filter(r => { return r.type == "category" && r.action == "update" })) {
-        processing = processResult(result, processing, txpool, undo_txids)
-    }
-    for (const result of processed.filter(r => { return r.type == "category" && r.action == "delete" })) {
-        processing = processResult(result, processing, txpool, undo_txids)
-    }
+    for (const result of txpool.filter(r => { return r.type == "category" && r.action == "create" })) { processing = process(result) }
+    for (const result of txpool.filter(r => { return r.type == "category" && r.action == "update" })) { processing = process(result) }
+    for (const result of txpool.filter(r => { return r.type == "category" && r.action == "delete" })) { processing = process(result) }
 
     // entry
-    for (const result of processed.filter(r => { return r.type == "entry" && r.action == "create" })) {
-        processing = processResult(result, processing, txpool, undo_txids)
-    }
-    for (const result of processed.filter(r => { return r.type == "entry" && r.action == "update" })) {
-        processing = processResult(result, processing, txpool, undo_txids)
-    }
-    for (const result of processed.filter(r => { return r.type == "entry" && r.action == "delete" })) {
-        processing = processResult(result, processing, txpool, undo_txids)
-    }
+    for (const result of txpool.filter(r => { return r.type == "entry" && r.action == "create" })) { processing = process(result) }
+    for (const result of txpool.filter(r => { return r.type == "entry" && r.action == "update" })) { processing = process(result) }
+    for (const result of txpool.filter(r => { return r.type == "entry" && r.action == "delete" })) { processing = process(result) }
+
+    // process tipchain
+    processing = processTipchain(processing, txpool);
 
     // vote
-    for (const result of processed.filter(r => { return r.type == "vote" })) {
-        processing = processResult(result, processing, txpool, undo_txids)
-    }
+    for (const result of txpool.filter(r => { return r.type == "vote" })) { processing = process(result) }
 
-
-    return updateCategoryEntryCounts(processing.map(r => {
-        return processBMediaTipChainResult(r, txpool);
-    }));
+    return updateCategoryMoneyCounts(updateCategoryEntryCounts(processing));
 }
 
-// Convert b:// links into the tipchain if possible
-function processBMediaTipChainResult(result, txpool=[]) {
 
-    if (result.type !== "entry") { return result; }
+function processTipchain(processing, txpool) {
 
-    const supported_protocols = [
-        "bit://" + B_MEDIA_PROTOCOL + "/",
-        "b://",
-        "bit://" + BCAT_MEDIA_PROTOCOL + "/",
-        "bcat://",
-    ];
+    const media = {};
+    for (const tx of txpool.filter(tx => { return tx.type == "other" })) {
+        media[tx.txid] = tx;
+    }
 
-    for (const protocol of supported_protocols) {
-        const bmedia_parts = result.link.split(protocol);
+    const opendir_tip = {"address": OPENDIR_TIP_ADDRESS, "name": "Open Directory"};
+
+    return processing.filter(r => { return r.type == "entry" || r.type == "category" }).map(result => {
+        const result_tip = {address: result.address, txid: result.txid, type: result.type};
+        var tipchain = [opendir_tip, result_tip];
+        if (result.category) {
+            const category = findObjectByTX(result.category, processing);
+
+            if (category && category.tipchain) {
+                tipchain = category.tipchain.concat([result_tip]);
+            }
+        }
+
+        if (result.type == "entry") {
+            const tip = parseTipFromEntryMedia(result, media);
+            if (tip) {
+                tipchain.push(tip);
+            }
+        }
+
+        result.tipchain = tipchain;
+
+        const tipchain_addresses = tipchain.map(t => { return t.address });
+        const satoshis = convertOutputs(result.outputs, tipchain_addresses);
+
+        result.satoshis = satoshis;
+
+        return result;
+    });
+}
+
+function parseTipFromEntryMedia(item, media) {
+    for (const protocol of SUPPORTED_TIPCHAIN_PROTOCOLS) {
+        const bmedia_parts = item.link.split(protocol);
         if (bmedia_parts.length == 2) {
             const bmedia_txid = bmedia_parts[1];
             if (bmedia_txid.length == 64) {
-                const bmedia = findObjectByTX(bmedia_txid, txpool);
-                if (bmedia && bmedia.address) {
-                    result.tipchain.push({
+                const bmedia_tx = media[bmedia_txid];
+                if (bmedia_tx) {
+                    return {
+                        "address": bmedia_tx.address,
                         "type": "media",
-                        "address": bmedia.address,
-                        "txid": bmedia.txid
-                    });
-                    break;
+                    };
+
+                } else {
+                    console.log("unable to find associated b media for item", item.txid);
                 }
             }
         }
     }
-
-    return result;
+    return null;
 }
 
 
-function processCategoryResult(result, existing, txpool) {
+function processCategoryResult(result, existing, raw) {
     if (result.action == "create") {
         const obj = result.change;
 
@@ -691,33 +697,20 @@ function processCategoryResult(result, existing, txpool) {
             obj.rendered_description = markdown.renderInline(obj.description);
         }
 
-        const result_tip = {"address": result.address, txid: result.txid, "type": "category"};
-
-        var tipchain = [
-            {"address": OPENDIR_TIP_ADDRESS, "name": "Open Directory", "type": "opendirectory"},
-            result_tip,
-        ];
-
         if (result.action_id) {
             obj.category = result.action_id;
-
-            const category = findObjectByTX(obj.category, existing);
-            if (category && category.tipchain) {
-                tipchain = category.tipchain.concat([result_tip]);
-            }
         }
-
-        obj.tipchain = tipchain;
 
         obj.type = result.type;
         obj.txid = result.txid;
         obj.address = result.address;
         obj.height = result.height;
         obj.time = result.time;
-        obj.satoshis = result.satoshis;
+        obj.outputs = result.outputs;
         obj.votes = 0;
-
+        obj.entries = 0;
         existing.push(obj);
+
     } else if (result.action == "update") {
         var obj = findObjectByTX(result.action_id, existing);
         if (obj) {
@@ -746,7 +739,9 @@ function processCategoryResult(result, existing, txpool) {
     return existing;
 }
 
-function processEntryResult(result, existing, txpool) {
+// TODO: Can we merge processEntry and processCategory?
+
+function processEntryResult(result, existing, raw) {
     if (result.action == "create") {
         const obj = result.change;
 
@@ -755,6 +750,11 @@ function processEntryResult(result, existing, txpool) {
             obj.rendered_description = markdown.renderInline(obj.description);
         }
 
+        if (result.action_id) {
+            obj.category = result.action_id;
+        }
+
+        /*
         const result_tip = {address: result.address, txid: result.txid, type: "entry"};
         var tipchain = [
             {"address": OPENDIR_TIP_ADDRESS, "name": "Open Directory"},
@@ -772,12 +772,19 @@ function processEntryResult(result, existing, txpool) {
 
         obj.tipchain = tipchain;
 
+        const tipchain_addresses = tipchain.map(o => { return o.address });
+        const satoshis = convertOutputs(result.outputs, tipchain_addresses);
+
+        obj.satoshis = satoshis;
+        */
+
         obj.type = result.type;
         obj.txid = result.txid;
         obj.address = result.address;
         obj.height = result.height;
         obj.time = result.time;
-        obj.satoshis = result.satoshis;
+        obj.outputs = result.outputs;
+
         obj.votes = 0;
 
         existing.push(obj);
@@ -811,57 +818,95 @@ function processEntryResult(result, existing, txpool) {
     return existing;
 }
 
-function processVoteResult(result, existing, txpool) {
+function processVoteResult(result, existing, raw) {
     const obj = findObjectByTX(result.action_id, existing);
     if (obj) {
         obj.votes += 1;
-        obj.satoshis += result.satoshis;
+
+        const tipchain_addresses = obj.tipchain.map(o => { return o.address });
+        const satoshis = convertOutputs(result.outputs, tipchain_addresses);
+        obj.satoshis += satoshis;
+
+        // Backfill the raw change logs with satoshis
+        if (satoshis > 0) {
+            for (var i in raw) {
+                if (raw[i].txid == result.txid) {
+                    raw[i].satoshis = satoshis;
+                }
+            }
+        }
+
     } else {
         console.log("couldn't find object for vote", obj, result);
     }
     return existing;
 }
 
-function processResult(result, existing, txpool, undo) {
+function processResult(result, existing, undo, raw) {
     if (undo.indexOf(result.txid) !== -1) {
         return existing;
     }
 
     switch (result.type) {
         case "category":
-            return processCategoryResult(result, existing, txpool, undo);
+            return processCategoryResult(result, existing, raw);
         case "entry":
-            return processEntryResult(result, existing, txpool, undo);
+            return processEntryResult(result, existing, raw);
         case "vote":
-            return processVoteResult(result, existing, txpool, undo);
+            return processVoteResult(result, existing, raw);
         default:
             console.log("error processing result", result);
             return existing;
     }
 }
 
-function updateCategoryEntryCounts(results) {
-    const counts = {};
-    for (const result of results) {
-        if (!result.deleted && result.category) {
-            if (counts[result.category]) {
-                counts[result.category] += 1;
-            } else {
-                counts[result.category] = 1;
+
+function updateCategoryMoneyCounts(items) {
+    return items.map(item => {
+        if (item.type == "category") {
+            item.satoshis = countMoneyUnderObject(item, items);
+        }
+        return item;
+    });
+}
+
+function countMoneyUnderObject(obj, items) {
+    var amount = obj.satoshis;
+    for (const item of items) {
+        if (!item.deleted && item.category == obj.txid) {
+            amount += item.satoshis;
+
+            if (item.type == "category") {
+                amount += countMoneyUnderObject(item, items);
             }
         }
     }
+    return amount;
+}
 
-
-    return results.map(r => {
-        if (r.type == "category") {
-            var count = counts[r.txid];
-            if (!count) { count = 0; }
-            r.entries = count;
+function updateCategoryEntryCounts(items) {
+    return items.map(item => {
+        if (item.type == "category") {
+            item.entries = countObjectsUnderObject(item, items);
         }
-        return r;
+        return item;
     });
 }
+
+function countObjectsUnderObject(obj, items) {
+    var count = 0;
+    for (const item of items) {
+        if (!item.deleted && item.category == obj.txid) {
+            count += 1;
+
+            if (item.type == "category") {
+                count += countObjectsUnderObject(item, items);
+            }
+        }
+    }
+    return count;
+}
+
 
 function findObjectByTX(txid, results=[]) {
     for (const result of results) {

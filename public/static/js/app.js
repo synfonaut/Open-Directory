@@ -95,7 +95,11 @@ class OpenDirectoryApp extends React.Component {
                     <p>* add bitcom protocol link on about page</p>
                     <p>* add information about micro payments. they're built into the actions of the site</p>
                     <p>* about with tip screen</p>
+                    <p>* bug: no changelog on about page</p>
+                    <p>clean up static page display logic...</p
                     <p>* about page (BSV particle effect, only run when active)</p>
+                    <p>* beta..stuff could break. tip might go to wrong place</p>
+                    <p>* about, link back to data providers for bitcoin price (coinmarketplace, coingecko, cryptonator, cors.io, cors-anywhere</p>
                      <p><code>v0.1—beta</code> </p>
                     <p>✌️ synfonaut</p>
                 </div>
@@ -271,22 +275,18 @@ class OpenDirectoryApp extends React.Component {
             const category_id = (this.state.category ? this.state.category.txid : null);
             fetch_from_network(category_id).then((rows) => {
 
-
                 //console.log("ROWS", JSON.stringify(rows, null, 4));
                 //console.log("ROWS LENGTH", rows.length);
 
-                const raw = this.state.raw;
-                const prepared = preprocessing(rows);
-                raw[category_id] = prepared;
 
                 const state = {
-                    "raw": raw,
                     "networkActive": false,
                     "isLoading": false,
                     "isError": false
                 };
 
-                const results = processResults(prepared);
+
+                const results = processResults(rows);
                 if (this.state.category && this.state.category.txid && this.state.category.needsdata) { // hacky...better way?
                     var found = false;
                     for (const result of results) {
@@ -305,11 +305,16 @@ class OpenDirectoryApp extends React.Component {
 
                 //console.log("RESULTS", JSON.stringify(results, null, 4));
 
+                const raw = this.state.raw;
+                raw[category_id] = rows;
+                state["raw"] = raw;
+
                 const cache = this.state.cache;
                 cache[category_id] = results;
-
                 state["cache"] = cache;
+
                 state["items"] = results;
+
                 this.setState(state);
                 this.setupNetworkSocket();
 

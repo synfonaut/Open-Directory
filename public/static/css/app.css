@@ -250,7 +250,7 @@ form {
 .upvoteContainer .entry,
 .upvoteContainer .category {
     float: left;
-    max-width: 90%;
+    max-width: 85%;
 }
 /* https://loading.io/css/ */
 .lds-circle {
@@ -429,10 +429,6 @@ form {
 
 .actions .action:hover {
     text-decoration: underline;
-}
-
-.category .actions {
-    margin-left: 5px;
 }
 
 .notice {

@@ -190,6 +190,10 @@ Step 5. Delete a moderator
 
 TODO: Does this solve moderation in a way that can be used with AIP?
 
+## Issues and Experiments
+
+- Should undoing or deleting an action have a high economic cost?
+
 ## Plan for v0.2
 
 The plan for the next version of Open Directory introduces two new experiments

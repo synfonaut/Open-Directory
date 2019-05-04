@@ -185,20 +185,19 @@ class EntryItem extends React.Component {
     render() {
 
         const tipchain = expandTipchainInformation(this.props.item.tipchain, this.state.tip, this.props.items);
+        const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE, true);
 
         var actions = (
             <span className="actions">
-                <a onClick={this.handleToggleExpand.bind(this)} className="arrow">{this.state.isExpanded ? "▶" : "▼"}</a>
+                <a onClick={this.handleToggleExpand.bind(this)} className="arrow" title={"txid " + this.props.item.txid}>{this.state.isExpanded ? "▶" : "▼"}</a>
                 {this.state.isExpanded && <a className="action" onClick={this.handleEdit.bind(this)}>edit</a>}
                 {this.state.isExpanded && <a className="action" onClick={this.handleDelete.bind(this)}>delete</a>}
             </span>);
 
-        const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE, true);
-
         return (
             <li id={this.props.item.txid} className="entry">
                 <div className="upvoteContainer">
-                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number">{price}</span><br /><span className="number">{this.props.item.votes}</span></div>
+                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number" title={this.props.item.satoshis + " sats"}>{price}</span><br /><span className="number">{this.props.item.votes}</span></div>
                     <div className="entry">
                         <h5><a href={this.props.item.link}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>} {actions}</h5>
                         <p className="description">{this.props.item.description}</p>
