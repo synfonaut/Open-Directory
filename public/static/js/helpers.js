@@ -193,7 +193,30 @@ function processOpenDirectoryTransaction(result) {
     } else if (item_type == "vote") {
         obj.action_id = args.shift();
     } else if (item_type == "undo") {
-        obj.action_id = args.shift();
+        if (args.length == 1) {
+            obj.reference_id = args.shift();
+            obj.action_id = obj.reference_id;
+        } else if (args.length == 2) {
+            obj.reference_id = args.shift();
+            obj.action_id = args.shift();
+        } else {
+            obj.reference_id = args.shift();
+            obj.action_id = args.shift();
+            obj.description = args.shift();
+        }
+
+        // hacky... backfill original references so we have data in changelog
+        if (obj.reference_id) {
+            result.reference_id = obj.reference_id;
+        }
+
+        if (obj.action_id) {
+            result.action_id = obj.action_id;
+        }
+
+        if (obj.description) {
+            result.description = obj.description;
+        }
     } else {
         console.log("unknown item type", result);
     }
@@ -570,6 +593,9 @@ function processUndos(results) {
     var roots = new Map(results.filter(r => { return r.type != "undo" }).map(r => { return [r.txid, r] }));
     var undos = results.filter(r => { return r.type == "undo" });
 
+    const maxrounds = undos.length * 10;
+    var i = 0;
+
     while (roots.size != results.length) {
         for (const root of roots.values()) {
             for (const undo of undos) {
@@ -577,6 +603,11 @@ function processUndos(results) {
                     roots.set(undo.txid, undo);
                 }
             }
+        }
+
+        if (i++ >= maxrounds) {
+            console.log("Error processing undos, hit infinite loop");
+            break;
         }
     }
 

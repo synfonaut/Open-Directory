@@ -175,7 +175,8 @@ form {
     border-bottom: 1px solid #ddd;
     padding: 11px;
     /*color: #444;*/
-    border-bottom: 1px solid #FF6384;
+    border-bottom: 1px solid #FF6384cc;
+    box-shadow: 1px 1px 2px #CCCCCCcc;
     color: white;
 }
 
@@ -549,6 +550,10 @@ form {
     margin-top: 7px;
     width: 100%;
     word-break: break-all;
+}
+
+#changelog td.undo {
+    word-break: break-word;
 }
 
 #changelog .expand {

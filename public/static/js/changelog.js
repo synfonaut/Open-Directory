@@ -70,6 +70,7 @@ class ChangeLogItem extends React.Component {
         this.state = {
             isShowingWarning: false,
             isExpanded: false,
+            undo_reason: ""
         };
     }
 
@@ -84,34 +85,48 @@ class ChangeLogItem extends React.Component {
         }
     }
 
-
-
-    handleUndo(e) {
+    handleClickUndo(e) {
         e.preventDefault();
+        this.setState({"isShowingWarning": true});
+    }
+
+
+
+    handleUndoSubmit(e) {
+        e.preventDefault();
+
+        const action_id = (this.props.item.action_id ? this.props.item.action_id : this.props.item.txid);
 
         const OP_RETURN = [
             OPENDIR_PROTOCOL,
             "undo",
+            action_id,
             this.props.item.txid,
         ];
 
+        if (this.state.undo_reason) {
+            OP_RETURN.push(this.state.undo_reason);
+        } else {
+            if (!confirm("Are you sure you want to continue? You didn't specify an undo reason.\n\nProviding a reason helps everyone understand your thinking behind this change, and can prevent it from being reverted in the future.")) {
+                return;
+            }
+        }
+
         console.log(OP_RETURN);
 
-        this.setState({"isShowingWarning": true}, () => {
-            const el = document.getElementById("changelog-action-" + this.props.item.txid).querySelector(".undo-money-button");
-            databutton.build({
-                data: OP_RETURN,
-                button: {
-                    $el: el,
-                    onPayment: (msg) => {
-                        setTimeout(() => {
-                            this.clearForm();
-                            this.setState({"isShowingWarning": false, "isExpanded": false});
-                            this.props.onSuccessHandler("Successfully reversed transaction, it will appear automatically—please refresh the page if it doesn't.");
-                        }, 3000);
-                    }
+        const el = document.getElementById("changelog-action-" + this.props.item.txid).querySelector(".undo-money-button");
+        databutton.build({
+            data: OP_RETURN,
+            button: {
+                $el: el,
+                onPayment: (msg) => {
+                    setTimeout(() => {
+                        this.clearForm();
+                        this.setState({"isShowingWarning": false, "isExpanded": false, "undo_reason": ""});
+                        this.props.onSuccessHandler("Successfully reversed transaction, it will appear automatically—please refresh the page if it doesn't.");
+                    }, 3000);
                 }
-            });
+            }
         });
     }
 
@@ -120,6 +135,10 @@ class ChangeLogItem extends React.Component {
             "isExpanded": !this.state.isExpanded,
             "isShowingWarning": false,
         });
+    }
+
+    handleChangeUndoReason(e) {  
+        this.setState({"undo_reason": e.target.value});
     }
 
     render() {
@@ -136,15 +155,22 @@ class ChangeLogItem extends React.Component {
                         <td className="action">{this.props.item.data.s2}</td>
                         <td className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</td>
                         <td className="amount" title={this.props.item.satoshis + " sats"}>{amount}</td>
+                        <td className="description">{this.props.item.description}</td>
+                        <td className="address">{this.props.item.address}</td>
                     </tr>
                     {(this.props.isExpanded || this.state.isExpanded) && <tr>
-                        <td className="data" colSpan="5"><pre><code>{JSON.stringify(this.props.item.data, null, 4)}</code></pre></td>
+                        <td className="data" colSpan="6"><pre><code>{JSON.stringify(this.props.item.data, null, 4)}</code></pre></td>
                         </tr>}
                     {(this.props.isExpanded || this.state.isExpanded) && <tr>
-                            <td className="undo" colSpan="5" id={"changelog-action-" + this.props.item.txid}>
+                            <td className="undo" colSpan="6" id={"changelog-action-" + this.props.item.txid}>
                             <a href={"https://whatsonchain.com/tx/" + this.props.item.txid}>{this.props.item.txid}</a>&nbsp;
-                        <a onClick={this.handleUndo.bind(this)}>undo</a>
-                            {this.state.isShowingWarning && <div className="notice"><span className="warning">You are undoing this change, are you sure you want to do this?</span><div className="explain"><p>If you undo this change, you'll be permanently undoing it in this directory for everyone else. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently undo this change?</strong></p><div className="undo-money-button"></div> </div></div>}
+                        <a onClick={this.handleClickUndo.bind(this)}>undo</a>
+                            {this.state.isShowingWarning && <div className="notice"><span className="warning">You are undoing this change, are you sure you want to do this?</span><div className="explain"><p>If you undo this change, you'll be permanently undoing it in this directory for everyone else. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Why are you undoing this change?</strong></p>
+
+                                <form onSubmit={this.handleUndoSubmit.bind(this)}>
+                                <input type="text" placeholder="reason for undo" value={this.state.undo_reason} onChange={this.handleChangeUndoReason.bind(this)} /> <input type="submit" className="button button-outline" value="undo" />
+                                </form>
+    <div className="undo-money-button"></div> </div></div>}
                             </td>
                             </tr>}
                 </React.Fragment>

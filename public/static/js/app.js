@@ -96,10 +96,10 @@ class OpenDirectoryApp extends React.Component {
                     <p>* add information about micro payments. they're built into the actions of the site</p>
                     <p>* about with tip screen</p>
                     <p>* bug: no changelog on about page</p>
-                    <p>clean up static page display logic...</p
-                    <p>* about page (BSV particle effect, only run when active)</p>
+                    <p>clean up static page display logic...</p>
+                    <p>* about page BSV particle effect, only run when active</p>
                     <p>* beta..stuff could break. tip might go to wrong place</p>
-                    <p>* about, link back to data providers for bitcoin price (coinmarketplace, coingecko, cryptonator, cors.io, cors-anywhere</p>
+                    <p>* about, link back to data providers for bitcoin price coinmarketplace, coingecko, cryptonator, cors.io, cors-anywhere</p>
                      <p><code>v0.1—beta</code> </p>
                     <p>✌️ synfonaut</p>
                 </div>
@@ -277,7 +277,6 @@ class OpenDirectoryApp extends React.Component {
 
                 //console.log("ROWS", JSON.stringify(rows, null, 4));
                 //console.log("ROWS LENGTH", rows.length);
-
 
                 const state = {
                     "networkActive": false,

@@ -1,8 +1,6 @@
 ## TODO
 
 ### protocol changes
-* change undo protocol to specify original action_id always
-* add undo description (why are you changing this?)
 * PROTOCOL.md
 
 ### code changes
@@ -10,7 +8,7 @@
 * convert txpool to hashtable? See if anywhere depends on order
 * have debug mode that shows how big network requests are...so we know if we are bloating the replies accidentally
 * check everything with slow connection again
-* split out helpers into business logic
+* split out helpers into business logic, split out process functions into process.js
 
 * forking
  - project for self-forking a webpage
@@ -73,6 +71,9 @@
  - for users, surf the blockchain
  - for contributors, earn money
  - for developers, build on top of open directory
+ - for developers, built on bitdb, moneybutton and react
+ - bitdb and money button are essential here, thank you!
+ - react i've never used before, but it ended up being an important piece. letting the data be declarative means i can silently cache and update in the background and the app doesn't have to worry about it. doing this imperatively would be rough
  - experiments with tipping and user incentives
  - first on-chain upload should be a fork from the website
 
@@ -87,6 +88,7 @@
 ## FUTURE
 * AIP to sign data by author
 * Categories "pull up" and aggregate their sub-categories
+* Attach comments to votes?
 
 ## FEEDBACK
 * bitdb bug: event stream is getting messages it shouldn't
