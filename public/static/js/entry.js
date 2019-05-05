@@ -226,22 +226,24 @@ class EntryItem extends React.Component {
                                     <p><a onClick={this.handleClickTipchain.bind(this)}>{pluralize(tipchain.length, "address", "addresses")}</a> in this tipchain</p>
                                     {this.state.isShowingTipChain && <ul>
                                         {tipchain.map((t, i) => {
+                                            console.log(t);
                                             const split = (Number(t.split) * 100).toFixed(2);
+                                            const key = i + t.type + t.address + t.split;
                                             var amount = Number(t.amount).toFixed(2);
                                             var symbol = "$";
                                             if (t.amount > 0 && amount == "0.00") {
                                                 amount = Number(t.amount).toFixed(3);
                                             }
                                             if (t.type == "opendirectory") {
-                                                return <li key={t.address}>{symbol}{amount} to <strong>{t.name}</strong> {t.address}</li>;
+                                                return <li key={key}>{symbol}{amount} to <strong>{t.name}</strong> {t.address}</li>;
                                             } else if (t.type == "media") {
-                                                return <li key={t.address}>{symbol}{amount} to original content owner <strong>{t.address}</strong></li>;
+                                                return <li key={key}>{symbol}{amount} to original content owner <strong>{t.address}</strong></li>;
                                             } else if (t.type == "category") {
-                                                return <li key={t.address}>{symbol}{amount} to <strong>{t.name}</strong> category creator {t.address}</li>;
+                                                return <li key={key}>{symbol}{amount} to <strong>{t.name}</strong> category creator {t.address}</li>;
                                             } else if (t.type == "entry") {
-                                                return <li key={t.address}>{symbol}{amount} to <strong>{t.name}</strong> entry submitter {t.address}</li>;
+                                                return <li key={key}>{symbol}{amount} to <strong>{t.name}</strong> entry submitter {t.address}</li>;
                                             } else {
-                                                return <li key={t.address}>{symbol}{amount} <strong>{t.name}</strong> {t.address}</li>;
+                                                return <li key={key}>{symbol}{amount} <strong>{t.name}</strong> {t.address}</li>;
                                             }
                                         })}
                                         <li key="desc"><a href="#about">Learn more</a></li>

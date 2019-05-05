@@ -1,4 +1,5 @@
 body {
+    display: inline;
     background: url("/static/img/bg-50.png") repeat;
 }
 
@@ -599,8 +600,10 @@ form {
     display: inline-block;
     padding: 6px 12px;
     white-space: nowrap;
-    max-width: 100%;
     border-radius: 10px;
+    overflow: scroll;
+    width: 100%;
+    max-width: 475px;
 }
 
 .tipping strong {
@@ -668,6 +671,8 @@ form {
 }
 
 .tipping .money-button-wrapper {
+    clear: both;
+    padding-top: 5px;
 }
 
 .tipping hr {
@@ -732,23 +737,21 @@ pre {
         clear: both;
     }
 
+    .tipping {
+        margin-left: 40px;
+        width: 92%;
+    }
 }
 
 /* Larger than tablet screen */
 @media (min-width: 80.0rem) {
     ul.list li.category {
-        width: 33%;
+        width: 50%;
     }
 
     .clearfix.two-column:after {
-        clear: none;
-    }
-
-    .clearfix.three-column:after {
         clear: both;
     }
-
-
 }
 
 /* Larger than desktop screen */

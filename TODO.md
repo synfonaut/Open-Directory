@@ -32,6 +32,7 @@
 
 ### marketing and design
 * add to home page links / hover information on description to give more details
+* about on bottom of every directory, explain what it is for people who have no idea
 * readme
 * better homepage description (benefits and how you can make money)
 * better separation in design like suggested (especially between categories and entries)

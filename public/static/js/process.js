@@ -441,46 +441,51 @@ function calculateEntryHottness(result, gravity=1.8) {
     return score;
 }
 
+function processTipchainResult(result, processing, txpool, media) {
+    const opendir_tip = {"address": OPENDIR_TIP_ADDRESS, "name": "Open Directory", "type": "opendirectory"};
+    const result_tip = {address: result.address, txid: result.txid, type: result.type};
+    var tipchain = [opendir_tip, result_tip];
+
+    if (result.category) {
+        const category = findObjectByTX(result.category, processing);
+
+        if (category) {
+            processTipchainResult(category, processing, txpool, media);
+            tipchain = category.tipchain.concat([result_tip]);
+        }
+
+    }
+
+    if (result.type == "entry") {
+        const tip = parseTipFromEntryMedia(result, media);
+        if (tip) {
+            tipchain.push(tip);
+        }
+    }
+
+    result.tipchain = tipchain;
+
+    const tipchain_addresses = tipchain.map(t => { return t.address });
+    const satoshis = convertOutputs(result.outputs, tipchain_addresses);
+
+    result.satoshis = satoshis;
+}
+
 
 function processTipchain(processing, txpool) {
-
     const media = {};
     for (const tx of txpool.filter(tx => { return tx.type == "other" })) {
         media[tx.txid] = tx;
     }
 
-    const opendir_tip = {"address": OPENDIR_TIP_ADDRESS, "name": "Open Directory"};
+    for (const item of processing) {
+        if (item.type !== "entry" && item.type !== "category") { continue }
+        processTipchainResult(item, processing, txpool, media);
+    }
 
-    return processing.filter(r => { return r.type == "entry" || r.type == "category" }).map(result => {
-        const result_tip = {address: result.address, txid: result.txid, type: result.type};
-        var tipchain = [opendir_tip, result_tip];
-        if (result.category) {
-            const category = findObjectByTX(result.category, processing);
-
-            if (category && category.tipchain) {
-                tipchain = category.tipchain.concat([result_tip]);
-            }
-        }
-
-        if (result.type == "entry") {
-            const tip = parseTipFromEntryMedia(result, media);
-            if (tip) {
-                tipchain.push(tip);
-            }
-        }
-
-        // Backfill result
-
-        result.tipchain = tipchain;
-
-        const tipchain_addresses = tipchain.map(t => { return t.address });
-        const satoshis = convertOutputs(result.outputs, tipchain_addresses);
-
-        result.satoshis = satoshis;
-
-        return result;
-    });
+    return processing;
 }
+
 
 function processCategoryResult(result, existing, undo, rows) {
     if (undo.indexOf(result.txid) !== -1) {
