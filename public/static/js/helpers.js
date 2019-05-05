@@ -13,6 +13,10 @@ function satoshisToDollars(satoshis, bitcoin_price=BSV_PRICE, show_zero=false) {
         if (val == "0.00" || val == "0.01") {
             val = ((satoshis / 100000000.0) * bitcoin_price).toLocaleString(undefined, {'minimumFractionDigits':3, 'maximumFractionDigits':3});
 
+            // ends in 0
+            if (val.length == 5 && val[4] == "0") {
+                return val.slice(0, 4);
+            }
             if (val == "0.000") {
                 val = "0.00";
             }
