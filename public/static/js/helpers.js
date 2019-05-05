@@ -15,10 +15,7 @@ function satoshisToDollars(satoshis, bitcoin_price=BSV_PRICE, show_zero=false) {
 
             // ends in 0
             if (val.length == 5 && val[4] == "0") {
-                return val.slice(0, 4);
-            }
-            if (val == "0.000") {
-                val = "0.00";
+                val = val.slice(0, 4);
             }
         }
         return "$" + val;

@@ -3,6 +3,8 @@
 * need a few better abstractions, so much duplication
 * tipchain should be a component we can integrate
 
+* i think delete may need the same reference_id treatment that undo does...can you get into a situation where some deletes aren't being included in network fetch because they're too far down path maxDepth?
+
 * almost every interaction should have a custom tip (create entry, create category) because this helps them rank better
 * allow tip amount when submitting a link and a category... since it now contributes to economic activity
  * test that we're accounting for this, so far only votes have been tested
