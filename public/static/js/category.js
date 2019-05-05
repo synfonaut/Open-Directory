@@ -188,8 +188,6 @@ class CategoryItem extends React.Component {
 
         const tipchain = expandTipchainInformation(this.props.item.tipchain, this.state.tip, this.props.items);
 
-        console.log("TIPCHAIN", tipchain);
-
         const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE, true);
 
         var actions = (

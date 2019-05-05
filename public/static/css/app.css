@@ -257,7 +257,7 @@ form {
 .upvoteContainer .entry,
 .upvoteContainer .category {
     float: left;
-    max-width: 85%;
+    max-width: 225px;
 }
 /* https://loading.io/css/ */
 .lds-circle {
@@ -312,6 +312,15 @@ form {
     opacity: 0.30;
     padding: 10px;
 }
+
+.clearfix.two-column:after {
+    clear: none;
+}
+
+.clearfix.three-column:after {
+    clear: none;
+}
+
 
 @keyframes lds-circle {
     0%, 100% {
@@ -518,14 +527,13 @@ form {
 }
 
 #changelog .height {
-    width: 105px;
+    white-space: nowrap;
     padding: 3px;
 }
 
 #changelog .action {
     word-break: none;
     white-space: nowrap;
-    width: 110px;
     padding: 3px;
     font-weight: 400;
 }
@@ -533,19 +541,25 @@ form {
 #changelog .address {
     padding: 4px;
     color: #999;
+    display: none;
 }
 
 #changelog .amount {
     padding: 4px;
     color: #999;
+    word-break: none;
+    white-space: nowrap;
 }
 
 #changelog .time {
     word-break: none;
     white-space: nowrap;
-    width: 115px;
     padding: 4px;
     color: #999;
+}
+
+#changelog .description {
+    display: none;
 }
 
 #changelog td {
@@ -674,6 +688,50 @@ pre {
     .delete {
         width: 550px;
     }
+
+    #changelog {
+    }
+
+    #changelog .height {
+        width: 105px;
+        padding: 4px;
+    }
+
+    #changelog .action {
+        width: 110px;
+        padding: 4px;
+    }
+
+    #changelog .amount {
+        padding: 4px;
+    }
+
+    #changelog .time {
+        width: 115px;
+        padding: 0px 4px;
+    }
+
+    #changelog .description {
+        padding: 4px;
+        width: 140px;
+        display: table-cell;
+    }
+
+    #changelog .address {
+        padding: 4px;
+        display: table-cell;
+    }
+
+
+    .clearfix.two-column:after {
+        clear: both;
+    }
+
+    .upvoteContainer .entry,
+    .upvoteContainer .category {
+        max-width: 80%;
+    }
+
 }
 
 /* Larger than tablet screen */
@@ -681,6 +739,15 @@ pre {
     ul.list li.category {
         width: 33%;
     }
+
+    .clearfix.two-column:after {
+        clear: none;
+    }
+
+    .clearfix.three-column:after {
+        clear: both;
+    }
+
 
 }
 

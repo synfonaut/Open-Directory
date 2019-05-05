@@ -154,9 +154,23 @@ class List extends React.Component {
             <div>
                 {heading}
                 <ul className="category list">
-                    {categories.map(category => (
-                        <CategoryItem key={"category-" + category.txid} item={category} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />
-                    ))}
+                    {categories.map((category, i) => {
+                        const output = <CategoryItem key={"category-" + category.txid} item={category} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />;
+
+                        if (((i+1) % 3) == 0) {
+                            return [
+                                output,
+                                <div key={"category-clearfix-" + i} className="clearfix three-column"></div>
+                            ];
+                        } else if (((i+1) % 2) == 0) {
+                            return [
+                                output,
+                                <div key={"category-clearfix-" + i} className="clearfix two-column"></div>
+                            ];
+                        } else {
+                            return output;
+                        }
+                    })}
                 </ul>
                 <div className="clearfix"></div>
                 {entryListing}

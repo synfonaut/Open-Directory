@@ -34,7 +34,7 @@ class ChangeLog extends React.Component {
             return i.data.s1 == OPENDIR_PROTOCOL;
         });
 
-        return (changelog && 
+        return (changelog && changelog.length > 0 && 
                   <div className="row">
                       <div className="column">
                         <div id="changelog">
@@ -95,10 +95,6 @@ class ChangeLogItem extends React.Component {
     handleUndoSubmit(e) {
         e.preventDefault();
 
-        /*
-        const action_id = (this.props.item.action_id ? this.props.item.action_id : this.props.item.txid);
-        */
-
         const object = findObjectByTX(this.props.item.txid, this.props.txpool);
         if (!object) {
             alert("Error while finding undo object, please try again");
@@ -158,6 +154,7 @@ class ChangeLogItem extends React.Component {
         const timestamp = (new Date()).getTime();
 
         var amount = satoshisToDollars(this.props.item.satoshis, BSV_PRICE);
+        const sats = (this.props.item.satoshis > 0 ? this.props.item.satoshis + " sats" : "");
 
         return (<React.Fragment>
                     <tr>
@@ -167,7 +164,7 @@ class ChangeLogItem extends React.Component {
                         </td>
                         <td className="action">{this.props.item.data.s2}</td>
                         <td className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</td>
-                        <td className="amount" title={this.props.item.satoshis + " sats"}>{amount}</td>
+                        <td className="amount" title={sats}>{amount}</td>
                         <td className="description">{this.props.item.description}</td>
                         <td className="address">{this.props.item.address}</td>
                     </tr>

@@ -1,10 +1,24 @@
 ## TODO
 
-* bug: changelog header is visible on loading
 * try to get rid of some of the extra state in app
 * optimize: possible to only sort results once instead of every time?
 * code cleanup: convert txpool to hashtable? See if anywhere depends on order
 * helpful: have debug mode that shows how big network requests are...so we know if we are bloating the replies accidentally
+
+
+* almost every interaction should have a custom tip (create entry, create category) because this helps them rank better
+* allow tip amount when submitting a link and a category... since it now contributes to economic activity
+ * test that we're accounting for this, so far only votes have been tested
+* add custom tippping on upvoting categories
+* each action should have variable tip (should each action have a specific amount?)
+
+
+
+
+
+
+
+### code changes
 
 * forking
  - project for self-forking a webpage
@@ -23,11 +37,6 @@
 * stress test server with beta and test transactions, see if aggregate is putting too much load
 
 ### ux changes
-* almost every interaction should have a custom tip (create entry, create category) because this helps them rank better
-* allow tip amount when submitting a link and a category... since it now contributes to economic activity
- * test that we're accounting for this, so far only votes have been tested
-* add custom tippping on upvoting categories
-* each action should have variable tip (should each action have a specific amount?)
 
 * search
 
@@ -42,8 +51,7 @@
 * add to home page links / hover information on description to give more details
 * readme
 * better homepage description (benefits and how you can make money)
-* bug: floating categories go right sometimes for some reason
-* better separation in design like suggested
+* better separation in design like suggested (especially between categories and entries)
 * improved layout
 * undo warning word wrap should be by word not letter
 * messages should float at top of screen so they scroll
