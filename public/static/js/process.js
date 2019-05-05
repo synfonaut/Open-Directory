@@ -314,12 +314,13 @@ function processOpenDirectoryTransactions(results) {
     return results.map(processOpenDirectoryTransaction).filter(r => { return r });
 }
 
+// TODO: Can we simplify this now that protocol includes parent?
 function processUndos(results) {
 
     var roots = new Map(results.filter(r => { return r.type != "undo" }).map(r => { return [r.txid, r] }));
     var undos = results.filter(r => { return r.type == "undo" });
 
-    const maxrounds = undos.length * 10;
+    const maxrounds = undos.length * 20;
     var i = 0;
 
     while (roots.size != results.length) {
@@ -373,13 +374,36 @@ function processResults(rows, txpool) {
     for (const result of txpool.filter(r => { return r.type == "entry" && r.action == "update" })) { processing = process(result) }
     for (const result of txpool.filter(r => { return r.type == "entry" && r.action == "delete" })) { processing = process(result) }
 
-    // process tipchain
+    // process tipchain, which right now only includes entries and categories
     processing = processTipchain(processing, txpool);
 
     // vote
     for (const result of txpool.filter(r => { return r.type == "vote" })) { processing = process(result) }
 
-    return updateCategoryMoneyCounts(updateCategoryEntryCounts(processing));
+    // update final counts
+    const process_pipeline = [updateCategoryEntryCounts, updateCategoryMoneyCounts, updateEntryHottness];
+    for (const fn of process_pipeline) {
+        processing = fn(processing);
+    }
+
+    return processing;
+}
+
+function updateEntryHottness(results) {
+    return results.map(result => {
+        result.hottness = calculateEntryHottness(result);
+        return result;
+    });
+}
+
+// Hacker News score algorithm, thanks https://medium.com/hacking-and-gonzo/how-hacker-news-ranking-algorithm-works-1d9b0cf2c08d
+function calculateEntryHottness(result, gravity=1.8) {
+    const val = (result.satoshis + result.votes) * 1.0;
+    const now = (new Date()).getTime() / 1000;
+    const time_since = (!result.time ? 0 : (now - result.time));
+    const hours_since = (time_since / (60 * 60));
+    const score = (val / Math.pow((hours_since + 2), gravity));
+    return score;
 }
 
 
@@ -503,7 +527,7 @@ function processEntryResult(result, existing, undo, rows) {
         obj.height = result.height;
         obj.time = result.time;
         obj.outputs = result.outputs;
-
+        obj.hottness = 0;
         obj.votes = 0;
 
         existing.push(obj);
@@ -666,7 +690,7 @@ function expandTipchainInformation(tipchain, tipAmount=0, results=[]) {
             }
         }
         if (!name) {
-            name = tip.address;
+            name = "";
         }
 
         const split = splits[i];

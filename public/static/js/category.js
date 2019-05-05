@@ -143,11 +143,7 @@ class CategoryItem extends React.Component {
             }
         }
 
-        var amount = OPENDIR_TIP_AMOUNT;
-        const tip = this.state.tip;
-        if (this.state.tip > 0) {
-            amount = this.state.tip;
-        }
+        const amount = Number(this.state.tip);
 
         console.log("tipchain", tipchain);
         const payments = calculateTipPayment(tipchain, amount, OPENDIR_TIP_CURRENCY);
@@ -191,6 +187,9 @@ class CategoryItem extends React.Component {
     render() {
 
         const tipchain = expandTipchainInformation(this.props.item.tipchain, this.state.tip, this.props.items);
+
+        console.log("TIPCHAIN", tipchain);
+
         const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE, true);
 
         var actions = (
@@ -216,7 +215,44 @@ class CategoryItem extends React.Component {
                         <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.rendered_description}}></p>
                         {this.state.isEditing && <div className="column"><EditCategoryForm category={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} onSubmit={this.collapse.bind(this)} /></div>}
                         {this.state.isDeleting && <div className="notice"><span className="warning">You are about to delete this entry, are you sure you want to do this?</span><div className="explain"><p>If you remove this category you'll be permanently removing it from this directory for others to view. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently delete category from this directory</strong></p><div className="category-delete-money-button"></div> </div></div>}
-                        <div className="category-tip-money-button"></div>
+
+                        {this.state.isTipping && <div className="tipping">
+                                <form onSubmit={this.handleTipSubmit.bind(this)}>
+                                <label>Tip &nbsp;<a className="suggested-tip" data-value="0.05" onClick={this.handleClickTip}>5¢</a>
+                                <a className="suggested-tip" data-value="0.10" onClick={this.handleClickTip}>10¢</a>
+                                <a className="suggested-tip" data-value="0.25" onClick={this.handleClickTip}>25¢</a>
+                                <a className="suggested-tip" data-value="1.00" onClick={this.handleClickTip}>$1.00</a>
+                                $</label>
+                                <input className="tip" type="text" placeholder="0.05" value={this.state.tip} onChange={this.handleChangeTip.bind(this)} /> <input type="submit" className="button button-outline" value="tip" />
+                                </form>
+                                <hr />
+                                <div className="tipchain">
+                                    <p><a onClick={this.handleClickTipchain.bind(this)}>{pluralize(tipchain.length, "address", "addresses")}</a> in this tipchain</p>
+                                    {this.state.isShowingTipChain && <ul>
+                                        {tipchain.map((t, i) => {
+                                            console.log("T", t);
+                                            const split = (Number(t.split) * 100).toFixed(2);
+                                            var amount = Number(t.amount).toFixed(2);
+                                            var symbol = "$";
+                                            if (t.amount > 0 && amount == "0.00") {
+                                                amount = Number(t.amount).toFixed(3);
+                                            }
+                                            if (t.type == "opendirectory") {
+                                                return <li key={t.address}>{symbol}{amount} to <strong>{t.name}</strong> {t.address}</li>;
+                                            } else if (t.type == "category") {
+                                                return <li key={t.address}>{symbol}{amount} to <strong>{t.name}</strong> category creator {t.address}</li>;
+                                            } else {
+                                                return <li key={t.address}>{symbol}{amount} <strong>{t.name}</strong> {t.address}</li>;
+                                            }
+                                        })}
+                                        <li key="desc"><a href="#about">Learn more</a></li>
+                                        </ul>}
+                                </div>
+                                <div className="money-button-wrapper">
+                                    <div className="category-tip-money-button"></div>
+                                </div>
+                                </div>}
+
                     </div>
                     <div className="clearfix"></div>
                 </div>

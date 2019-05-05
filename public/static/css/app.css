@@ -127,6 +127,12 @@ a {
     text-decoration: underline;
 }
 
+.entry .time {
+    color: #bbb;
+    font-size: 12px;
+    margin: 0 0 0 2px;
+}
+
 form {
     margin: 10px 0;
 }
@@ -421,7 +427,7 @@ form {
 }
 
 .actions a {
-    margin-right: 7px;
+    margin-right: 2px;
 }
 
 .actions .action {

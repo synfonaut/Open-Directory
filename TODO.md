@@ -1,13 +1,10 @@
 ## TODO
 
-* changelog header is visible on loading
+* bug: changelog header is visible on loading
 * try to get rid of some of the extra state in app
-
-### code changes
-* possible to only sort results once instead of every time?
-* convert txpool to hashtable? See if anywhere depends on order
-* have debug mode that shows how big network requests are...so we know if we are bloating the replies accidentally
-* check everything with slow connection again
+* optimize: possible to only sort results once instead of every time?
+* code cleanup: convert txpool to hashtable? See if anywhere depends on order
+* helpful: have debug mode that shows how big network requests are...so we know if we are bloating the replies accidentally
 
 * forking
  - project for self-forking a webpage
@@ -26,8 +23,6 @@
 * stress test server with beta and test transactions, see if aggregate is putting too much load
 
 ### ux changes
-* add default "hot" sort, which essentially velocity, or (time * money)
-
 * almost every interaction should have a custom tip (create entry, create category) because this helps them rank better
 * allow tip amount when submitting a link and a category... since it now contributes to economic activity
  * test that we're accounting for this, so far only votes have been tested
@@ -59,6 +54,7 @@
 * opendirectory.network
 
 ### launch / content / submissions
+ - check on slow network
  - protocol reset id
  - clean up protocol language
  - upload on bitcom
