@@ -1,11 +1,15 @@
 body {
     display: inline;
-    background: url("/static/img/bg-50.png") repeat;
+    background: url("/static/img/bg-70.png") repeat;
 }
 
 .open-directory
 {
     font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background: white;
+    border-left: 1px solid #e8e2d699;
+    border-right: 1px solid #e8e2d699;
+    padding: 5px 12px;
 }
 
 input[type='email'], input[type='number'], input[type='password'], input[type='search'], input[type='tel'], input[type='text'], input[type='url'], textarea, select {
@@ -51,7 +55,6 @@ h1 {
 .blurb {
     padding: 7px 0 3px 0;
 }
-
 hr {
     border-top: 1px dashed #e8e2d699;
 }
@@ -212,6 +215,42 @@ form {
     list-style: none;
 }
 
+.subcategories ul.category {
+    border: 1px solid #b5b5b547;
+    padding: 5px 10px;
+    background: #efefef1a;
+}
+
+.subcategories ul.category li {
+    margin: 0;
+}
+
+.subcategories .upvote .arrow {
+    border: 1px solid red;
+    float: left;
+
+}
+
+.subcategories h2 {
+    font-size: 15px;
+    color: #999;
+    padding-bottom: 3px;
+}
+
+
+.subcategories .category h3 {
+    padding-top: 2px;
+    font-size: 17px;
+}
+
+.subcategories .category .description {
+    display: none;
+}
+
+.subcategories .category .votes {
+    display: none;
+}
+
 .entry .upvoteContainer .upvote {
     padding-top: 5px;
     padding-bottom: 3px;
@@ -221,12 +260,35 @@ form {
 }
 
 .category .upvoteContainer .upvote {
-    padding-top: 8px;
     padding-bottom: 3px;
-    font-size: 15px;
     min-width: 0px;
     width: 60px;
     text-align: center;
+}
+
+.subcategories .category .upvoteContainer {
+    vertical-align: middle;
+    padding: 4px 0;
+}
+
+.subcategories .category .upvoteContainer .upvote {
+    width: auto;
+    white-space: nowrap;
+}
+
+.subcategories .category .upvoteContainer .upvote a {
+    float: left;
+}
+
+.subcategories .category .upvoteContainer .upvote .number {
+    float: left;
+    padding-left: 2px;
+    padding-right: 6px;
+}
+
+.subcategories .category .category-count {
+    padding: 3px;
+    font-size: 12px;
 }
 
 .sort .label {
@@ -322,7 +384,7 @@ form {
 }
 
 .clearfix.three-column:after {
-    clear: none;
+    clear: both;
 }
 
 
@@ -737,6 +799,10 @@ pre {
         clear: both;
     }
 
+    .clearfix.three-column:after {
+        clear: none;
+    }
+
     .tipping {
         margin-left: 40px;
         width: 92%;
@@ -745,13 +811,19 @@ pre {
 
 /* Larger than tablet screen */
 @media (min-width: 80.0rem) {
+
     ul.list li.category {
-        width: 50%;
+        width: 33%;
     }
 
     .clearfix.two-column:after {
+        clear: none;
+    }
+
+    .clearfix.three-column:after {
         clear: both;
     }
+
 }
 
 /* Larger than desktop screen */

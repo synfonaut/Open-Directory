@@ -44,6 +44,8 @@ class OpenDirectoryApp extends React.Component {
             "type": type, "message": msg, "key": key,
         }]);
 
+        console.log("MESG", messages);
+
         this.setState({ "messages": messages }, () => {
             setTimeout(() => {
                 this.hideMessage(key);
@@ -147,14 +149,12 @@ class OpenDirectoryApp extends React.Component {
                   </section>
                 </nav>
                 <div className="container">
-                  <div className="row">
-                    <div className="column">
-                       <div className="messages">
-                           {this.state.messages.map((m) => {
-                               return <div key={m.key} className={"message " + m.type}>{m.message}</div>;
-                           })}
-                      </div>
                       <div className="open-directory">
+                          <div className="messages">
+                              {this.state.messages.map((m) => {
+                                  return <div key={m.key} className={"message " + m.type}>{m.message}</div>;
+                              })}
+                          </div>
                           {hash == "" && 
                             <div className="intro">
                               <img id="logo" src="/static/img/logo.png" />
@@ -187,8 +187,6 @@ class OpenDirectoryApp extends React.Component {
                             <ChangeLog changelog={changelog} txpool={this.state.txpool} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
                       </div>
 
-                    </div>
-                  </div>
                 </div>
             </div>
         );
