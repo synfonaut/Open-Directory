@@ -4,9 +4,7 @@ class CategoryItem extends React.Component {
         super(props);
         this.state = {
             "isExpanded": false,
-            "isDeleting": false,
-            "isEditing": false,
-            "isTipping": false,
+            "action": null,
         };
 
         this._isMounted = false;
@@ -27,99 +25,36 @@ class CategoryItem extends React.Component {
         this.props.onSuccessHandler("Successfully upvoted category, it will appear automatically—please refresh the page if it doesn't");
     }
 
-    collapse() {
-        this.setState({
-            "isExpanded": false,
-            "isDeleting": false,
-            "isEditing": false,
-            "isTipping": false,
-        });
+    handleSuccessfulDelete() {
+        this.setState({"action": null});
+        this.props.onSuccessHandler("Successfully deleted category, it will appear automatically—please refresh the page if it doesn't");
     }
 
     clearForm() {
         if (this._isMounted) {
             this.setState({
                 "isExpanded": false,
-                "isDeleting": false,
-                "isEditing": false,
-                "isTipping": false,
+                "action": null,
             });
-
-            const el = document.getElementById(this.props.item.txid).querySelector(".category-delete-money-button");
-            if (el) {
-                const parentNode = el.parentNode;
-                if (parentNode) {
-                    parentNode.removeChild(el);
-                    const newEl = document.createElement('div');
-                    newEl.className = "category-delete-money-button";
-                    parentNode.appendChild(newEl);
-                }
-            }
         }
     }
-
     handleUpvote(e) {
-        this.setState({"isTipping": true});
-    }
-
-    handleLink(e) {
-        const url = e.target.href;
-        history.pushState({}, "", url);
-        window.dispatchEvent(new HashChangeEvent("hashchange"));
-        e.preventDefault();
+        this.setState({"action": "tipping"});
     }
 
     handleToggleExpand(e) {
         this.setState({
             "isExpanded": !this.state.isExpanded,
-            "isDeleting": false,
-            "isEditing": false,
-            "isTipping": false,
+            "action": null,
         });
     }
 
     handleEdit(e) {
-        this.setState({ "isEditing": true, "isDeleting": false, "isTipping": false });
+        this.setState({"action": "editing"});
     }
 
-
     handleDelete(e) {
-        this.setState({
-            "isDeleting": true,
-            "isEditing": false,
-            "isTipping": false,
-            "isTipping": false,
-        }, () => {
-            const OP_RETURN = [
-                OPENDIR_PROTOCOL,
-                "category.delete",
-                this.props.item.txid,
-            ];
-
-            const button = document.getElementById(this.props.item.txid).querySelector(".category-delete-money-button")
-            console.log(OP_RETURN);
-
-            databutton.build({
-                data: OP_RETURN,
-                button: {
-                    $el: button,
-                    /*$pay: {
-                    to: [{
-                        address: OPENDIR_PROTOCOL,
-                        value: 50000,
-                    }]
-                },*/
-                    onPayment: (msg) => {
-                        console.log(msg);
-                        setTimeout(() => {
-                            this.clearForm();
-                            this.props.onSuccessHandler("Successfully deleted category, it will disappear automatically—please refresh the page if it doesn't.");
-                        }, 5000);
-                    }
-                }
-            });
-        });
-
+        this.setState({"action": "deleting"});
     }
 
     render() {
@@ -143,16 +78,15 @@ class CategoryItem extends React.Component {
                     <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number" title={this.props.item.satoshis + " sats"}>{price}</span><br /><span className="number">{this.props.item.votes}</span></div>
                     <div className="category">
                         <h3>
-                            <a href={"#" + this.props.item.txid} onClick={this.handleLink.bind(this)}>{this.props.item.name}</a>
+                            <a href={"#" + this.props.item.txid} onClick={this.handleUpvote.bind(this)}>{this.props.item.name}</a>
                             {!this.props.item.height && <span className="pending">pending</span>}
                             <span className="category-count">({this.props.item.entries})</span>
                             {actions}
                         </h3>
                         <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.rendered_description}}></p>
-                        {this.state.isEditing && <div className="column"><EditCategoryForm category={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} onSubmit={this.collapse.bind(this)} /></div>}
-                        {this.state.isDeleting && <div className="notice"><span className="warning">You are about to delete this entry, are you sure you want to do this?</span><div className="explain"><p>If you remove this category you'll be permanently removing it from this directory for others to view. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Permanently delete category from this directory</strong></p><div className="category-delete-money-button"></div> </div></div>}
-
-                        {this.state.isTipping && <TipchainItem item={this.props.item} items={this.props.items} onSuccessHandler={this.handleSuccessfulTip.bind(this)} onErrorHandler={this.props.onErrorHandler} />}
+                        {this.state.action == "editing" && <div className="column"><EditCategoryForm category={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} onSubmit={this.clearForm.bind(this)} /></div>}
+                        {this.state.action == "tipping" && <TipchainItem item={this.props.item} items={this.props.items} onSuccessHandler={this.handleSuccessfulTip.bind(this)} onErrorHandler={this.props.onErrorHandler} />}
+                        {this.state.action == "deleting"  && <DeleteItem item={this.props.item} onSuccessHandler={this.handleSuccessfulDelete.bind(this)} onErrorHandler={this.props.onErrorHandler} />}
                     </div>
                     <div className="clearfix"></div>
                 </div>
