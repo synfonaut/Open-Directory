@@ -1,14 +1,11 @@
 ## TODO
 
-* need a few better abstractions, so much duplication
+* delete should have a reason
+* should edit have a reason?
 
-* i think delete may need the same reference_id treatment that undo does...can you get into a situation where some deletes aren't being included in network fetch because they're too far down path maxDepth?
-* add tests for if you delete a delete a delete a delete
 
-* almost every interaction should have a custom tip (create entry, create category) because this helps them rank better
-* allow tip amount when submitting a link and a category... since it now contributes to economic activity
- * test that we're accounting for this, so far only votes have been tested
-
+* Plug bitdb into bit:// for genesis bitdb so we don't have to hardcode it
+* search
 
 ### code changes
 
@@ -18,15 +15,10 @@
  - fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
  - add themes that stick and work during forking (color logo with css)
 
-* Plug bitdb into bit:// for genesis bitdb so we don't have to hardcode it
-
 * compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output
-* refactor code as much as possible so it's easier to organize
 * stress test server with beta and test transactions, see if aggregate is putting too much load
 
 ### ux changes
-
-* search
 
 * dedicated add directory page...homepage might get too big and you'd still want to be able to easily create new ones
 * changelog should be able to toggle all, then close individually
@@ -79,7 +71,8 @@
 
 ## Open Directory v2
 * Planaria to reduce load on client
-* Crawl Bitcoin Stickers from websites for including C:// and other protocols in tipchain
+* Planaria to remove maxDepth restriction on categories and search
+* Planaria to crawl Bitcoin Stickers from websites for including C:// and other protocols in tipchain
 * Moderation tools
 * Statistics (money, categories, links, votes)
 * Custom currency support

@@ -92,6 +92,7 @@ class OpenDirectoryApp extends React.Component {
                     <p>* beta..stuff could break. tip might go to wrong place</p>
                     <p>* about, link back to data providers for bitcoin price coinmarketplace, coingecko, cryptonator, cors.io, cors-anywhere</p>
                      <p><code>v0.1—beta</code> </p>
+                    <p><small>Open Directory is an experiment. Be kind. Have fun. Build the future. ✌️</small></p>
                     <p>✌️ synfonaut</p>
                 </div>
             );
@@ -184,11 +185,6 @@ class OpenDirectoryApp extends React.Component {
 
                           {(shouldShowAddNewEntryForm || shouldShowAddNewCategoryForm) && <hr />}
                             <ChangeLog changelog={changelog} txpool={this.state.txpool} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
-                          <div className="row">
-                              <div className="column">
-                                  <p align="center"><a href="https://twitter.com/synfonaut">@synfonaut</a></p>
-                              </div>
-                          </div>
                       </div>
 
                     </div>
