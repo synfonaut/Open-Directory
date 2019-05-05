@@ -29,7 +29,6 @@ class List extends React.Component {
         if (this.props.category) {
             const entries = this.props.items.filter(i => { return !i.deleted && i.type == "entry" && i.category && i.category == this.props.category.txid });
             return entries.sort((a, b) => {
-                // TODO: Simplify this
                 if (this.state.sort == "time") {
                     if (!a.height) { return -1; }
                     if (a.height < b.height) { return 1; }

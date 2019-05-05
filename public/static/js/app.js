@@ -2,15 +2,18 @@ class OpenDirectoryApp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            raw: {},
-            cache: {},
-            items: [],
-            txpool: [],
-            location: [""],
-            messages: [],
-            category: {"txid": null, "needsupdate": true},
             isLoading: true,
             isError: false,
+
+            location: [""],
+            messages: [],
+
+            raw: {},    // response from network
+            txpool: [], // semi-processed results from network
+            items: [],  // current items
+            cache: {},  // previous items
+
+            category: {"txid": null, "needsupdate": true},
         };
 
         this.NETWORK_DELAY = 0;
@@ -275,52 +278,27 @@ class OpenDirectoryApp extends React.Component {
 
             const category_id = (this.state.category ? this.state.category.txid : null);
             fetch_from_network(category_id).then((rows) => {
-
-                //console.log("ROWS", JSON.stringify(rows, null, 4));
-                //console.log("ROWS LENGTH", rows.length);
-
-                const state = {
-                    "networkActive": false,
-                    "isLoading": false,
-                    "isError": false
-                };
-
-
                 const txpool = processOpenDirectoryTransactions(rows);
-
                 const results = processResults(rows, txpool);
-                if (this.state.category && this.state.category.txid && this.state.category.needsdata) { // hacky...better way?
-                    var found = false;
-                    for (const result of results) {
-                        if (result.type == "category" && result.txid == this.state.category.txid) {
-                            this.setState({category: result});
-                            document.title = result.name + " — Open Directory";
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (!found) {
-                        state["isError"] = true; // category deleted?
-                    }
-                }
-
-                //console.log("RESULTS", JSON.stringify(results, null, 4));
+                const success = this.checkForUpdatedActiveCategory(results);
 
                 const raw = this.state.raw;
                 raw[category_id] = rows;
-                state["raw"] = raw;
 
                 const cache = this.state.cache;
                 cache[category_id] = results;
-                state["cache"] = cache;
 
-                state["items"] = results;
-                state["txpool"] = txpool;
+                this.setState({
+                    "networkActive": false,
+                    "isLoading": false,
+                    "isError": !success,
+                    "txpool": txpool,
+                    "items": results,
+                    "raw": raw,
+                    "cache": cache,
+                });
 
-                this.setState(state);
                 this.setupNetworkSocket();
-
             }).catch((e) => {
                 console.log("error", e);
                 this.setState({
@@ -332,6 +310,21 @@ class OpenDirectoryApp extends React.Component {
 
 
         }, this.NETWORK_DELAY);
+    }
+
+    checkForUpdatedActiveCategory(results) {
+        if (this.state.category && this.state.category.txid && this.state.category.needsdata) { // hacky...better way?
+            for (const result of results) {
+                if (result.type == "category" && result.txid == this.state.category.txid) {
+                    this.setState({category: result});
+                    document.title = result.name + " — Open Directory";
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        return true;
     }
 
     setupNetworkSocket() {

@@ -17,7 +17,7 @@ describe('basic tx processing', function() {
             {"height":580286,"address":"1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A","txid":"2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"category.create","s3":"name","s4":"New directory","s5":"description","s6":"This is a new directory"}}
         ];
 
-        const processedResults = process.processResults(txs);
+        const processedResults = process.processRawResults(txs);
         assert.equal(processedResults[0].type, "category");
         assert.equal(processedResults[0].name, "New directory");
         assert.equal(processedResults[0].description, "This is a new directory");
@@ -37,7 +37,7 @@ describe('basic tx processing', function() {
             {"height":580286,"address":"1Juvf2KaCJearuF1zFRxrnRCocmjdh3DcC","txid":"a8b337d22a91f6a2c4263ee2e3bfae6bc88a91af5ce80d217c6b9cf1a0a534a3","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"entry.update","s3":"f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d","s4":"name","s5":"New link with edit","s6":"description","s7":"Desc goes here (edit)"}},
             {"height":580286,"address":"1Juvf2KaCJearuF1zFRxrnRCocmjdh3DcC","txid":"a8b337d22a91f6a2c4263ee2e3bfae6bc88a91af5ce80d217c6b9cf1a0a534a4","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"entry.update","s3":"f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d","s4":"name","s5":"Newer link with edit","s6":"description","s7":"Desc goes here (edited)"}},
         ];
-        const processedResults = process.processResults(txs);
+        const processedResults = process.processRawResults(txs);
         assert.equal(processedResults[0].type, "entry");
         assert.equal(processedResults[0].name, "Newer link with edit");
         assert.equal(processedResults[0].link, "bit://asdf");
@@ -60,7 +60,7 @@ describe('process open directory undo transactions', function() {
             {"name":"New link","link":"bit://asdf","description":"Desc goes here","rendered_description":"Desc goes here","category":"2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","type":"entry","txid":"f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d","address":"1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp","height":580286,"votes":0}
         ];
 
-        const processedResults = process.processResults(txs);
+        const processedResults = process.processRawResults(txs);
 
         assert.equal(processedResults[0].type, "entry");
         assert.equal(processedResults[0].name, "New link");
@@ -78,7 +78,7 @@ describe('process open directory undo transactions', function() {
             {"height":null,"address":"1LLzzUcjT6Gb2eW24cXSTYnQjw3EhA6Cds","txid":"7b5cc3cd1a7ddd3aae32b7e21c623c99027ff885af68a7fd5ae47062fc18dce9","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"undo","s3":"8b5cc3cd1a7ddd3aae32b7e21c623c99027ff885af68a7fd5ae47062fc18dce8"}}
         ];
 
-        const processedResults = process.processResults(txs);
+        const processedResults = process.processRawResults(txs);
         assert.equal(processedResults[0].type, "entry");
         assert.equal(processedResults[0].name, "New link with edit");
         assert.equal(processedResults[0].link, "bit://asdf");
@@ -101,7 +101,7 @@ describe('process open directory undo transactions', function() {
             {"name":"New link","link":"bit://asdf","description":"Desc goes here","rendered_description":"Desc goes here","category":"2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","type":"entry","txid":"f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d","address":"1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp","height":580286,"votes":0}
         ];
 
-        const processedResults = process.processResults(txs);
+        const processedResults = process.processRawResults(txs);
 
         assert.equal(processedResults[0].type, "entry");
         assert.equal(processedResults[0].name, "New link");
@@ -123,7 +123,7 @@ describe('process open directory undo transactions', function() {
             {"name":"New directory","description":"This is a new directory","rendered_description":"This is a new directory","type":"category","txid":"2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","address":"1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A","height":580286,"votes":0,"entries":0},
         ];
 
-        const processedResults = process.processResults(txs);
+        const processedResults = process.processRawResults(txs);
         assert.equal(processedResults[0].type, "category");
         assert.equal(processedResults[0].name, "New directory");
         assert.equal(processedResults[0].description, "This is a new directory");
@@ -132,7 +132,7 @@ describe('process open directory undo transactions', function() {
 
     it('converts 4x undo regression', function() {
         const txs = readFileTXs("undo_undo_undo_undo_entry_regression.json");
-        const processedResults = process.processResults(txs);
+        const processedResults = process.processRawResults(txs);
 
         assert.equal(processedResults.length, 2);
 
@@ -158,7 +158,7 @@ describe('tipchain', function() {
             {"height":580286,"address":"1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A","txid":"2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"category.create","s3":"name","s4":"New directory","s5":"description","s6":"This is a new directory"}}
         ];
 
-        const processedResults = process.processResults(txs);
+        const processedResults = process.processRawResults(txs);
         assert.equal(processedResults[0].tipchain[0].address, process.OPENDIR_TIP_ADDRESS);
         assert.equal(processedResults[0].tipchain[1].address, "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A");
         assert.equal(processedResults[0].txid, "2fff57d7f40b31e55448468b6aec45ffaddf34278aca8de1098ee9adcf560f18");
@@ -172,7 +172,7 @@ describe('tipchain', function() {
             {"height":580286,"address":"1Juvf2KaCJearuF1zFRxrnRCocmjdh3DcC","txid":"a8b337d22a91f6a2c4263ee2e3bfae6bc88a91af5ce80d217c6b9cf1a0a534a3","data":{"s1":"1dirxA5oET8EmcdW4saKXzPqejmMXQwg2","s2":"entry.update","s3":"f126fbdd09832f446505604ea82842b6cc3da76b261b9f264d07da9e5fab671d","s4":"name","s5":"New link with edit","s6":"description","s7":"Desc goes here (edit)"}}, // currently tipchain ignores edits
         ];
 
-        const processedResults = process.processResults(txs);
+        const processedResults = process.processRawResults(txs);
         assert.equal(processedResults[1].tipchain[0].address, process.OPENDIR_TIP_ADDRESS);
         assert.equal(processedResults[1].tipchain[1].address, "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A");
         assert.equal(processedResults[1].tipchain[2].address, "1DcVxjZ56dqYTPejKanoUXfrzypSei2fNp");
@@ -187,7 +187,7 @@ describe('tipchain', function() {
 
         ];
 
-        const processedResults = process.processResults(txs);
+        const processedResults = process.processRawResults(txs);
         assert.equal(processedResults[2].tipchain[0].address, process.OPENDIR_TIP_ADDRESS);
         assert.equal(processedResults[2].tipchain[1].address, "1Jtp4DDg3B1cQj74nRMQRX3VHYY8dTx99B");
         assert.equal(processedResults[2].tipchain[2].address, "1Nup3TDg3B1cQj74nRMQRX3VHYY8dTx88A");

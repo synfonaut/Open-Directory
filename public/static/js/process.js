@@ -249,16 +249,6 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
 
         var items = {};
         const rows = r.c.concat(r.u).reverse();
-        /*
-        //TODO: remove
-        for (const row of rows) {
-            console.log("ROW", JSON.stringify(row, null, 4));
-        }
-
-        console.log("ROWS", rows.length);
-
-        throw "E";
-        */
 
         results = results.concat(rows);
         cursor += rows.length;
@@ -314,7 +304,6 @@ function processOpenDirectoryTransactions(results) {
     return results.map(processOpenDirectoryTransaction).filter(r => { return r });
 }
 
-// TODO: Can we simplify this now that protocol includes parent?
 function processUndos(results) {
 
     var roots = new Map(results.filter(r => { return r.type != "undo" }).map(r => { return [r.txid, r] }));
@@ -350,6 +339,11 @@ function processUndos(results) {
     }
 
     return Object.keys(undos_txids);
+}
+
+function processRawResults(rows) {
+    const txpool = processOpenDirectoryTransactions(rows);
+    return processResults(rows, txpool);
 }
 
 function processResults(rows, txpool) {
@@ -919,15 +913,11 @@ function findObjectByTX(txid, results=[]) {
 }
 
 function findRootActionID(result, results=[]) {
-
-    console.log("FINDING ROOT ACTION FOR", result, results.length);
-
     if (!result.action_id) {
         return null;
     }
 
     if (result.type == "undo" && result.action_id) {
-        console.log("CHECKING PARENT TX AT", result.action_id);
         const parent = findObjectByTX(result.action_id, results);
         if (parent) {
             const parent_action_id = findRootActionID(parent, results);
@@ -950,6 +940,7 @@ if (typeof window == "undefined") {
         "OPENDIR_ACTIONS": OPENDIR_ACTIONS,
         "fetch_from_network": fetch_from_network,
         "processResults": processResults,
+        "processRawResults": processRawResults,
         "calculateTipchainSplits": calculateTipchainSplits,
         "calculateTipPayment": calculateTipPayment,
     };
