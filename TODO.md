@@ -56,8 +56,12 @@
 * edit form design
 * hide create category by default
 * better iconography and graphics
+* great logo with custom icon
+* opendirectory.network
 
 ### launch / content / submissions
+ - protocol reset id
+ - upload on bitcom
  - create good examples (collab with bsvdevs, onchain games, onchain art, onchain utilities)
  - on-chain app
  - tipchain
@@ -76,6 +80,9 @@
  - react i've never used before, but it ended up being an important piece. letting the data be declarative means i can silently cache and update in the background and the app doesn't have to worry about it. doing this imperatively would be rough
  - experiments with tipping and user incentives
  - first on-chain upload should be a fork from the website
+ - launch with private beta on website, then publicly on-chain
+ - only possible with BSV, low-fees allow micro transaction business models
+ - in my past life i built on platforms that constantly changed the rules. i am building on bsv because the rules are set in stone.
 
 ## Open Directory v2
 * Planaria to reduce load on client

@@ -685,6 +685,8 @@ function processTipchain(processing, txpool) {
             }
         }
 
+        // Backfill result
+
         result.tipchain = tipchain;
 
         const tipchain_addresses = tipchain.map(t => { return t.address });
@@ -719,7 +721,11 @@ function parseTipFromEntryMedia(item, media) {
 }
 
 
-function processCategoryResult(result, existing, raw) {
+function processCategoryResult(result, existing, undo, raw) {
+    if (undo.indexOf(result.txid) !== -1) {
+        return existing;
+    }
+
     if (result.action == "create") {
         const obj = result.change;
 
@@ -772,7 +778,11 @@ function processCategoryResult(result, existing, raw) {
 
 // TODO: Can we merge processEntry and processCategory?
 
-function processEntryResult(result, existing, raw) {
+function processEntryResult(result, existing, undo, raw) {
+    if (undo.indexOf(result.txid) !== -1) {
+        return existing;
+    }
+
     if (result.action == "create") {
         const obj = result.change;
 
@@ -784,30 +794,6 @@ function processEntryResult(result, existing, raw) {
         if (result.action_id) {
             obj.category = result.action_id;
         }
-
-        /*
-        const result_tip = {address: result.address, txid: result.txid, type: "entry"};
-        var tipchain = [
-            {"address": OPENDIR_TIP_ADDRESS, "name": "Open Directory"},
-            result_tip,
-        ];
-
-        if (result.action_id) {
-            obj.category = result.action_id;
-
-            const category = findObjectByTX(obj.category, existing);
-            if (category && category.tipchain) {
-                tipchain = category.tipchain.concat([result_tip]);
-            }
-        }
-
-        obj.tipchain = tipchain;
-
-        const tipchain_addresses = tipchain.map(o => { return o.address });
-        const satoshis = convertOutputs(result.outputs, tipchain_addresses);
-
-        obj.satoshis = satoshis;
-        */
 
         obj.type = result.type;
         obj.txid = result.txid;
@@ -849,14 +835,18 @@ function processEntryResult(result, existing, raw) {
     return existing;
 }
 
-function processVoteResult(result, existing, raw) {
+function processVoteResult(result, existing, undo, raw) {
+
     const obj = findObjectByTX(result.action_id, existing);
     if (obj) {
-        obj.votes += 1;
 
         const tipchain_addresses = obj.tipchain.map(o => { return o.address });
         const satoshis = convertOutputs(result.outputs, tipchain_addresses);
-        obj.satoshis += satoshis;
+
+        if (undo.indexOf(result.txid) == -1) {
+            obj.votes += 1;
+            obj.satoshis += satoshis;
+        }
 
         // Backfill the raw change logs with satoshis
         if (satoshis > 0) {
@@ -874,17 +864,26 @@ function processVoteResult(result, existing, raw) {
 }
 
 function processResult(result, existing, undo, raw) {
+    /*
     if (undo.indexOf(result.txid) !== -1) {
+        existing.push({
+            "txid": result.txid,
+            "address": result.address,
+            "type": "other",
+            "blah": "hey",
+            "satoshis": 10000
+        });
         return existing;
     }
+    */
 
     switch (result.type) {
         case "category":
-            return processCategoryResult(result, existing, raw);
+            return processCategoryResult(result, existing, undo, raw);
         case "entry":
-            return processEntryResult(result, existing, raw);
+            return processEntryResult(result, existing, undo, raw);
         case "vote":
-            return processVoteResult(result, existing, raw);
+            return processVoteResult(result, existing, undo, raw);
         default:
             console.log("error processing result", result);
             return existing;
