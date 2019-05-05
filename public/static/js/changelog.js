@@ -30,26 +30,26 @@ class ChangeLog extends React.Component {
 
         // For now only show open directory protocol changes in changelog—in future may want to
         // pull in related bitcoin media
-        const items = (this.props.items ? this.props.items.slice(0).reverse() : []).filter(i => {
+        const changelog = (this.props.changelog ? this.props.changelog.slice(0).reverse() : []).filter(i => {
             return i.data.s1 == OPENDIR_PROTOCOL;
         });
 
-        return (items && 
+        return (changelog && 
                   <div className="row">
                       <div className="column">
                         <div id="changelog">
                             <h3>Changelog</h3>
                             <table>
                                 <tbody>
-                                {items.map(i => {
+                                {changelog.map(i => {
                                     if ((idx++ <= max) || this.state.isShowAll) {
-                                        return <ChangeLogItem item={i} key={"changelog-" + i.txid} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} isExpanded={this.state.isExpanded} />;
+                                        return <ChangeLogItem item={i} txpool={this.props.txpool} key={"changelog-" + i.txid} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} isExpanded={this.state.isExpanded} />;
                                     }
                                 })}
                                 </tbody>
-                                {(!this.state.isShowingWarning && items.length > max) && <tbody><tr>
+                                {(!this.state.isShowingWarning && changelog.length > max) && <tbody><tr>
                                     <td colSpan="5" className="expand">
-                                        <a onClick={this.handleToggleShowAll.bind(this)}>{this.state.isShowAll ? "Hide" : "Show"} all {items.length} changes from changelog</a>
+                                        <a onClick={this.handleToggleShowAll.bind(this)}>{this.state.isShowAll ? "Hide" : "Show"} all {changelog.length} changes from changelog</a>
                                         &nbsp;<a onClick={this.handleToggleExpand.bind(this)}>expanded</a>
                                     </td>
                                  </tr></tbody>}
@@ -95,7 +95,20 @@ class ChangeLogItem extends React.Component {
     handleUndoSubmit(e) {
         e.preventDefault();
 
+        /*
         const action_id = (this.props.item.action_id ? this.props.item.action_id : this.props.item.txid);
+        */
+
+        const object = findObjectByTX(this.props.item.txid, this.props.txpool);
+        if (!object) {
+            alert("Error while finding undo object, please try again");
+            return;
+        }
+
+        const action_id = findRootActionID(object, this.props.txpool);
+        if (!action_id) {
+            alert("Error while finding undo object action_id, please try again");
+        }
 
         const OP_RETURN = [
             OPENDIR_PROTOCOL,

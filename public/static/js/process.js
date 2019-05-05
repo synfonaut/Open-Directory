@@ -351,14 +351,13 @@ function processUndos(results) {
     return Object.keys(undos_txids);
 }
 
-function processResults(raw) {
-    const txpool = processOpenDirectoryTransactions(raw);
+function processResults(rows, txpool) {
     var processing = [];
 
     const undo_txids = processUndos(txpool);
 
     function process(result) {
-        return processResult(result, processing, undo_txids, raw);
+        return processResult(result, processing, undo_txids, rows);
     }
 
     // process them in this order because blockchain may be out of order and we need to build hierarchy in correct way
@@ -424,7 +423,7 @@ function processTipchain(processing, txpool) {
     });
 }
 
-function processCategoryResult(result, existing, undo, raw) {
+function processCategoryResult(result, existing, undo, rows) {
     if (undo.indexOf(result.txid) !== -1) {
         return existing;
     }
@@ -481,7 +480,7 @@ function processCategoryResult(result, existing, undo, raw) {
 
 // TODO: Can we merge processEntry and processCategory?
 
-function processEntryResult(result, existing, undo, raw) {
+function processEntryResult(result, existing, undo, rows) {
     if (undo.indexOf(result.txid) !== -1) {
         return existing;
     }
@@ -538,7 +537,7 @@ function processEntryResult(result, existing, undo, raw) {
     return existing;
 }
 
-function processVoteResult(result, existing, undo, raw) {
+function processVoteResult(result, existing, undo, rows) {
 
     const obj = findObjectByTX(result.action_id, existing);
     if (obj) {
@@ -553,9 +552,9 @@ function processVoteResult(result, existing, undo, raw) {
 
         // Backfill the raw change logs with satoshis
         if (satoshis > 0) {
-            for (var i in raw) {
-                if (raw[i].txid == result.txid) {
-                    raw[i].satoshis = satoshis;
+            for (var i in rows) {
+                if (rows[i].txid == result.txid) {
+                    rows[i].satoshis = satoshis;
                 }
             }
         }
@@ -566,27 +565,14 @@ function processVoteResult(result, existing, undo, raw) {
     return existing;
 }
 
-function processResult(result, existing, undo, raw) {
-    /*
-    if (undo.indexOf(result.txid) !== -1) {
-        existing.push({
-            "txid": result.txid,
-            "address": result.address,
-            "type": "other",
-            "blah": "hey",
-            "satoshis": 10000
-        });
-        return existing;
-    }
-    */
-
+function processResult(result, existing, undo, rows) {
     switch (result.type) {
         case "category":
-            return processCategoryResult(result, existing, undo, raw);
+            return processCategoryResult(result, existing, undo, rows);
         case "entry":
-            return processEntryResult(result, existing, undo, raw);
+            return processEntryResult(result, existing, undo, rows);
         case "vote":
-            return processVoteResult(result, existing, undo, raw);
+            return processVoteResult(result, existing, undo, rows);
         default:
             console.log("error processing result", result);
             return existing;
@@ -906,6 +892,28 @@ function findObjectByTX(txid, results=[]) {
         }
     }
     return null;
+}
+
+function findRootActionID(result, results=[]) {
+
+    console.log("FINDING ROOT ACTION FOR", result, results.length);
+
+    if (!result.action_id) {
+        return null;
+    }
+
+    if (result.type == "undo" && result.action_id) {
+        console.log("CHECKING PARENT TX AT", result.action_id);
+        const parent = findObjectByTX(result.action_id, results);
+        if (parent) {
+            const parent_action_id = findRootActionID(parent, results);
+            if (parent_action_id) {
+                return parent_action_id;
+            }
+        }
+    }
+
+    return result.action_id;
 }
 
 

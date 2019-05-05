@@ -64,7 +64,6 @@ class EntryItem extends React.Component {
 
     handleUpvote(e) {
         this.setState({"isTipping": true});
-
     }
 
     handleToggleExpand(e) {

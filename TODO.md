@@ -1,14 +1,13 @@
 ## TODO
 
-### protocol changes
-* PROTOCOL.md
+* changelog header is visible on loading
+* try to get rid of some of the extra state in app
 
 ### code changes
 * possible to only sort results once instead of every time?
 * convert txpool to hashtable? See if anywhere depends on order
 * have debug mode that shows how big network requests are...so we know if we are bloating the replies accidentally
 * check everything with slow connection again
-* split out helpers into business logic, split out process functions into process.js
 
 * forking
  - project for self-forking a webpage
@@ -61,6 +60,7 @@
 
 ### launch / content / submissions
  - protocol reset id
+ - clean up protocol language
  - upload on bitcom
  - create good examples (collab with bsvdevs, onchain games, onchain art, onchain utilities)
  - on-chain app
@@ -96,6 +96,7 @@
 * AIP to sign data by author
 * Categories "pull up" and aggregate their sub-categories
 * Attach comments to votes?
+* Sort changelog by graph-dependant order
 
 ## FEEDBACK
 * bitdb bug: event stream is getting messages it shouldn't

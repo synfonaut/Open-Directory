@@ -100,7 +100,7 @@ class CategoryItem extends React.Component {
             ];
 
             const button = document.getElementById(this.props.item.txid).querySelector(".category-delete-money-button")
-            console.log(button);
+            console.log(OP_RETURN);
 
             databutton.build({
                 data: OP_RETURN,

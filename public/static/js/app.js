@@ -5,6 +5,7 @@ class OpenDirectoryApp extends React.Component {
             raw: {},
             cache: {},
             items: [],
+            txpool: [],
             location: [""],
             messages: [],
             category: {"txid": null, "needsupdate": true},
@@ -192,7 +193,7 @@ class OpenDirectoryApp extends React.Component {
                           </div>
 
                           {(shouldShowAddNewEntryForm || shouldShowAddNewCategoryForm) && <hr />}
-                            <ChangeLog items={changelog} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
+                            <ChangeLog changelog={changelog} txpool={this.state.txpool} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
                           <div className="row">
                               <div className="column">
                                   <p align="center"><a href="https://twitter.com/synfonaut">@synfonaut</a></p>
@@ -285,7 +286,9 @@ class OpenDirectoryApp extends React.Component {
                 };
 
 
-                const results = processResults(rows);
+                const txpool = processOpenDirectoryTransactions(rows);
+
+                const results = processResults(rows, txpool);
                 if (this.state.category && this.state.category.txid && this.state.category.needsdata) { // hacky...better way?
                     var found = false;
                     for (const result of results) {
@@ -313,6 +316,7 @@ class OpenDirectoryApp extends React.Component {
                 state["cache"] = cache;
 
                 state["items"] = results;
+                state["txpool"] = txpool;
 
                 this.setState(state);
                 this.setupNetworkSocket();
