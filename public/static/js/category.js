@@ -7,7 +7,7 @@ class CategoryItem extends React.Component {
             "isDeleting": false,
             "isEditing": false,
             "isTipping": false,
-            "tip": 0.05,
+            "tip": SETTINGS["tip_amount"],
             "isShowingTipChain": false
         };
 
@@ -159,6 +159,12 @@ class CategoryItem extends React.Component {
                 onPayment: (msg) => {
                     console.log(msg);
                     setTimeout(() => {
+
+                        const local_settings = get_local_settings();
+                        local_settings["tip_amount"] = amount;
+                        use_local_settings(local_settings);
+                        save_local_settings(local_settings);
+
                         this.clearForm();
                         this.props.onSuccessHandler("Successfully upvoted category, it will appear automatically—please refresh the page if it doesn't");
                     }, 5000);

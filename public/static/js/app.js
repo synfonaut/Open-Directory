@@ -38,19 +38,6 @@ class OpenDirectoryApp extends React.Component {
         this._isMounted = false;
     }
 
-    performCheckForUpdates() {
-        getLatestUpdate().then(update => {
-            if (document.location.origin != update.uri) {
-                console.log("Current location doesn't match latest update URI...new version available", document.location.origin, update.uri);
-                const redirect_url = <a href={update.uri}>new version</a>;
-                this.addSuccessMessage(<div>Open Directory has a {redirect_url} available, check it out!</div>, null, 10000);
-            }
-        }).catch((e) => {
-            console.log("Error while checking for updates", e);
-            this.addErrorMessage("Error while checking for updates");
-        });
-    }
-
     addMessage(msg, type, cb=null, timeout=5000) {
         const key = (new Date()).getTime();
         const messages = this.state.messages.concat([{
@@ -212,6 +199,19 @@ class OpenDirectoryApp extends React.Component {
 
     }
 
+    performCheckForUpdates() {
+        getLatestUpdate().then(update => {
+            if (document.location.origin != update.uri) {
+                console.log("Current location doesn't match latest update URI...new version available", document.location.origin, update.uri);
+                const redirect_url = <a href={update.uri}>new version</a>;
+                this.addSuccessMessage(<div>Open Directory has a {redirect_url} available, check it out!</div>, null, 10000);
+            }
+        }).catch((e) => {
+            console.log("Error while checking for updates", e);
+            this.addErrorMessage("Error while checking for updates");
+        });
+    }
+
     getLocation() {
         return window.location.hash.replace(/^#\/?|\/$/g, '').split('/');
     }
@@ -278,6 +278,9 @@ class OpenDirectoryApp extends React.Component {
 
             const category_id = (this.state.category ? this.state.category.txid : null);
             fetch_from_network(category_id).then((rows) => {
+
+                console.log("network content length", JSON.stringify(rows).length);
+
                 const txpool = processOpenDirectoryTransactions(rows);
                 const results = processResults(rows, txpool);
                 const success = this.checkForUpdatedActiveCategory(results);
@@ -328,7 +331,6 @@ class OpenDirectoryApp extends React.Component {
     }
 
     setupNetworkSocket() {
-
         if (this.socket) {
             console.log("refreshing network socket");
             this.socket.close();
@@ -338,7 +340,10 @@ class OpenDirectoryApp extends React.Component {
         }
 
         const query = get_bitdb_query(this.state.category ? this.state.category.txid : null);
-        const url = "https://bitomation.com/s/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + toBase64(JSON.stringify(query));
+        const encoded_query = toBase64(JSON.stringify(query));
+        const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "s");;
+        const url = api_url.replace("{query}", encoded_query);
+
         this.socket = new EventSource(url);
         this.socket.onmessage = (e) => {
             try {

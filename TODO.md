@@ -1,23 +1,8 @@
 ## TODO
 
-* try to get rid of some of the extra state in app
-* optimize: possible to only sort results once instead of every time?
-* code cleanup: convert txpool to hashtable? See if anywhere depends on order
-* helpful: have debug mode that shows how big network requests are...so we know if we are bloating the replies accidentally
-
-
-
-
 * almost every interaction should have a custom tip (create entry, create category) because this helps them rank better
 * allow tip amount when submitting a link and a category... since it now contributes to economic activity
  * test that we're accounting for this, so far only votes have been tested
-* add custom tippping on upvoting categories
-* each action should have variable tip (should each action have a specific amount?)
-
-
-
-
-
 
 
 ### code changes
@@ -27,10 +12,6 @@
  - main template parameters split out in HTML/JSON
  - fork button! let user edit html, edit paragraphs, change name, set root category, change color theme
  - add themes that stick and work during forking (color logo with css)
-
-* use local storage for user-specific settings, like an alternative endpiont for bitdb genesis and api key
-* save whatever you tipped last as default (localstorage)
-* customize bitdb server
 
 * Plug bitdb into bit:// for genesis bitdb so we don't have to hardcode it
 

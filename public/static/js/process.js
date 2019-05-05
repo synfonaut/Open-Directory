@@ -7,8 +7,49 @@ if (isNode) {
     markdownit = require("markdown-it");
 }
 
+var SETTINGS = {
+    "api_key": "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z",
+    "api_endpoint": "https://bitomation.com/{api_action}/{api_key}/{query}",
+    "tip_amount": 0.05,
+};
 
-var BSV_PRICE = 30.00;
+function get_local_settings() {
+    const storage = window.localStorage;
+    const cached_settings = storage["settings"];
+    if (cached_settings) {
+        try {
+            return JSON.parse(cached_settings);
+        } catch (e) {
+        }
+    }
+    return {};
+}
+
+function save_local_settings(local_settings) {
+    if (local_settings) {
+        window.localStorage["settings"] = JSON.stringify(local_settings);
+        console.log("Saving local settings", local_settings);
+    } else {
+        delete window.localStorage["settings"];
+    }
+}
+
+function use_local_settings(local_settings) {
+    if (local_settings && Object.keys(local_settings).length > 0) {
+        console.log("Found local settings", local_settings);
+        for (const key in local_settings) {
+            const val = local_settings[key];
+            console.log("Local setting override", key, val);
+            SETTINGS[key] = val;
+        }
+    }
+}
+
+if (isBrowser) {
+    use_local_settings(get_local_settings());
+}
+
+var BSV_PRICE = 53.00;
 const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
 const BCAT_MEDIA_PROTOCOL = "15DHFxWZJT58f9nhyGnsRBqrgwK4W6h4Up";
 const SUPPORTED_TIPCHAIN_PROTOCOLS = [
@@ -18,7 +59,6 @@ const SUPPORTED_TIPCHAIN_PROTOCOLS = [
     "bcat://",
 ];
 
-const OPENDIR_TIP_AMOUNT = 0.05;
 const OPENDIR_TIP_CURRENCY = "USD";
 const OPENDIR_TIP_ADDRESS = "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL";
 const OPENDIR_PROTOCOL = "1dirxA5oET8EmcdW4saKXzPqejmMXQwg2";
@@ -234,11 +274,11 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
 
 
 function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
-
     const query = get_bitdb_query(category_id, cursor, limit);
-    
-    var url = "https://bitomation.com/q/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + toBase64(JSON.stringify(query));
-    var header = { headers: { key: "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z" } };
+    const encoded_query = toBase64(JSON.stringify(query));
+    const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
+    const url = api_url.replace("{query}", encoded_query);
+    const header = { headers: { key: SETTINGS.api_key } };
 
     function handleResponse(resolve, reject, r) {
 
@@ -294,6 +334,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
                     reject("Error while retrieving response from server " + r.status);
                     return;
                 }
+
                 return r.json();
             }).then(r => { handleResponse(resolve, reject, r) }).catch(reject);
         }
@@ -934,7 +975,6 @@ function findRootActionID(result, results=[]) {
 if (typeof window == "undefined") {
     module.exports = {
         "OPENDIR_TIP_ADDRESS": OPENDIR_TIP_ADDRESS,
-        "OPENDIR_TIP_AMOUNT": OPENDIR_TIP_AMOUNT,
         "OPENDIR_TIP_CURRENCY": OPENDIR_TIP_CURRENCY,
         "OPENDIR_PROTOCOL": OPENDIR_PROTOCOL,
         "OPENDIR_ACTIONS": OPENDIR_ACTIONS,

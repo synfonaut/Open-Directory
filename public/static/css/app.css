@@ -112,11 +112,13 @@ a {
 
 .entry .description {
     margin: 0;
+    margin-left: 60px;
 }
 
 .entry .url {
     font-size: 14px;
     margin: 0;
+    margin-left: 60px;
 }
 
 .entry .url a {
@@ -210,14 +212,20 @@ form {
 }
 
 .entry .upvoteContainer .upvote {
-    float: left;
-    padding: 5px 11px 3px 0px;
+    padding-top: 5px;
+    padding-bottom: 3px;
+    min-width: 0px;
+    width: 60px;
+    text-align: center;
 }
 
 .category .upvoteContainer .upvote {
-    padding: 8px 11px 3px 0px;
+    padding-top: 8px;
+    padding-bottom: 3px;
     font-size: 15px;
-    float: left;
+    min-width: 0px;
+    width: 60px;
+    text-align: center;
 }
 
 .sort .label {
@@ -254,11 +262,6 @@ form {
     font-weight: 400;
 }
 
-.upvoteContainer .entry,
-.upvoteContainer .category {
-    float: left;
-    max-width: 225px;
-}
 /* https://loading.io/css/ */
 .lds-circle {
     display: inline-block;
@@ -595,6 +598,8 @@ form {
     border: 1px solid #eee;
     display: inline-block;
     padding: 6px 12px;
+    white-space: nowrap;
+    max-width: 100%;
     border-radius: 10px;
 }
 
@@ -725,11 +730,6 @@ pre {
 
     .clearfix.two-column:after {
         clear: both;
-    }
-
-    .upvoteContainer .entry,
-    .upvoteContainer .category {
-        max-width: 80%;
     }
 
 }
