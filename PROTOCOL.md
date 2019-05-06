@@ -27,6 +27,7 @@ Open Directory protocols have two primary forms, creating new items (categories 
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     category.delete
     <category_txid>
+    [description]
 
 ### Entry
 
@@ -49,6 +50,7 @@ Open Directory protocols have two primary forms, creating new items (categories 
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     entry.delete
     <entry_txid>
+    [description]
 
 ### Vote
 
@@ -69,21 +71,6 @@ Description is optional and is a message about why you are undoing a change.
     <reference_id>
     <txid>
     [description]
-
-### Forking (proposed)
-
-This needs more thinking... need to be able to publish to new endpoint which includes all kinds of customizations
-
-    # soft fork
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    fork.soft
-    <category_txid>
-
-    # hard fork does a deep copy of entire directory
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
-    fork.hard
-    <category_txid>
-
 
 ### Moderation (proposed)
 
@@ -174,4 +161,13 @@ Step 5. Delete a moderator
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     moderator.delete
     <publickey>
+
+### Forking (proposed)
+
+Directory forks need more thinking... what should forking do? Should it change history and let user override the tipchain? Right now forking is mainly visual (choose sub-category, change colors, etc.)
+
+    # hard fork does a deep copy of entire directory
+    fork
+    <category_txid>
+
 

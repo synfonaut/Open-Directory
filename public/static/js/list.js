@@ -125,7 +125,7 @@ class List extends React.Component {
                             <li><a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.state.sort == "hot" ? "active" : ""}>hot</a></li>
                             <li><a onClick={() => { this.handleChangeSortOrder("money") }} className={this.state.sort == "money" ? "active" : ""}>$</a></li>
                             <li><a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.state.sort == "votes" ? "active" : ""}>votes</a></li>
-                            <li><a onClick={() => { this.handleChangeSortOrder("time") }} className={this.state.sort == "time" ? "active" : ""}>time</a></li>
+                            <li><a onClick={() => { this.handleChangeSortOrder("time") }} className={this.state.sort == "time" ? "active" : ""}>new</a></li>
                         </ul>
                         <div className="clearfix"></div>
                     </div>
@@ -155,7 +155,6 @@ class List extends React.Component {
                 {heading}
                 {categories && categories.length > 0 && 
                     <div className={isHome ? "homepage" : "subcategories"}>
-                        {!isHome && <h2>subcategories</h2>}
                         <ul className="category list">
                             {categories.map((category, i) => {
                                 const output = <CategoryItem key={"category-" + category.txid} item={category} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />;

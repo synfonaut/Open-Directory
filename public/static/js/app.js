@@ -194,11 +194,31 @@ class OpenDirectoryApp extends React.Component {
     }
 
     performCheckForUpdates() {
+
+        const now = (new Date()).getTime();
+        const MAX_CACHE_SECONDS = 60 * 60 * 4; // update every 4 hours
+
+        const storage = window.localStorage;
+        const last_update_timestamp = storage["last_update_timestamp"];
+        if (last_update_timestamp) {
+            const diff = now - last_update_timestamp;
+
+            if (diff < MAX_CACHE_SECONDS * 1000) {
+                console.log("Recently checked for updates.... skipping");
+                return;
+            }
+        }
+
+        storage["last_update_timestamp"] = now;
+        console.log("Checking for latest version of application");
+
         getLatestUpdate().then(update => {
             if (document.location.origin != update.uri) {
                 console.log("Current location doesn't match latest update URI...new version available", document.location.origin, update.uri);
                 const redirect_url = <a href={update.uri}>new version</a>;
                 this.addSuccessMessage(<div>Open Directory has a {redirect_url} available, check it out!</div>, null, 10000);
+            } else {
+                console.log("Didn't find a more recent version of application");
             }
         }).catch((e) => {
             console.log("Error while checking for updates", e);

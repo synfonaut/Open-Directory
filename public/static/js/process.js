@@ -841,6 +841,12 @@ function processOpenDirectoryTransaction(result) {
             obj.change = convertKeyValues(args);
         } else if (item_action == "delete") {
             obj.action_id = args.shift();
+
+            const desc = args.shift();
+            if (desc) {
+                obj.description = desc;
+                result.description = desc;
+            }
         } else {
             console.log("unknown category action", result);
         }
@@ -853,6 +859,12 @@ function processOpenDirectoryTransaction(result) {
             obj.change = convertKeyValues(args);
         } else if (item_action == "delete") {
             obj.action_id = args.shift();
+
+            const desc = args.shift();
+            if (desc) {
+                obj.description = desc;
+                result.description = desc;
+            }
         } else {
             console.log("unknown entry action", result);
         }

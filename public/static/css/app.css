@@ -9,7 +9,7 @@ body {
     background: white;
     border-left: 1px solid #e8e2d699;
     border-right: 1px solid #e8e2d699;
-    padding: 5px 12px;
+    padding: 6px 20px;
 }
 
 input[type='email'], input[type='number'], input[type='password'], input[type='search'], input[type='tel'], input[type='text'], input[type='url'], textarea, select {
@@ -45,11 +45,11 @@ h1 {
 }
 
 .intro {
-    background: rgba(255, 255, 255, 0.85);
-    padding: 10px 20px 10px 20px;
+    background: #efefef11;
+    margin: 0 -20px 0 -20px;
+    padding: 10px 25px;
     margin-bottom: 40px;
-    border-radius: 5px;
-    border: 1px solid #e8e2d699;
+    border-bottom: 1px solid #efefef;
 }
 
 .blurb {
@@ -188,6 +188,8 @@ form {
     padding: 11px;
     /*color: #444;*/
     border-bottom: 1px solid #FF6384cc;
+    position: relative;
+    z-index: 2;
     box-shadow: 1px 1px 2px #CCCCCCcc;
     color: white;
 }
@@ -216,9 +218,8 @@ form {
 }
 
 .subcategories ul.category {
-    border: 1px solid #b5b5b547;
-    padding: 5px 10px;
-    background: #efefef1a;
+    padding: 7px 14px;
+    background: #efefef33;
 }
 
 .subcategories ul.category li {
@@ -268,7 +269,7 @@ form {
 
 .subcategories .category .upvoteContainer {
     vertical-align: middle;
-    padding: 4px 0;
+    padding: 6px 0;
 }
 
 .subcategories .category .upvoteContainer .upvote {

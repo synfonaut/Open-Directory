@@ -28,23 +28,26 @@ Open Directory is open source in two ways.
 
 Check out the [Open Directory Protocol][/protocol.md] to learn more.
 
-## Issues and Experiments
+## Open Directory v2
 
-- Should undoing or deleting an action have a high economic cost?
+* Planaria to reduce load on client
+* Planaria to remove maxDepth restriction on categories and search
+* Planaria to crawl Bitcoin Stickers from websites for including C:// and other protocols in tipchain
+* Planaria to sort changelog by graph-dependant order
+* Admin console that can "detach" certain directories to remove them from view
+* Moderation tools
+* Statistics (money, categories, links, votes)
+* Custom currency support
+* Pretty Bitcom links like bit://<OPENDIR_PROTOCOL>/<txid>
 
-## Plan for v0.2
+Open question: should actions mirror economic costs? ex. undoing a $50 entry costs $50
 
-The plan for the next version of Open Directory introduces two new experiments
-
-1. Add moderation controls described above (likely need identity support in MoneyButton/Bottle)
-2. Experiment with economic-based rules for moderation
-
-
-For the second one, if a link has $100 invested in it, should you be able to delete it for $0.01?
-
-You can easily undelete it for $0.01, but if you made it $100 to delete, you may have just incentivized spam.
-
+## FUTURE
+* AIP to sign data by author
+* Categories "pull up" and aggregate their sub-categories
+* Attach comments to votes?
 
 ## About
 
 @synfonaut
+
