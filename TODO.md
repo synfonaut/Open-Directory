@@ -1,5 +1,9 @@
 ## Alpha
 
+* doesn't look good on mobile at all, not resizing, overflowing
+* read design for hackers and consider improvements
+* miligram isn't breaking for phone
+
 - content
  - homepage
   - add links / hover information on description to give more details
@@ -32,6 +36,7 @@
 
 
 - Redesign
+ - multiple color schemes: red/orange, blue/purple, green/yellow
  - dedicated add directory page
  - favicon
  - changelog should be able to toggle all, then close individually
@@ -46,7 +51,7 @@
 should only be able to edit a category on the actual category page
 
 - Forking
- - custom category
+ - custom category, no back button
  - custom theme
  - customize intro blurb
  - customize css

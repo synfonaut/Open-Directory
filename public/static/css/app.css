@@ -59,6 +59,11 @@ hr {
     border-top: 1px dashed #e8e2d699;
 }
 
+.back {
+    padding: 2px 0 1px 0;
+    font-size: 13px;
+}
+
 p.nopadding {
     padding-bottom: 0;
     margin-bottom: 10px;
@@ -123,6 +128,9 @@ a {
     font-size: 14px;
     margin: 0;
     margin-left: 60px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .entry .url a {
@@ -208,9 +216,12 @@ form {
 }
 
 #logo {
-    width: 500px;
+    width: 300px;
     max-width: 100%;
-    padding: 20px 0;
+    padding-top: 20px;
+}
+
+.intro {
 }
 
 .intro li {
@@ -753,7 +764,7 @@ pre {
 }
 
 /* Larger than mobile screen */
-@media (min-width: 40.0rem) {
+@media (min-width: 45.0rem) {
     ul.list li.category {
         width: 50%;
     }
@@ -811,7 +822,7 @@ pre {
 }
 
 /* Larger than tablet screen */
-@media (min-width: 80.0rem) {
+@media (min-width: 85.0rem) {
 
     ul.list li.category {
         width: 33%;
@@ -828,5 +839,5 @@ pre {
 }
 
 /* Larger than desktop screen */
-@media (min-width: 120.0rem) {
+@media (min-width: 125.0rem) {
 }

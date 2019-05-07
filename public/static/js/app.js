@@ -158,6 +158,7 @@ class OpenDirectoryApp extends React.Component {
                           {hash == "" && 
                             <div className="intro">
                               <img id="logo" src="/static/img/logo.png" />
+                              <p><code>v1—beta</code> </p>
                               <div className="row">
                                   <div className="column">
                                       <p>Open Directory lets anyone build resources like <a href="https://www.reddit.com">Reddit</a>, <a href="https://github.com/sindresorhus/awesome">Awesome Lists</a> and <a href="http://dmoz-odp.org">DMOZ</a> ontop of Bitcoin (SV). With Open Directory you can:</p>

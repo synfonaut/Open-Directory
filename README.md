@@ -38,7 +38,8 @@ Check out the [Open Directory Protocol][/protocol.md] to learn more.
 * Moderation tools
 * Statistics (money, categories, links, votes)
 * Custom currency support
-* Pretty Bitcom links like bit://<OPENDIR_PROTOCOL>/<txid>
+* Pretty in-browser Bitcom links like bit://<OPENDIR_PROTOCOL>/<txid>
+* Pretty in-app Bitcom links like bit://<B_MEDIA_PROTOCOL>/<txid> converted to <protocol name>: <txid>
 
 Open question: should actions mirror economic costs? ex. undoing a $50 entry costs $50
 
