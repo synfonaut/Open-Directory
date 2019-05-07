@@ -72,6 +72,22 @@ Description is optional and is a message about why you are undoing a change.
     <txid>
     [description]
 
+### Forking
+
+Forking needs more thinking behind it—currently there's two ways to fork:
+
+* Soft fork — changing meta parameters, theme, title, about, main category, intro, and base tipchain address
+* Hard fork — bulk replaying transactions so you own 100% of tipchain
+
+    # soft fork uploads a new frontend, adds a redirect, but underlying data stays the same
+    fork.soft
+    <uri>
+    [category_txid]
+
+    # (proposed) hard fork replays every transaction to takeover ownership, likely combo of protocol + client side. needs more thinking....
+    fork.hard
+    ...
+
 ### Moderation (proposed)
 
 There are three kinds of proposed moderation, they're loosely inspired by IRC moderation—where a list of approved operators can set the directory into moderation "modes" at any time.
@@ -161,13 +177,5 @@ Step 5. Delete a moderator
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     moderator.delete
     <publickey>
-
-### Forking (proposed)
-
-Directory forks need more thinking... what should forking do? Should it change history and let user override the tipchain? Right now forking is mainly visual (choose sub-category, change colors, etc.)
-
-    # hard fork does a deep copy of entire directory
-    fork
-    <category_txid>
 
 

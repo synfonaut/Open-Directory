@@ -14,8 +14,17 @@ const SUPPORTED_TIPCHAIN_PROTOCOLS = [
 ];
 
 const OPENDIR_TIP_CURRENCY = "USD";
-const OPENDIR_TIP_ADDRESS = "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL";
+
+// Open Directory Bitcom Protocol
 const OPENDIR_PROTOCOL = "1dirxA5oET8EmcdW4saKXzPqejmMXQwg2";
+
+// Address included in tipchain
+const OPENDIR_TIP_ADDRESS = "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL";
+
+// Address that gets admin privileges, like update versino and detatch
+const OPENDIR_ADMIN_ADDRESS = "18yPrJqrcoxAeGByXHaLhzVtmfb4ToQAWd";
+
+// Allowed actions
 const OPENDIR_ACTIONS = [
     "category.create",
     "category.update",
@@ -25,6 +34,7 @@ const OPENDIR_ACTIONS = [
     "entry.delete",
     "vote",
     "undo",
+    "fork.soft",
 ];
 
 function get_bitdb_query(category_id=null, cursor=0, limit=200) {

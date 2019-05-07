@@ -4,6 +4,11 @@
 * read design for hackers and consider improvements
 * miligram isn't breaking for phone
 
+* admin console...detatch a category
+ - process entire admin command set and dispatch commands
+
+* don't like the tipchain? fork it!
+
 - content
  - homepage
   - add links / hover information on description to give more details

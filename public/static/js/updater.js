@@ -27,25 +27,27 @@ function getUpdates() {
     });
 }
 
+// TODO: Convert this to admin process and process admin commands
 function fetchUpdates() {
     const query = {
         "v": 3,
         "q": {
             "find": {
-                "out.s1": "18yPrJqrcoxAeGByXHaLhzVtmfb4ToQAWd",
+                "out.s1": OPENDIR_ADMIN_ADDRESS,
                 "out.s2": "uri",
-                "in.e.a": "18yPrJqrcoxAeGByXHaLhzVtmfb4ToQAWd"
+                "in.e.a": OPENDIR_ADMIN_ADDRESS,
             },
-            "limit": 9999
+            "limit": 9999 // can eventually do paging here if necessary, admin log should stay small though
         },
         "r": {
             "f": "[.[] | {\"height\": .blk.i, \"address\": .in[0].e.a, \"txid\": .tx.h, \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}]"
         }
     };
 
-    // TODO: Make generic
-    var url = "https://bitomation.com/q/1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z/" + toBase64(JSON.stringify(query));
-    var header = { headers: { key: "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z" } };
+    const encoded_query = toBase64(JSON.stringify(query));
+    const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
+    const url = api_url.replace("{query}", encoded_query);
+    const header = { headers: { key: SETTINGS.api_key } };
 
     return new Promise((resolve, reject) => {
         fetch(url, header).then(function(r) {
