@@ -168,6 +168,7 @@ form {
     width: 100%;
     border-bottom: 1px solid #ddd;
     background-color: #555;
+    min-height: 49px;
     padding: 11px;
     position: relative;
     z-index: 2;
@@ -408,7 +409,7 @@ form {
     min-height: 100%;
     right: 0;
     z-index: 100;
-    padding: 15px 20px;
+    padding: 15px 18px;
 }
 
 .fork input,
@@ -423,6 +424,7 @@ form {
 }
 
 .fork .select-theme { 
+    text-decoration: none;
     background: white;
     display: inline-block;
     width: 30px;
@@ -502,12 +504,9 @@ form {
     line-height: 20px;
 }
 
-.fork .form-combo-item {
-    margin-bottom: 15px;
-}
-
 .fork .form-item {
-    margin-bottom: 23px;
+    margin-bottom: 13px;
+    padding-top: 5px;
     border-bottom: 1px solid #efefef33;
 }
 
@@ -560,6 +559,11 @@ form {
     width: 20px;
     text-align: center;
     font-weight: 900;
+}
+
+
+.fork a {
+    text-decoration: underline;
 }
 
 .fork .tipchain .remove a {
@@ -1234,6 +1238,16 @@ body.theme-yellow a { color: #F9F871; }
 .purple-theme .pages a.active {
     border-color: #9b4dca;
     color: #9b4dca;
+}
+
+.purple-theme .error {
+    background: #BA99CB;
+    border: 1px solid #BA99CB;
+}
+
+.purple-theme .success {
+    background: #9b4dca;
+    border: 1px solid #9b4dca;
 }
 
 /** Green Theme **/

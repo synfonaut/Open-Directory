@@ -1,5 +1,11 @@
 ## Alpha
 
+* error when increasing maxDepth to 6,7,8
+* category update isn't showing on home page and description is outdated
+
+* undo loop is borked
+* display list of forks for each category
+
 * read design for hackers and consider improvements
 * animations? messages ..expanding forms
 
@@ -9,6 +15,23 @@
 * change logo to change with color scheme
 * edit entry is very large
 
+* include tip in fork
+
+about
+                    <p>it's early days so no moderation, let's call it a feature instead of a bug for now and see what the market does</p>
+                    <p>tip chain</p>
+                    <p>tools, milligram, bitdb, moneybutton</p>
+                    <p>* add bitcom protocol link on about page</p>
+                    <p>* add information about micro payments. they're built into the actions of the site</p>
+                    <p>* about with tip screen</p>
+                    <p>* bug: no changelog on about page</p>
+                    <p>clean up static page display logic...</p>
+                    <p>* about page BSV particle effect, only run when active</p>
+                    <p>* beta..stuff could break. tip might go to wrong place</p>
+                    <p>* about, link back to data providers for bitcoin price coinmarketplace, coingecko, cryptonator, cors.io, cors-anywhere</p>
+                     <p><code>v0.1—beta</code> </p>
+                    <p><small>Open Directory is an experiment. Be kind. Have fun. Build the future. ✌️</small></p>
+                    <p>✌️ synfonaut</p>
 
 
 

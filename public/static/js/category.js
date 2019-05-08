@@ -23,7 +23,7 @@ class CategoryItem extends Item {
                             <span className="category-count">({this.props.item.entries})</span>
                             {actions}
                         </h3>
-                        <p className="description" dangerouslySetInnerHTML={{__html: this.props.item.rendered_description}}></p>
+                        <ReactMarkdown className="description" source={this.props.item.description} />
                         {this.state.action == "editing" && <div className="column"><EditCategoryForm category={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} onSubmit={this.clearForm.bind(this)} /></div>}
                         {this.state.action == "tipping" && <TipchainItem item={this.props.item} items={this.props.items} onSuccessHandler={this.handleSuccessfulTip.bind(this)} onErrorHandler={this.props.onErrorHandler} />}
                         {this.state.action == "deleting"  && <DeleteItem item={this.props.item} onSuccessHandler={this.handleSuccessfulDelete.bind(this)} onErrorHandler={this.props.onErrorHandler} />}

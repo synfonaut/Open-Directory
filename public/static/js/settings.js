@@ -1,4 +1,3 @@
-const isNode = (typeof window == "undefined");
 const isBrowser = (typeof window == "object");
 
 var SETTINGS = {

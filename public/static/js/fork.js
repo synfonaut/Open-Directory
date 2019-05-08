@@ -56,7 +56,7 @@ class Fork extends React.Component {
                                     <label>
                                         Default Tipchain
                                     </label>
-                                    <p>Set the addresses you want to send payments when transactions happen on the site (you might consider leaving Open Directory :)</p>
+                                    <p>Specify which addresses get included in the tipchain</p>
                                     <table className="tipchain">
                                     <tbody>
                                     <tr>
@@ -77,7 +77,7 @@ class Fork extends React.Component {
                                         Title
                                     </label>
                                     <p>What is the name of your directory?</p>
-                                    <input type="text" defaultValue="Open Directory" />
+                                    <input type="text" value={this.props.title} onChange={this.props.onChangeTitle} />
                                 </div>
                             </div>
                             <div className="row form-item">
@@ -85,7 +85,7 @@ class Fork extends React.Component {
                                     <label>
                                         Theme
                                     </label>
-                                    <p>Select one of the 4 default themes</p>
+                                    <p>Select a color scheme</p>
                                     <div className="row select-a-theme">
                                         <div className="column"><a className="select-theme orange" onClick={() => { this.props.onChangeTheme("orange-theme") }}>{(this.props.theme == "orange-theme") && "✔️"}</a></div>
                                         <div className="column"><a className="select-theme blue" onClick={() => { this.props.onChangeTheme("blue-theme") }}>{(this.props.theme == "blue-theme") && "✔️"}</a></div>
@@ -109,7 +109,7 @@ class Fork extends React.Component {
                                         About
                                     </label>
                                     <p>Optional text that goes on about page (markdown supported)</p>
-                                    <textarea></textarea>
+                                    <textarea value={this.props.aboutMarkdown} onChange={this.props.onAboutChange}></textarea>
                                 </div>
                             </div>
                             <div className="row form-item">

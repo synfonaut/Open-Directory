@@ -17,7 +17,9 @@ class OpenDirectoryApp extends React.Component {
 
             category: {"txid": null, "needsupdate": true},
 
+            title: "Open Directory",
             intro_markdown: "# Open Directory\n`v1—beta`\n\nOpen Directory lets anyone build resources like [Reddit](https://www.reddit.com), [Awesome Lists](https://github.com/sindresorhus/awesome) and [DMOZ](http://dmoz-odp.org) ontop of Bitcoin (SV). With Open Directory you can:\n\n* 💡 Create your own resource and earn money when people tip through upvotes\n* 💰 Incentivize quality submissions by sharing a portion of tips back to contributors\n* 🛠 Organize an existing directory or fork it with 1-click and start your own\n\nCreate your own directory or view the existing ones below.",
+            about_markdown: "# about markdown\nhello world",
             theme: "orange-theme",
         };
 
@@ -86,7 +88,14 @@ class OpenDirectoryApp extends React.Component {
 
     handleCloseFork() {
         this.setState({"isForking": false});
+    }
 
+    handleChangeTitle(e) {
+        this.setState({"title": e.target.value});
+    }
+
+    didChangeAboutHandler(e) {
+        this.setState({"about_markdown": e.target.value});
     }
 
     handleToggleFork() {
@@ -111,25 +120,9 @@ class OpenDirectoryApp extends React.Component {
         var changelog;
 
         if (hash == "about") {
-            body = (
-                <div>
-                    <h1>About Open Directory</h1>
-                    <p>it's early days so no moderation, let's call it a feature instead of a bug for now and see what the market does</p>
-                    <p>tip chain</p>
-                    <p>tools, milligram, bitdb, moneybutton</p>
-                    <p>* add bitcom protocol link on about page</p>
-                    <p>* add information about micro payments. they're built into the actions of the site</p>
-                    <p>* about with tip screen</p>
-                    <p>* bug: no changelog on about page</p>
-                    <p>clean up static page display logic...</p>
-                    <p>* about page BSV particle effect, only run when active</p>
-                    <p>* beta..stuff could break. tip might go to wrong place</p>
-                    <p>* about, link back to data providers for bitcoin price coinmarketplace, coingecko, cryptonator, cors.io, cors-anywhere</p>
-                     <p><code>v0.1—beta</code> </p>
-                    <p><small>Open Directory is an experiment. Be kind. Have fun. Build the future. ✌️</small></p>
-                    <p>✌️ synfonaut</p>
+            body = <div className="about">
+                    <ReactMarkdown source={this.state.about_markdown} />
                 </div>
-            );
         } else {
 
             if (!this.state.isLoading && !this.state.isError) {
@@ -152,7 +145,7 @@ class OpenDirectoryApp extends React.Component {
                         <div className="bounce2"></div>
                         <div className="bounce3"></div>
                     </div>
-                    <p>Loading Open Directory...</p>
+                    <p>Loading {this.state.title}...</p>
                 </div>
 
             error = <div>
@@ -170,10 +163,10 @@ class OpenDirectoryApp extends React.Component {
 
         return (
             <div className={this.state.theme + " wrapper"}>
-                {this.state.isForking && <Fork onSubmitFork={this.handleSubmitFork.bind(this)} onCloseFork={this.handleCloseFork.bind(this)} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } />}
+                {this.state.isForking && <Fork onSubmitFork={this.handleSubmitFork.bind(this)} onCloseFork={this.handleCloseFork.bind(this)} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} aboutMarkdown={this.state.about_markdown} onAboutChange={this.didChangeAboutHandler.bind(this)} />}
                 <nav className="navigation">
                   <section className="container">
-                    <a href="/#" className="navigation-title">Open Directory</a>
+                    <a href="/#" className="navigation-title">{this.state.title}</a>
                     <div className={this.state.networkActive ? "spinner white active" : "spinner white"}>
                         <div className="bounce1"></div>
                         <div className="bounce2"></div>
@@ -240,7 +233,7 @@ class OpenDirectoryApp extends React.Component {
             if (document.location.origin != update.uri) {
                 console.log("Current location doesn't match latest update URI...new version available", document.location.origin, update.uri);
                 const redirect_url = <a href={update.uri}>new version</a>;
-                this.addSuccessMessage(<div>Open Directory has a {redirect_url} available, check it out!</div>, null, 10000);
+                this.addSuccessMessage(<div>{this.state.title} has a {redirect_url} available, check it out!</div>, null, 10000);
             } else {
                 console.log("Didn't find a more recent version of application");
             }
@@ -262,10 +255,10 @@ class OpenDirectoryApp extends React.Component {
 
         var category = this.state.category;
         var items = [];
-        var title = "Open Directory";
+        var title = this.state.title;
 
         if (hash == "about") {
-            title = "About Open Directory";
+            title = "About " + this.state.title;
         } else {
             const category_id = (hash == "" ? null : hash);
             const cached = this.state.cache[category_id];
@@ -278,7 +271,7 @@ class OpenDirectoryApp extends React.Component {
                 const cachedCategory = findObjectByTX(category_id, cached);
                 if (cachedCategory) {
                     cachedCategory.needsdata = true; // don't know for sure the server hasn't updated since we last cached
-                    title = category.name + " — Open Directory";
+                    title = category.name + " — " + this.state.title;
                     category = cachedCategory;
                 }
             }
@@ -358,7 +351,7 @@ class OpenDirectoryApp extends React.Component {
             for (const result of results) {
                 if (result.type == "category" && result.txid == this.state.category.txid) {
                     this.setState({category: result});
-                    document.title = result.name + " — Open Directory";
+                    document.title = result.name + " — " + this.state.title;
                     return true;
                 }
             }

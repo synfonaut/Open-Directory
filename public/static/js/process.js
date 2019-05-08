@@ -1,7 +1,8 @@
+const isNode = (typeof window == "undefined");
+
 var axios;
 if (isNode) {
     axios = require("axios");
-    markdownit = require("markdown-it");
 }
 
 const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
@@ -313,7 +314,10 @@ function processUndos(results) {
     var roots = new Map(results.filter(r => { return r.type != "undo" }).map(r => { return [r.txid, r] }));
     var undos = results.filter(r => { return r.type == "undo" });
 
-    const maxrounds = undos.length * 20;
+    // TODO: Fix this
+    console.log("UNDOS", undos);
+
+    const maxrounds = undos.length * 10;
     var i = 0;
 
     while (roots.size != results.length) {
@@ -458,11 +462,6 @@ function processCategoryResult(result, existing, undo, rows) {
     if (result.action == "create") {
         const obj = result.change;
 
-        if (obj.description) {
-            const markdown = new markdownit();
-            obj.rendered_description = markdown.renderInline(obj.description);
-        }
-
         if (result.action_id) {
             obj.category = result.action_id;
         }
@@ -482,11 +481,6 @@ function processCategoryResult(result, existing, undo, rows) {
         if (obj) {
             for (const key in result.change) {
                 obj[key] = result.change[key];
-
-                if (key == "description") {
-                    const markdown = new markdownit();
-                    obj["rendered_description"] = markdown.renderInline(obj.description);
-                }
             }
         } else {
             console.log("couldn't find category for update", obj, result, existing);
@@ -515,11 +509,6 @@ function processEntryResult(result, existing, undo, rows) {
     if (result.action == "create") {
         const obj = result.change;
 
-        if (obj.description) {
-            const markdown = new markdownit();
-            obj.rendered_description = markdown.renderInline(obj.description);
-        }
-
         if (result.action_id) {
             obj.category = result.action_id;
         }
@@ -540,11 +529,6 @@ function processEntryResult(result, existing, undo, rows) {
         if (obj) {
             for (const key in result.change) {
                 obj[key] = result.change[key];
-
-                if (key == "description") {
-                    const markdown = new markdownit();
-                    obj["rendered_description"] = markdown.renderInline(obj.description);
-                }
             }
         } else {
             console.log("couldn't find category for update", obj, result, existing);

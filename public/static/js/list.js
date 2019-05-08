@@ -111,7 +111,7 @@ class List extends React.Component {
             heading = (<div>
                 {back}
                 <h1>{this.props.category.name}</h1>
-                <p dangerouslySetInnerHTML={{__html: this.props.category.rendered_description}}></p>
+                <ReactMarkdown source={this.props.category.description} />
             </div>);
         }
 

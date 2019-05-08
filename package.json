@@ -5,6 +5,8 @@
   "main": "debug.js",
   "dependencies": {
     "axios": "^0.18.0",
+    "css": "^2.2.4",
+    "google-caja-sanitizer": "^1.0.4",
     "markdown-it": "^8.4.2"
   },
   "devDependencies": {
