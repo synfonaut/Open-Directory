@@ -434,6 +434,17 @@ form {
     color: white;
     font-size: 12px;
     padding: 5px;
+    margin-bottom: 13px;
+}
+
+.fork .select-a-theme .column { 
+    width: 25%;
+    float: left;
+}
+
+.fork .select-a-theme.row { 
+    width: 100%;
+    display: block;
 }
 
 .fork .select-theme.orange { 

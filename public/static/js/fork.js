@@ -112,15 +112,6 @@ class Fork extends React.Component {
                                     <textarea value={this.props.aboutMarkdown} onChange={this.props.onAboutChange}></textarea>
                                 </div>
                             </div>
-                            <div className="row form-item">
-                                <div className="column">
-                                    <label>
-                                        Custom CSS
-                                    </label>
-                                    <p>Add custom styles to customize the theme even more</p>
-                                    <textarea></textarea>
-                                </div>
-                            </div>
                             <div className="row">
                                 <div className="column">
                                     <p>You are about to fork ...</p>
