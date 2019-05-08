@@ -86,11 +86,11 @@ class Fork extends React.Component {
                                         Theme
                                     </label>
                                     <p>Select one of the 4 default themes</p>
-                                    <div className="row">
-                                        <div className="column">1</div>
-                                        <div className="column">2</div>
-                                        <div className="column">3</div>
-                                        <div className="column">4</div>
+                                    <div className="row select-a-theme">
+                                        <div className="column"><a className="select-theme orange" onClick={() => { this.props.onChangeTheme("orange-theme") }}>{(this.props.theme == "orange-theme") && "✔️"}</a></div>
+                                        <div className="column"><a className="select-theme blue" onClick={() => { this.props.onChangeTheme("blue-theme") }}>{(this.props.theme == "blue-theme") && "✔️"}</a></div>
+                                        <div className="column"><a className="select-theme purple" onClick={() => { this.props.onChangeTheme("purple-theme") }}>{(this.props.theme == "purple-theme") && "✔️"}</a></div>
+                                        <div className="column"><a className="select-theme green" onClick={() => { this.props.onChangeTheme("green-theme") }}>{(this.props.theme == "green-theme") && "✔️"}</a></div>
                                     </div>
                                 </div>
                             </div>

@@ -394,13 +394,6 @@ form {
     position: relative;
 }
 
-
-.fork a {
-    text-decoration: underline;
-    color: white;
-}
-
-
 .fork {
     background: #4a4a4a;
     border-left: 1px solid #424242;
@@ -415,7 +408,7 @@ form {
     min-height: 100%;
     right: 0;
     z-index: 100;
-    padding: 15px 25px;
+    padding: 15px 20px;
 }
 
 .fork input,
@@ -423,6 +416,42 @@ form {
 .fork select,
 .fork input[type=submit] {
     max-width: 100%;
+}
+
+.fork .select-a-theme { 
+    text-align: center;
+}
+
+.fork .select-theme { 
+    background: white;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    border: 3px solid white;
+    color: white;
+    font-size: 12px;
+    padding: 5px;
+}
+
+.fork .select-theme.orange { 
+    background-color: #FF6384;
+    border-color: #FF6384;
+}
+
+.fork .select-theme.blue { 
+    background-color: #0081CF;
+    border-color: #0081CF;
+}
+
+.fork .select-theme.purple { 
+    background-color: #9b4dca;
+    border-color: #9b4dca;
+}
+
+.fork .select-theme.green { 
+    background-color: #009484;
+    border-color: #009484;
 }
 
 .fork input[type='email'],.fork  input[type='number'],.fork  input[type='password'],.fork  input[type='search'],.fork  input[type='tel'],.fork  input[type='text'],.fork  input[type='url'],.fork  textarea,.fork  select {
@@ -985,6 +1014,7 @@ body.theme-orange2 a { color: #FFC857; }
 body.theme-yellow a { color: #F9F871; }
 */
 
+/** Orange Theme **/
 .orange-theme a {
     color: #FF6384;
 }
@@ -1061,4 +1091,239 @@ body.theme-yellow a { color: #F9F871; }
     background-image: linear-gradient(to right, #ff6384, #ff6e79, #ff7b70, #ff8769, #ff9464);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.orange-theme .fork a {
+    color: #e6e6e6;
+}
+.orange-theme .fork input[type=submit] {
+    background-color: #4a4a4a;
+    border-color: #e6e6e6;
+    color: #e6e6e6;
+}
+
+.orange-theme .fork input[type=submit]:hover {
+    background-color: #e6e6e6;
+    border-color: #e6e6e6;
+    color: #4a4a4a;
+}
+
+/** Blue Theme **/
+.blue-theme a {
+    color: #0081CF;
+}
+
+.blue-theme .highlight {
+    background-color: #0081CF;
+}
+.blue-theme .button,
+.blue-theme button,
+.blue-theme input[type='button'],
+.blue-theme input[type='reset'],
+.blue-theme input[type='submit'] {
+    background-color: #0081CF;
+    color: #0081CF;
+}
+
+.blue-theme .button.button-outline,
+.blue-theme button.button-outline,
+.blue-theme input[type='button'].button-outline,
+.blue-theme input[type='reset'].button-outline,
+.blue-theme input[type='submit'].button-outline {
+    border-color: #0081CF;
+    color: #0081CF;
+    background-color: white;
+}
+
+.blue-theme .pending {
+    background-color: #FF9464;
+}
+
+.blue-theme .sort ul li a {
+    color: #00A4DE;
+}
+
+.blue-theme .actions .action {
+    color: #00A4DE;
+}
+
+.blue-theme .navigation {
+}
+.blue-theme .navigation a {
+    color: #FFFFFFEE;
+}
+.blue-theme .block {
+    background-color: #0081CF;
+}
+
+.blue-theme .error {
+    background: #0081CF;
+    border: 1px solid #0081CF;
+}
+
+.blue-theme .success {
+    background: #00C2D0;
+    border: 1px solid #00C2D0;
+}
+
+.blue-theme .notice .warning {
+    background: #0081CF;
+}
+
+.blue-theme pre {
+    border-color: #0081CF;
+}
+
+.blue-theme .pages a.active {
+    border-color: #0081CF;
+    color: #0081CF;
+}
+
+.blue-theme .intro h1 {
+    background-image: linear-gradient(to right top, #0081cf, #0093d6, #00a4d7, #00b3d5, #00c2d0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.blue-theme .fork a {
+    color: #e6e6e6;
+}
+.blue-theme .fork input[type=submit] {
+    background-color: #4a4a4a;
+    border-color: #e6e6e6;
+    color: #e6e6e6;
+}
+
+.blue-theme .fork input[type=submit]:hover {
+    background-color: #e6e6e6;
+    border-color: #e6e6e6;
+    color: #4a4a4a;
+}
+
+/** Purple Theme **/
+.purple-theme .intro h1 {
+    background-image: linear-gradient(to right top, #9b4dca, #b34ac4, #c848bc, #db47b4, #eb48ab);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.purple-theme .fork a {
+    color: #e6e6e6;
+}
+.purple-theme .fork input[type=submit] {
+    background-color: #4a4a4a;
+    border-color: #e6e6e6;
+    color: #e6e6e6;
+}
+
+.purple-theme .fork input[type=submit]:hover {
+    background-color: #e6e6e6;
+    border-color: #e6e6e6;
+    color: #4a4a4a;
+}
+
+
+.purple-theme .block {
+    background-color: #9b4dca;
+}
+
+.purple-theme .highlight {
+    background-color: #9b4dca;
+}
+
+.purple-theme .pages a.active {
+    border-color: #9b4dca;
+    color: #9b4dca;
+}
+
+/** Green Theme **/
+.green-theme a {
+    color: #37AB85;
+}
+
+.green-theme .highlight {
+    background-color: #37AB85;
+}
+.green-theme .button,
+.green-theme button,
+.green-theme input[type='button'],
+.green-theme input[type='reset'],
+.green-theme input[type='submit'] {
+    background-color: #37AB85;
+    color: #37AB85;
+}
+
+.green-theme .button.button-outline,
+.green-theme button.button-outline,
+.green-theme input[type='button'].button-outline,
+.green-theme input[type='reset'].button-outline,
+.green-theme input[type='submit'].button-outline {
+    border-color: #37AB85;
+    color: #37AB85;
+    background-color: white;
+}
+
+.green-theme .pending {
+    background-color: #FF9464;
+}
+
+.green-theme .sort ul li a {
+    color: #009484;
+}
+
+.green-theme .actions .action {
+    color: #009484;
+}
+
+.green-theme .navigation {
+}
+.green-theme .navigation a {
+    color: #FFFFFFEE;
+}
+.green-theme .block {
+    background-color: #37AB85;
+}
+
+.green-theme .error {
+    background: #37AB85;
+    border: 1px solid #37AB85;
+}
+
+.green-theme .success {
+    background: #00C2D0;
+    border: 1px solid #00C2D0;
+}
+
+.green-theme .notice .warning {
+    background: #37AB85;
+}
+
+.green-theme pre {
+    border-color: #37AB85;
+}
+
+.green-theme .pages a.active {
+    border-color: #37AB85;
+    color: #37AB85;
+}
+
+.green-theme .intro h1 {
+    background-image: linear-gradient(to right bottom, #009484, #20a085, #36ab85, #4cb683, #62c181);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.green-theme .fork a {
+    color: #e6e6e6;
+}
+.green-theme .fork input[type=submit] {
+    background-color: #4a4a4a;
+    border-color: #e6e6e6;
+    color: #e6e6e6;
+}
+
+.green-theme .fork input[type=submit]:hover {
+    background-color: #e6e6e6;
+    border-color: #e6e6e6;
+    color: #4a4a4a;
 }

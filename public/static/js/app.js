@@ -97,6 +97,10 @@ class OpenDirectoryApp extends React.Component {
         this.setState({"intro_markdown": e.target.value});
     }
 
+    handleChangeTheme(theme) {
+        this.setState({"theme": theme});
+    }
+
     // TODO: SPlit this up
     render() {
         const hash = this.state.location[0];
@@ -166,7 +170,7 @@ class OpenDirectoryApp extends React.Component {
 
         return (
             <div className={this.state.theme + " wrapper"}>
-                {this.state.isForking && <Fork onSubmitFork={this.handleSubmitFork.bind(this)} onCloseFork={this.handleCloseFork.bind(this)} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} />}
+                {this.state.isForking && <Fork onSubmitFork={this.handleSubmitFork.bind(this)} onCloseFork={this.handleCloseFork.bind(this)} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } />}
                 <nav className="navigation">
                   <section className="container">
                     <a href="/#" className="navigation-title">Open Directory</a>
