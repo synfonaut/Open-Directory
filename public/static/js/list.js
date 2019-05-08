@@ -4,7 +4,7 @@ class List extends React.Component {
         super(props);
         this.state = {
             "sort": "hot",
-            "limit": 10,
+            "limit": 2,
             "cursor": 0,
         };
     }

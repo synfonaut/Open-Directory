@@ -5,6 +5,8 @@ class OpenDirectoryApp extends React.Component {
             isLoading: true,
             isError: false,
 
+            isForking: true,
+
             location: [""],
             messages: [],
 
@@ -14,6 +16,9 @@ class OpenDirectoryApp extends React.Component {
             cache: {},  // previous items
 
             category: {"txid": null, "needsupdate": true},
+
+            intro_markdown: "# Open Directory\n`v1—beta`\n\nOpen Directory lets anyone build resources like [Reddit](https://www.reddit.com), [Awesome Lists](https://github.com/sindresorhus/awesome) and [DMOZ](http://dmoz-odp.org) ontop of Bitcoin (SV). With Open Directory you can:\n\n* 💡 Create your own resource and earn money when people tip through upvotes\n* 💰 Incentivize quality submissions by sharing a portion of tips back to contributors\n* 🛠 Organize an existing directory or fork it with 1-click and start your own\n\nCreate your own directory or view the existing ones below.",
+            theme: "orange-theme",
         };
 
         this.NETWORK_DELAY = 0;
@@ -31,6 +36,12 @@ class OpenDirectoryApp extends React.Component {
         this.didUpdateLocation();
         this.performCheckForUpdates();
         updateBitcoinSVPrice();
+
+        this.addErrorMessage("TESTING", () => {
+            this.addSuccessMessage("TESTING", () => {
+            });
+
+        });
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
     }
 
@@ -43,8 +54,6 @@ class OpenDirectoryApp extends React.Component {
         const messages = this.state.messages.concat([{
             "type": type, "message": msg, "key": key,
         }]);
-
-        console.log("MESG", messages);
 
         this.setState({ "messages": messages }, () => {
             setTimeout(() => {
@@ -70,6 +79,25 @@ class OpenDirectoryApp extends React.Component {
         this.setState({ "messages": messages });
     }
 
+
+    handleSubmitFork(e) {
+        console.log("SUBMIT", e);
+    }
+
+    handleCloseFork() {
+        this.setState({"isForking": false});
+
+    }
+
+    handleToggleFork() {
+        this.setState({"isForking": !this.state.isForking});
+    }
+
+    didChangeIntroHandler(e) {
+        this.setState({"intro_markdown": e.target.value});
+    }
+
+    // TODO: SPlit this up
     render() {
         const hash = this.state.location[0];
 
@@ -131,8 +159,14 @@ class OpenDirectoryApp extends React.Component {
            </div>
         }
 
+        var intro;
+        if (this.state.intro_markdown) {
+            intro = <div className="intro"><ReactMarkdown source={this.state.intro_markdown} /></div>;
+        }
+
         return (
-            <div>
+            <div className={this.state.theme + " wrapper"}>
+                {this.state.isForking && <Fork onSubmitFork={this.handleSubmitFork.bind(this)} onCloseFork={this.handleCloseFork.bind(this)} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} />}
                 <nav className="navigation">
                   <section className="container">
                     <a href="/#" className="navigation-title">Open Directory</a>
@@ -143,6 +177,7 @@ class OpenDirectoryApp extends React.Component {
                     </div>
                     <ul className="navigation-list float-right">
                       <li className="navigation-item">
+                        <a className="navigation-link" onClick={this.handleToggleFork.bind(this)}>Fork</a>
                         <a className="navigation-link" href="#about">About</a>
                       </li>
                     </ul>
@@ -155,23 +190,7 @@ class OpenDirectoryApp extends React.Component {
                                   return <div key={m.key} className={"message " + m.type}>{m.message}</div>;
                               })}
                           </div>
-                          {hash == "" && 
-                            <div className="intro">
-                              <img id="logo" src="/static/img/logo.png" />
-                              <p><code>v1—beta</code> </p>
-                              <div className="row">
-                                  <div className="column">
-                                      <p>Open Directory lets anyone build resources like <a href="https://www.reddit.com">Reddit</a>, <a href="https://github.com/sindresorhus/awesome">Awesome Lists</a> and <a href="http://dmoz-odp.org">DMOZ</a> ontop of Bitcoin (SV). With Open Directory you can:</p>
-                                      <ul className="blurb">
-                                          <li>💡 Create your own resource and earn money when people tip through upvotes</li>
-                                          <li>💰 Incentivize quality submissions by sharing a portion of tips back to contributors</li>
-                                          <li>🛠 Organize an existing directory or fork it with 1-click and start your own</li>
-                                      </ul>
-      
-                                      <p className="nopadding">Create your own directory or view the existing ones below.</p>
-                                  </div>
-                              </div>
-                            </div>}
+                          {hash == "" && intro}
                           {body}
                           {this.state.isLoading && loading}
                           {this.state.isError && error}

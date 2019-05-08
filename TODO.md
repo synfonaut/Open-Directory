@@ -1,11 +1,20 @@
 ## Alpha
 
-* doesn't look good on mobile at all, not resizing, overflowing
 * read design for hackers and consider improvements
-* miligram isn't breaking for phone
+* animations? messages ..expanding forms
+
+* switch themes with a single className
+ * edit millgram if needed
+* come up with 4 good color schemes
+* change logo to change with color scheme
+* edit entry is very large
+
+
+
 
 * admin console...detatch a category
  - process entire admin command set and dispatch commands
+ - document this! custom bitcom protocol setup...
 
 * don't like the tipchain? fork it!
 
