@@ -1,12 +1,3 @@
-var isNode = (typeof window == "undefined");
-
-function toBase64(str) {
-    if (isNode) {
-        return Buffer.from(str).toString('base64');
-    }
-
-    return btoa(str);
-}
 
 function satoshisToDollars(satoshis, bitcoin_price=BSV_PRICE, show_zero=false) {
     if (satoshis > 0) {

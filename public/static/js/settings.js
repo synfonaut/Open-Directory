@@ -1,5 +1,3 @@
-const isBrowser = (typeof window == "object");
-
 var SETTINGS = {
     "api_key": "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z",
     "api_endpoint": "https://bitomation.com/{api_action}/{api_key}/{query}",
@@ -40,6 +38,8 @@ function use_local_settings(local_settings) {
 
 var BSV_PRICE = 53.00;
 
-if (isBrowser) {
+if (typeof window == "object") {
     use_local_settings(get_local_settings());
+} else {
+    module.exports = SETTINGS;
 }

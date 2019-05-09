@@ -1,8 +1,8 @@
 var isNode = (typeof window == "undefined");
 
-var axios;
 if (isNode) {
     axios = require("axios");
+    SETTINGS = require("./settings.js");
 }
 
 const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
@@ -37,6 +37,14 @@ const OPENDIR_ACTIONS = [
     "undo",
     "fork.soft",
 ];
+
+function toBase64(str) {
+    if (isNode) {
+        return Buffer.from(str).toString('base64');
+    }
+
+    return btoa(str);
+}
 
 function get_bitdb_query(category_id=null, cursor=0, limit=200) {
 
