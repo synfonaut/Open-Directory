@@ -1,3 +1,5 @@
+var isNode = (typeof window == "undefined");
+
 function toBase64(str) {
     if (isNode) {
         return Buffer.from(str).toString('base64');

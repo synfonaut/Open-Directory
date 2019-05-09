@@ -51,6 +51,7 @@ function fetchUpdates() {
 
     return new Promise((resolve, reject) => {
         fetch(url, header).then(function(r) {
+            console.log("R", r);
             if (!r) {
                 reject("Error response while checking updater");
             } else if (r.status !== 200) {

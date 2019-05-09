@@ -147,7 +147,6 @@ describe('process open directory undo transactions', function() {
         assert.equal(processedResults[1].description, "new test grounds link");
         assert.equal(processedResults[1].txid, "aa505711f2acb032cc63977ad422fc3a72542483de4da412146dbe000e54e899");
     });
-
 });
 
 

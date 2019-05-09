@@ -1123,6 +1123,10 @@ body.theme-yellow a { color: #F9F871; }
     color: #4a4a4a;
 }
 
+.orange-theme .message a {
+    color: white;
+}
+
 /** Blue Theme **/
 .blue-theme a {
     color: #0081CF;
@@ -1215,6 +1219,10 @@ body.theme-yellow a { color: #F9F871; }
     color: #4a4a4a;
 }
 
+.blue-theme .message a {
+    color: white;
+}
+
 /** Purple Theme **/
 .purple-theme .intro h1 {
     background-image: linear-gradient(to right top, #9b4dca, #b34ac4, #c848bc, #db47b4, #eb48ab);
@@ -1259,6 +1267,106 @@ body.theme-yellow a { color: #F9F871; }
 .purple-theme .success {
     background: #9b4dca;
     border: 1px solid #9b4dca;
+}
+
+.purple-theme .message a {
+    color: white;
+}
+
+/** Green Theme **/
+.green-theme a {
+    color: #37AB85;
+}
+
+.green-theme .highlight {
+    background-color: #37AB85;
+}
+.green-theme .button,
+.green-theme button,
+.green-theme input[type='button'],
+.green-theme input[type='reset'],
+.green-theme input[type='submit'] {
+    background-color: #37AB85;
+    color: #37AB85;
+}
+
+.green-theme .button.button-outline,
+.green-theme button.button-outline,
+.green-theme input[type='button'].button-outline,
+.green-theme input[type='reset'].button-outline,
+.green-theme input[type='submit'].button-outline {
+    border-color: #37AB85;
+    color: #37AB85;
+    background-color: white;
+}
+
+.green-theme .pending {
+    background-color: #FF9464;
+}
+
+.green-theme .sort ul li a {
+    color: #009484;
+}
+
+.green-theme .actions .action {
+    color: #009484;
+}
+
+.green-theme .navigation {
+}
+.green-theme .navigation a {
+    color: #FFFFFFEE;
+}
+.green-theme .block {
+    background-color: #37AB85;
+}
+
+.green-theme .error {
+    background: #37AB85;
+    border: 1px solid #37AB85;
+}
+
+.green-theme .success {
+    background: #00C2D0;
+    border: 1px solid #00C2D0;
+}
+
+.green-theme .notice .warning {
+    background: #37AB85;
+}
+
+.green-theme pre {
+    border-color: #37AB85;
+}
+
+.green-theme .pages a.active {
+    border-color: #37AB85;
+    color: #37AB85;
+}
+
+.green-theme .intro h1 {
+    background-image: linear-gradient(to right bottom, #009484, #20a085, #36ab85, #4cb683, #62c181);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.green-theme .fork a {
+    color: #e6e6e6;
+}
+.green-theme .fork input[type=submit] {
+    background-color: #4a4a4a;
+    border-color: #e6e6e6;
+    color: #e6e6e6;
+}
+
+.green-theme .fork input[type=submit]:hover {
+    background-color: #e6e6e6;
+    border-color: #e6e6e6;
+    color: #4a4a4a;
+}
+
+.purple-theme .message a {
+    color: white;
 }
 
 /** Green Theme **/

@@ -1,4 +1,4 @@
-const isNode = (typeof window == "undefined");
+var isNode = (typeof window == "undefined");
 
 var axios;
 if (isNode) {
@@ -52,6 +52,9 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
             // mongodb doesn't have a clean way to join on both so nearly every query below is doubled, on for each db
             "db": ["u", "c"],
             "limit": limit,
+            "sort": {
+                "txid": 1
+            },
 
             // aggregate is where most of the magic happens. it's the pipeline where we
             //  1. filter for Open Directory data
@@ -186,7 +189,6 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 { "$unwind": { "path": "$items" } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
-
                 //
                 // let users page results
                 { "$skip": cursor },
@@ -237,10 +239,10 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
 }
 
 
-function fetch_from_network(category_id=null, cursor=0, limit=200, results=[]) {
+function fetch_from_network(category_id=null, cursor=0, limit=500, results=[]) {
     const query = get_bitdb_query(category_id, cursor, limit);
     const encoded_query = toBase64(JSON.stringify(query));
-    const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
+    const api_url = SETTINGS.api_endpoint.replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
     const url = api_url.replace("{query}", encoded_query);
     const header = { headers: { key: SETTINGS.api_key } };
 
@@ -309,44 +311,60 @@ function processOpenDirectoryTransactions(results) {
     return results.map(processOpenDirectoryTransaction).filter(r => { return r });
 }
 
+// find all children of an object that perform an action on it
+function findChildrenByActionID(obj, results=[]) {
+
+    var children = [];
+    for (const result of results) {
+        if (result.action_id == obj.txid) {
+            const subchildren = findChildrenByActionID(result, results);
+            children = children.concat([result], subchildren);
+        }
+
+    }
+    return children;
+}
+
+/** Given a set of results, return a set of txid's to undo ... works recursively, so you can undo an undo an undo.... */
 function processUndos(results) {
 
-    var roots = new Map(results.filter(r => { return r.type != "undo" }).map(r => { return [r.txid, r] }));
-    var undos = results.filter(r => { return r.type == "undo" });
+    // build txids
+    const txids = {};
+    for (const result of results) {
+        txids[result.txid] = result;
+    }
 
-    // TODO: Fix this
-    console.log("UNDOS", undos);
-
-    const maxrounds = undos.length * 10;
-    var i = 0;
-
-    while (roots.size != results.length) {
-        for (const root of roots.values()) {
-            for (const undo of undos) {
-                if (undo.action_id == root.txid && !roots[undo.txid]) {
-                    roots.set(undo.txid, undo);
-                }
-            }
-        }
-
-        if (i++ >= maxrounds) {
-            console.log("Error processing undos, hit infinite loop");
-            break;
+    // find nodes that aren't referenced by action_id, we start with those
+    const nodes = [];
+    for (const result of results) {
+        if (!txids[result.action_id]) {
+            nodes.push(result);
         }
     }
 
-    const reversed = Array.from(roots.values()).slice(0).reverse();
-    const undos_txids = {};
+    var unique_ids = new Set();
 
-    for (const result of reversed) {
-        if (result.type == "undo") {
-            if (!undos_txids[result.txid]) {
-                undos_txids[result.action_id] = result.txid;
+    // loop through nodes and find their children
+    for (const node of nodes) {
+
+        const children = findChildrenByActionID(node, results);
+
+        // process undo
+        var undo_ids = {};
+        for (var i = (children.length - 1); i >= 0; i--) {
+            const child = children[i];
+            if (child.type !== "undo") { continue }
+            if (!undo_ids[child.txid]) {
+                undo_ids[child.action_id] = child;
             }
+        }
+
+        for (const undo_id in undo_ids) {
+            unique_ids.add(undo_id);
         }
     }
 
-    return Object.keys(undos_txids);
+    return Array.from(unique_ids);
 }
 
 function processRawResults(rows) {
@@ -800,6 +818,12 @@ function processOpenDirectoryTransaction(result) {
     }
 
     if (OPENDIR_ACTIONS.indexOf(opendir_action) == -1) {
+        // TODO: Remove these when you switch protocols...they were an iteration on the design and right now they're cluterring debugging
+        if (txid == "2c330d313d196c835743fe38c27e0790bfb9ec1e598041d3577f9410efbda7ea") {
+            return null;
+        } else if (txid == "ab6283414902787171d79b025ef90357053882abc755f1f26c16a4aa41678f05") {
+            return null;
+        }
         console.log("Error while processing open directory transaction: invalid action", result);
         return null;
     }
@@ -934,6 +958,7 @@ function findRootActionID(result, results=[]) {
 
     return result.action_id;
 }
+
 
 
 if (typeof window == "undefined") {

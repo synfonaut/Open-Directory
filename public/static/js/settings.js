@@ -43,4 +43,3 @@ var BSV_PRICE = 53.00;
 if (isBrowser) {
     use_local_settings(get_local_settings());
 }
-

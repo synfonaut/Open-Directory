@@ -38,12 +38,6 @@ class OpenDirectoryApp extends React.Component {
         this.didUpdateLocation();
         this.performCheckForUpdates();
         updateBitcoinSVPrice();
-
-        this.addErrorMessage("TESTING", () => {
-            this.addSuccessMessage("TESTING", () => {
-            });
-
-        });
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
     }
 
@@ -213,7 +207,7 @@ class OpenDirectoryApp extends React.Component {
     performCheckForUpdates() {
 
         const now = (new Date()).getTime();
-        const MAX_CACHE_SECONDS = 60 * 60 * 4; // update every 4 hours
+        const MAX_CACHE_SECONDS = 60 * 60 * 1; // update every 1 hour
 
         const storage = window.localStorage;
         const last_update_timestamp = storage["last_update_timestamp"];

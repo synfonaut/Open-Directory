@@ -1,9 +1,17 @@
 ## Alpha
 
-* error when increasing maxDepth to 6,7,8
-* category update isn't showing on home page and description is outdated
-
 * undo loop is borked
+
+* when no content...can make css full height?
+* need little checkmark svg or image
+
+* error when increasing maxDepth to 6,7,8
+
+* category update isn't showing on home page and description is outdated
+* admin updating application doesn't seem instant if transasction is unconfirmed
+
+* admin log command that shows recent actions
+
 * display list of forks for each category
 
 * read design for hackers and consider improvements
