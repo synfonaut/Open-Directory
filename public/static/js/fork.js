@@ -87,10 +87,10 @@ class Fork extends React.Component {
                                     </label>
                                     <p>Select a color scheme</p>
                                     <div className="row select-a-theme">
-                                        <div className="column"><a className="select-theme orange" onClick={() => { this.props.onChangeTheme("orange-theme") }}>{(this.props.theme == "orange-theme") && "✔️"}</a></div>
-                                        <div className="column"><a className="select-theme blue" onClick={() => { this.props.onChangeTheme("blue-theme") }}>{(this.props.theme == "blue-theme") && "✔️"}</a></div>
-                                        <div className="column"><a className="select-theme purple" onClick={() => { this.props.onChangeTheme("purple-theme") }}>{(this.props.theme == "purple-theme") && "✔️"}</a></div>
-                                        <div className="column"><a className="select-theme green" onClick={() => { this.props.onChangeTheme("green-theme") }}>{(this.props.theme == "green-theme") && "✔️"}</a></div>
+                                        <div className="column"><a className={this.props.theme =="orange-theme" ? "active select-theme orange" : "select-theme orange"} onClick={() => { this.props.onChangeTheme("orange-theme") }}></a></div>
+                                        <div className="column"><a className={this.props.theme =="blue-theme" ? "active select-theme blue" : "select-theme blue"} onClick={() => { this.props.onChangeTheme("blue-theme") }}></a></div>
+                                        <div className="column"><a className={this.props.theme =="purple-theme" ? "active select-theme purple" : "select-theme purple"} onClick={() => { this.props.onChangeTheme("purple-theme") }}></a></div>
+                                        <div className="column"><a className={this.props.theme =="green-theme" ? "active select-theme green" : "select-theme green"} onClick={() => { this.props.onChangeTheme("green-theme") }}></a></div>
                                     </div>
                                 </div>
                             </div>

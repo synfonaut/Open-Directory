@@ -46,12 +46,11 @@ function toBase64(str) {
     return btoa(str);
 }
 
-function get_bitdb_query(category_id=null, cursor=0, limit=200) {
+function get_bitdb_query(category_id=null, cursor=0, limit=500, maxDepth=5) {
 
     // this is a monster query. if you're thinking of building a query this complex, you might
     // reconsider and build a Planaria instead—future versions will
 
-    const max_depth = 5;
     const query = {
         "v": 3,
         "q": {
@@ -59,7 +58,10 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
             // querying both confirmed and unconfirmed transactions
             // mongodb doesn't have a clean way to join on both so nearly every query below is doubled, on for each db
             "db": ["u", "c"],
+
             "limit": limit,
+
+            // need sort here so cursor is consistent
             "sort": {
                 "txid": 1
             },
@@ -84,7 +86,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
                 // Crawl confirmed children (entries, votes, undos)
 
                 // perform recursive join, connecting s3 to txid
-                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children", "maxDepth": max_depth } },
+                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children", "maxDepth": maxDepth } },
 
                 // mongo doesn't have an easy way to bring sub-documents up to the parent, so it requires a few steps
                 // copy both to surrounding container so they're siblings
@@ -100,7 +102,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=200) {
 
                 //
                 // Crawl confirmed children (entries, votes, undos)
-                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children", "maxDepth": max_depth } },
+                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children", "maxDepth": maxDepth } },
                 { "$project": { "unconfirmed_children": "$unconfirmed_children", "object": ["$$ROOT"], } },
                 { "$project": { "object.unconfirmed_children": 0, } },
                 { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_children", ] } } },
@@ -264,6 +266,16 @@ function fetch_from_network(category_id=null, cursor=0, limit=500, results=[]) {
         var items = {};
         const rows = r.c.concat(r.u).reverse();
 
+        /*
+        for (const row of rows) {
+            console.log("ROW", row);
+        }
+
+        console.log("ROWS", rows.length);
+        throw "E";
+        console.log("ROW JSON", JSON.stringify(rows, null, 4));
+        */
+
         results = results.concat(rows);
         cursor += rows.length;
 
@@ -350,11 +362,11 @@ function processUndos(results) {
         }
     }
 
-    var unique_ids = new Set();
+    // Build actual chain by collapsing undos...then go backwards and figure out which undos stuck around
 
     // loop through nodes and find their children
+    const unique_ids = new Set();
     for (const node of nodes) {
-
         const children = findChildrenByActionID(node, results);
 
         // process undo
@@ -956,7 +968,7 @@ function findRootActionID(result, results=[]) {
 
     if (result.type == "undo" && result.action_id) {
         const parent = findObjectByTX(result.action_id, results);
-        if (parent) {
+        if (parent && parent.type == "undo") {
             const parent_action_id = findRootActionID(parent, results);
             if (parent_action_id) {
                 return parent_action_id;

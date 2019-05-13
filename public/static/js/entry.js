@@ -18,9 +18,9 @@ class EntryItem extends Item {
 
                         <p className="description">{this.props.item.description}</p>
                         <p className="url"><a href={this.props.item.link}>{this.props.item.link}</a></p>
-                        {this.state.action == "editing" && <div className="column"><EditEntryForm item={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} onSubmit={this.clearForm.bind(this)} /></div>}
+                        {this.state.action == "editing" && <div className="inline-edit"><EditEntryForm item={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} onSubmit={this.clearForm.bind(this)} /></div>}
                         {this.state.action == "tipping" && <TipchainItem item={this.props.item} items={this.props.items} onSuccessHandler={this.handleSuccessfulTip.bind(this)} onErrorHandler={this.props.onErrorHandler} />}
-                        {this.state.action == "deleting"  && <DeleteItem item={this.props.item} onSuccessHandler={this.handleSuccessfulDelete.bind(this)} onErrorHandler={this.props.onErrorHandler} />}
+                        {this.state.action == "deleting"  && <div className="inline-delete"><DeleteItem item={this.props.item} onSuccessHandler={this.handleSuccessfulDelete.bind(this)} onErrorHandler={this.props.onErrorHandler} /></div>}
                    </div>
                     <div className="clearfix"></div>
                 </div>
@@ -292,7 +292,6 @@ class EditEntryForm extends React.Component {
     render() {
         return (
             <div className="column">
-                <br />
                 <h3>Edit link <span className="highlight">{this.props.item.name}</span></h3>
                 <form onSubmit={this.handleSubmit}>
                     <fieldset>

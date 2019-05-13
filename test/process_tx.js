@@ -147,6 +147,21 @@ describe('process open directory undo transactions', function() {
         assert.equal(processedResults[1].description, "new test grounds link");
         assert.equal(processedResults[1].txid, "aa505711f2acb032cc63977ad422fc3a72542483de4da412146dbe000e54e899");
     });
+
+    it('deep entry multiple undo regression', function() {
+        const txs = readFileTXs("undo_regression.json");
+        const processedResults = process.processRawResults(txs);
+
+        var found = false;
+        for (const result of processedResults) {
+            if (result.txid == "0b4102b0ba8c8098719223af1be2ab05210fea61d5920762cf9ed33a34bafb36") {
+                found = true;
+                break;
+            }
+        }
+
+        assert(found);
+    });
 });
 
 
@@ -351,4 +366,3 @@ describe("tipchain split", function() {
     });
 
 });
-

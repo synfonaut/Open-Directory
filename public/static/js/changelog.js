@@ -106,6 +106,8 @@ class ChangeLogItem extends React.Component {
             alert("Error while finding undo object action_id, please try again");
         }
 
+        console.log("LOCKED ON TO ", action_id);
+
         const OP_RETURN = [
             OPENDIR_PROTOCOL,
             "undo",

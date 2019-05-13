@@ -1,53 +1,60 @@
 ## Alpha
 
-* undo loop is borked
-
-* when no content...can make css full height?
-* need little checkmark svg or image
-
-* error when increasing maxDepth to 6,7,8
-
-* category update isn't showing on home page and description is outdated
-* admin updating application doesn't seem instant if transasction is unconfirmed
-
-* admin log command that shows recent actions
-
+* finish forking
+* add edit/upvote on category page
 * display list of forks for each category
-
-* read design for hackers and consider improvements
-* animations? messages ..expanding forms
-
-* switch themes with a single className
- * edit millgram if needed
-* come up with 4 good color schemes
-* change logo to change with color scheme
-* edit entry is very large
-
-* include tip in fork
-
-about
-                    <p>it's early days so no moderation, let's call it a feature instead of a bug for now and see what the market does</p>
-                    <p>tip chain</p>
-                    <p>tools, milligram, bitdb, moneybutton</p>
-                    <p>* add bitcom protocol link on about page</p>
-                    <p>* add information about micro payments. they're built into the actions of the site</p>
-                    <p>* about with tip screen</p>
-                    <p>* bug: no changelog on about page</p>
-                    <p>clean up static page display logic...</p>
-                    <p>* about page BSV particle effect, only run when active</p>
-                    <p>* beta..stuff could break. tip might go to wrong place</p>
-                    <p>* about, link back to data providers for bitcoin price coinmarketplace, coingecko, cryptonator, cors.io, cors-anywhere</p>
-                     <p><code>v0.1—beta</code> </p>
-                    <p><small>Open Directory is an experiment. Be kind. Have fun. Build the future. ✌️</small></p>
-                    <p>✌️ synfonaut</p>
+- Search
 
 
-
+- Double check app updates work
+* admin updating application doesn't seem instant if transasction is unconfirmed
+* admin log command that shows recent actions
 * admin console...detatch a category
  - process entire admin command set and dispatch commands
  - document this! custom bitcom protocol setup...
 
-* don't like the tipchain? fork it!
+
+* split out lib and my JS file organization
+
+- Redesign
+ - dedicated add directory page
+ - favicon
+ - changelog should be able to toggle all, then close individually
+ - edit form design
+ - hide create category by default
+ - better iconography and graphics
+
+- Plug bitdb into bit:// for genesis bitdb so we don't have to hardcode it (then we can't default to bitomation...)
+should only be able to edit a category on the actual category page
+
+- Forking
+ - custom category, no back button
+ - custom theme
+ - customize intro blurb
+ - customize css
+ - change base tip chain address
+
+- compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output
+
+- Test performance on bitcoinscaling.io
+- Check on slow network
+
+about
+    <p>it's early days so no moderation, let's call it a feature instead of a bug for now and see what the market does</p>
+    <p>tip chain</p>
+    <p>tools, milligram, bitdb, moneybutton</p>
+    <p>* add bitcom protocol link on about page</p>
+    <p>* add information about micro payments. they're built into the actions of the site</p>
+    <p>* about with tip screen</p>
+    <p>* bug: no changelog on about page</p>
+    <p>clean up static page display logic...</p>
+    <p>* about page BSV particle effect, only run when active</p>
+    <p>* beta..stuff could break. tip might go to wrong place</p>
+    <p>* about, link back to data providers for bitcoin price coinmarketplace, coingecko, cryptonator, cors.io, cors-anywhere</p>
+     <p><code>v0.1—beta</code> </p>
+    <p><small>Open Directory is an experiment. Be kind. Have fun. Build the future. ✌️</small></p>
+    <p>✌️ synfonaut</p>
+
 
 - content
  - homepage
@@ -80,37 +87,8 @@ about
   - react i've never used before, but it ended up being an important piece. letting the data be declarative means i can silently cache and update in the background and the app doesn't have to worry about it. doing this imperatively would be rough
 
 
-- Redesign
- - multiple color schemes: red/orange, blue/purple, green/yellow
- - dedicated add directory page
- - favicon
- - changelog should be able to toggle all, then close individually
- - edit form design
- - hide create category by default
- - better iconography and graphics
- - great logo with custom icon
-
-- Search
-- New release update should cache
-- Plug bitdb into bit:// for genesis bitdb so we don't have to hardcode it (then we can't default to bitomation...)
-should only be able to edit a category on the actual category page
-
-- Forking
- - custom category, no back button
- - custom theme
- - customize intro blurb
- - customize css
- - change base tip chain address
-
-- compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output
-
-- Test performance on bitcoinscaling.io
-- Check on slow network
-- Double check app updates work
-
 ## Beta (Friends)
-- Find domain: opendirectory.network
-- Upload website
+- Upload website (dir.sv)
 - Reset protocol id
 - Polish content
 - create good examples (collab with bsvdevs, onchain games, onchain art, onchain utilities)

@@ -5,7 +5,7 @@ class OpenDirectoryApp extends React.Component {
             isLoading: true,
             isError: false,
 
-            isForking: true,
+            isForking: false,
 
             location: [""],
             messages: [],
@@ -38,6 +38,7 @@ class OpenDirectoryApp extends React.Component {
         this.didUpdateLocation();
         this.performCheckForUpdates();
         updateBitcoinSVPrice();
+
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
     }
 
@@ -104,7 +105,7 @@ class OpenDirectoryApp extends React.Component {
         this.setState({"theme": theme});
     }
 
-    // TODO: SPlit this up
+    // TODO: Split this up
     render() {
         const hash = this.state.location[0];
 
@@ -176,11 +177,13 @@ class OpenDirectoryApp extends React.Component {
                 </nav>
                 <div className="container">
                       <div className="open-directory">
-                          <div className="messages">
-                              {this.state.messages.map((m) => {
-                                  return <div key={m.key} className={"message " + m.type}>{m.message}</div>;
-                              })}
-                          </div>
+                          <PoseGroup>
+                            {(this.state.messages.length > 0) && <MessageGroup key="message_group" className="messages">
+                                {this.state.messages.map((m) => {
+                                    return <Message key={m.key} className={"message " + m.type}>{m.message}</Message>;
+                                })}
+                              </MessageGroup>}
+                          </PoseGroup>
                           {hash == "" && intro}
                           {body}
                           {this.state.isLoading && loading}
@@ -304,11 +307,11 @@ class OpenDirectoryApp extends React.Component {
             const category_id = (this.state.category ? this.state.category.txid : null);
             fetch_from_network(category_id).then((rows) => {
 
-                console.log("network content length", JSON.stringify(rows).length);
-
                 const txpool = processOpenDirectoryTransactions(rows);
                 const results = processResults(rows, txpool);
                 const success = this.checkForUpdatedActiveCategory(results);
+
+                console.log("RESULTS", JSON.stringify(results, null, 4));
 
                 const raw = this.state.raw;
                 raw[category_id] = rows;
@@ -398,6 +401,23 @@ class OpenDirectoryApp extends React.Component {
     }
 
 }
+
+const MessageGroup = posed.div({
+    enter: {
+        applyAtStart: { display: "block" },
+        opacity: 1,
+        beforeChildren: true,
+    },
+    exit: {
+        applyAtEnd: { display: "none" },
+        opacity: 0,
+        beforeChildren: true
+    }
+});
+
+const Message = posed.div({
+});
+
 
 var application = <OpenDirectoryApp />;
 ReactDOM.render(application, document.getElementById("app"));
