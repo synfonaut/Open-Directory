@@ -47,7 +47,7 @@ class Fork extends React.Component {
                                     <label>
                                         Admin Address
                                     </label>
-                                    <p>Set the address that gets special rights, like notifying users about updated versions and detatching directories. The easiest way to generate an address you control is with Bitcom and MoneyButton.</p>
+                                    <p>Set the address that gets special rights, like notifying users about updated versions and detatching directories. <a href="https://github.com/synfonaut/OpenDirectory-Admin-Console" target="_blank">Generate an OpenDirectory Admin Address</a></p>
                                     <input type="text" defaultValue={OPENDIR_ADMIN_ADDRESS} />
                                 </div>
                             </div>

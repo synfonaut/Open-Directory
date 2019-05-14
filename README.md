@@ -34,7 +34,6 @@ Check out the [Open Directory Protocol][/protocol.md] to learn more.
 * Planaria to remove maxDepth restriction on categories and search
 * Planaria to crawl Bitcoin Stickers from websites for including C:// and other protocols in tipchain
 * Planaria to sort changelog by graph-dependant order
-* Admin console that can "detach" certain directories to remove them from view
 * Moderation tools
 * Statistics (money, categories, links, votes)
 * Custom currency support

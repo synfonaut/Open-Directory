@@ -337,8 +337,7 @@ function findChildrenByActionID(obj, results=[]) {
     var children = [];
     for (const result of results) {
         if (result.action_id == obj.txid) {
-            const subchildren = findChildrenByActionID(result, results);
-            children = children.concat([result], subchildren);
+            const subchildren = findChildrenByActionID(result, results); children = children.concat([result], subchildren);
         }
 
     }

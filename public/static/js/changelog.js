@@ -31,7 +31,7 @@ class ChangeLog extends React.Component {
         // For now only show open directory protocol changes in changelog—in future may want to
         // pull in related bitcoin media
         const changelog = (this.props.changelog ? this.props.changelog.slice(0).reverse() : []).filter(i => {
-            return i.data.s1 == OPENDIR_PROTOCOL;
+            return i.data.s1 == OPENDIR_PROTOCOL || i.data.s1 == OPENDIR_ADMIN_ADDRESS;
         });
 
         return (changelog && changelog.length > 0 && 
@@ -158,13 +158,20 @@ class ChangeLogItem extends React.Component {
         var amount = satoshisToDollars(this.props.item.satoshis, BSV_PRICE);
         const sats = (this.props.item.satoshis > 0 ? this.props.item.satoshis + " sats" : "");
 
+        var action;
+        if (this.props.item.type == "admin") {
+            action = this.props.item.type + "." + this.props.item.action;
+        } else {
+            action = this.props.item.data.s2;
+        }
+
         return (<React.Fragment>
                     <tr>
                         <td className="height">
                             <a onClick={this.handleToggleExpand.bind(this)} className="arrow">{(this.props.isExpanded || this.state.isExpanded) ? "▼" : "▶"}</a>
                             {this.props.item.height ? <span className="block">#{this.props.item.height}</span> : <span className="pending">pending</span>}
                         </td>
-                        <td className="action">{this.props.item.data.s2}</td>
+                        <td className="action">{action}</td>
                         <td className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</td>
                         <td className="amount" title={sats}>{amount}</td>
                         <td className="description">{this.props.item.description}</td>
@@ -176,7 +183,7 @@ class ChangeLogItem extends React.Component {
                     {(this.props.isExpanded || this.state.isExpanded) && <tr>
                             <td className="undo" colSpan="6" id={"changelog-action-" + this.props.item.txid}>
                             <a href={"https://whatsonchain.com/tx/" + this.props.item.txid}>{this.props.item.txid}</a>&nbsp;
-                        <a onClick={this.handleClickUndo.bind(this)}>undo</a>
+                        {false && <a onClick={this.handleClickUndo.bind(this)}>undo</a>}
                             {this.state.isShowingWarning && <div className="notice"><span className="warning">You are undoing this change, are you sure you want to do this?</span><div className="explain"><p>If you undo this change, you'll be permanently undoing it in this directory for everyone else. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Why are you undoing this change?</strong></p>
 
                                 <form onSubmit={this.handleUndoSubmit.bind(this)}>

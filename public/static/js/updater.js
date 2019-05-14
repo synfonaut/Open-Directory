@@ -10,10 +10,16 @@ function getLatestUpdate() {
     });
 }
 
+
+
 function getUpdates() {
     return new Promise((resolve, reject) => {
         fetchUpdates().then(response => {
-            const updates = response.c.concat(response.u).reverse().map(update => {
+            const responses = response.c.concat(response.u);
+            const sorted = responses.sort(function(a, b) {
+                return (a.height===null)-(b.height===null) || +(a.height>b.height) || -(a.height<b.height);
+            });
+            const updates = sorted.map(update => {
                 return {
                     "txid": update.txid,
                     "address": update.address,
@@ -27,7 +33,7 @@ function getUpdates() {
     });
 }
 
-// TODO: Convert this to admin process and process admin commands
+// TODO: Convert this to admin process and process admin commands (detatch)
 function fetchUpdates() {
     const query = {
         "v": 3,

@@ -15,6 +15,10 @@ class OpenDirectoryApp extends React.Component {
             items: [],  // current items
             cache: {},  // previous items
 
+            admin_actions: [],
+
+            taches: [], // attach and detaches
+
             category: {"txid": null, "needsupdate": true},
 
             title: "Open Directory",
@@ -36,7 +40,7 @@ class OpenDirectoryApp extends React.Component {
     componentDidMount() {
         this._isMounted = true;
         this.didUpdateLocation();
-        this.performCheckForUpdates();
+        this.performAdminActionsFetch();
         updateBitcoinSVPrice();
 
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
@@ -105,6 +109,43 @@ class OpenDirectoryApp extends React.Component {
         this.setState({"theme": theme});
     }
 
+    buildChangeLog(txid) {
+        const admin_changelog = processAdminResults(this.state.admin_actions).filter(r => {
+            // show homepage redirects
+            if (!txid && r.type == "uri") { return true }
+
+            // if action_id references this txid
+            if (r.action_id == txid) { return true }
+
+            // check if action_id references
+            if (r.action_id) {
+                const obj = findObjectByTX(r.action_id, this.state.items);
+                if (obj && obj.type == "category" && (!obj.category_id || obj.txid == r.action_id)) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        var changelog = this.state.raw[this.state.category.txid];
+        if (!changelog) {
+            changelog = [];
+        }
+
+        changelog = changelog.filter(r => {
+            return OPENDIR_ACTIONS.indexOf(r.data.s2) !== -1;
+        });
+
+        const combined = changelog.concat(admin_changelog);
+
+        const sorted = combined.sort(function(a, b) {
+            return (a.height===null)-(b.height===null) || +(a.height>b.height) || -(a.height<b.height);
+        });
+
+        return sorted;
+    }
+
     // TODO: Split this up
     render() {
         const hash = this.state.location[0];
@@ -128,10 +169,11 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
-            changelog = this.state.raw[this.state.category.txid];
+            changelog = this.buildChangeLog(this.state.category.txid);
 
             if (!this.state.isError) {
-                body = <List items={this.state.items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
+                const filtered_items = this.filterOutDetaches(this.state.items);
+                body = <List items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
             }
 
             loading = <div className="loading">
@@ -207,25 +249,18 @@ class OpenDirectoryApp extends React.Component {
 
     }
 
-    performCheckForUpdates() {
+    performAdminActionsFetch() {
+        getCachedAdminActions().then(actions => {
+            this.setState({"admin_actions": actions});
 
-        const now = (new Date()).getTime();
-        const MAX_CACHE_SECONDS = 60 * 60 * 1; // update every 1 hour
+            this.performAdminUpdateCheck();
+        }).catch(e => {
+            console.log("Error while checking for admin actions", e);
+            this.addErrorMessage("Error while checking for admin actions");
+        });
+    }
 
-        const storage = window.localStorage;
-        const last_update_timestamp = storage["last_update_timestamp"];
-        if (last_update_timestamp) {
-            const diff = now - last_update_timestamp;
-
-            if (diff < MAX_CACHE_SECONDS * 1000) {
-                console.log("Recently checked for updates.... skipping");
-                return;
-            }
-        }
-
-        storage["last_update_timestamp"] = now;
-        console.log("Checking for latest version of application");
-
+    performAdminUpdateCheck() {
         getLatestUpdate().then(update => {
             if (document.location.origin != update.uri) {
                 console.log("Current location doesn't match latest update URI...new version available", document.location.origin, update.uri);
@@ -234,10 +269,29 @@ class OpenDirectoryApp extends React.Component {
             } else {
                 console.log("Didn't find a more recent version of application");
             }
-        }).catch((e) => {
-            console.log("Error while checking for updates", e);
-            this.addErrorMessage("Error while checking for updates");
         });
+    }
+
+    filterOutDetaches(results) {
+
+        const taches = processAdminResults(this.state.admin_actions)
+            .filter(a => { return a.action == "attach" || a.action == "detach" });
+        if (results.length > 0 && taches.length > 0) {
+            for (const tach of taches) {
+                const result = findObjectByTX(tach.action_id, results);
+                if (result) {
+                    if (tach.action == "detach") {
+                        result.detached = true;
+                    } else if (tach.action == "attach") {
+                        delete result["detached"];
+                    }
+                } else {
+                    console.log("unable to find result for tach", tach);
+                }
+            }
+        }
+
+        return results.filter(r => { return !r.detached });
     }
 
     getLocation() {
@@ -311,7 +365,7 @@ class OpenDirectoryApp extends React.Component {
                 const results = processResults(rows, txpool);
                 const success = this.checkForUpdatedActiveCategory(results);
 
-                console.log("RESULTS", JSON.stringify(results, null, 4));
+                //console.log("RESULTS", JSON.stringify(results, null, 4));
 
                 const raw = this.state.raw;
                 raw[category_id] = rows;

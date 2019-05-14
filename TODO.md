@@ -6,14 +6,6 @@
 - Search
 
 
-- Double check app updates work
-* admin updating application doesn't seem instant if transasction is unconfirmed
-* admin log command that shows recent actions
-* admin console...detatch a category
- - process entire admin command set and dispatch commands
- - document this! custom bitcom protocol setup...
-
-
 * split out lib and my JS file organization
 
 - Redesign
@@ -97,10 +89,12 @@ about
 - Test uploading to chain
 - Polish polish polish
 - first on-chain upload should be a fork from the website
+- double check app updates work
 
 ## Launch (Everyone)
 - prepare tweet storm
 - prepare launch images
+- make repos public
 - launch on Product Hunt
 - 🔥 Launch!
 
