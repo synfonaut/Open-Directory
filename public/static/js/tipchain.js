@@ -57,6 +57,7 @@ class TipchainItem extends React.Component {
         console.log("payments", payments);
 
         const button = document.getElementById(this.props.item.txid).querySelector(".tip-money-button");
+
         databutton.build({
             data: OP_RETURN,
             button: {

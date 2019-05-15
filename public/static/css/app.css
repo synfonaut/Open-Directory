@@ -300,6 +300,10 @@ form {
     display: none;
 }
 
+.subcategories > .category {
+    margin-left: 60px;
+}
+
 .entry .upvoteContainer .upvote {
     padding-top: 5px;
     padding-bottom: 3px;
@@ -338,6 +342,24 @@ form {
 .subcategories .category .category-count {
     padding: 3px;
     font-size: 12px;
+}
+
+.category-meta .upvoteContainer {
+}
+
+.category-meta .upvoteContainer .upvote {
+    width: 60px;
+    padding-top: 8px;
+    font-size: 15px;
+}
+
+.category-meta .upvoteContainer h1 {
+    margin-left: 60px;
+}
+
+.category-meta .upvoteContainer .markdown {
+    margin-left: 60px;
+    padding: 1px 5px;
 }
 
 .sort .label {
@@ -989,6 +1011,15 @@ form {
 .inline-delete {
     margin-left: 60px;
 }
+
+.subcategories .tipping {
+    margin-left: 0px;
+}
+
+.category-meta .tipping {
+    margin-left: 0px;
+}
+
 /** Orange Theme **/
 .orange-theme a {
     color: #FF6384;
@@ -1370,9 +1401,10 @@ form {
     }
 
     .tipping {
-        margin-left: 40px;
+        margin-left: 60px;
         width: 92%;
     }
+
 
     .fork {
         width: 420px;
@@ -1399,3 +1431,4 @@ form {
 /* Larger than desktop screen */
 @media (min-width: 125.0rem) {
 }
+

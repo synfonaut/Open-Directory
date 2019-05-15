@@ -6,6 +6,7 @@ class List extends React.Component {
             "sort": "hot",
             "limit": 2,
             "cursor": 0,
+            "action": null,
         };
     }
 
@@ -62,6 +63,25 @@ class List extends React.Component {
         return [];
     }
 
+    componentDidMount() {
+        this._isMounted = true;
+        window.addEventListener('hashchange', this.clearForm.bind(this), false);
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+        window.removeEventListener('hashchange', this.clearForm.bind(this));
+    }
+
+    clearForm() {
+        if (this._isMounted) {
+            this.setState({
+                "action": null,
+                "cursor": 0,
+            });
+        }
+    }
+
     findCategoryByTXID(txid) {
         return this.props.items.filter(i => { return i.type == "category" && i.txid == txid }).shift();
     }
@@ -84,9 +104,19 @@ class List extends React.Component {
         this.setState({"cursor": cursor});
     }
 
+    handleUpvote(e) {
+        this.setState({"action": "tipping"});
+    }
+
+    handleSuccessfulTip() {
+        this.setState({"action": null});
+        this.props.onSuccessHandler("Successfully upvoted " + this.props.category.type + ", it will appear automatically—please refresh the page if it doesn't");
+    }
+
     render() {
         const categories = this.getCategories();
         const entries = this.getEntries();
+        const price = satoshisToDollars(this.props.category.satoshis, BSV_PRICE, true);
 
         var slice = entries.slice(this.state.cursor, this.state.cursor + this.state.limit);
 
@@ -108,11 +138,20 @@ class List extends React.Component {
             if (parent) {
                 back = <div className="back"><a href={"/#" + parent.txid}>&laquo; {parent.name}</a><hr /></div>;
             }
-            heading = (<div>
-                {back}
-                <h1>{this.props.category.name}</h1>
-                <ReactMarkdown source={this.props.category.description} />
-            </div>);
+            if (this.props.category.name) {
+                heading = (<div className="category-meta" id={this.props.category.txid}>
+                    {back}
+                    <div className="upvoteContainer">
+                        <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number" title={this.props.category.satoshis + " sats"}>{price}</span><br /><span className="number">{this.props.category.votes}</span></div>
+                        <div>
+                            <h1>{this.props.category.name}</h1>
+                            {this.state.action == "tipping" && <TipchainItem item={this.props.category} items={this.props.items} onSuccessHandler={this.handleSuccessfulTip.bind(this)} onErrorHandler={this.props.onErrorHandler} />}
+                            <div className="markdown"><ReactMarkdown source={this.props.category.description} /></div>
+                        </div>
+                        <div className="clearfix"></div>
+                    </div>
+                </div>);
+            }
         }
 
         var entryListing;
@@ -148,6 +187,7 @@ class List extends React.Component {
                 );
             }
         }
+
 
         const isHome = this.props.category.txid == null;
         return (
