@@ -3,14 +3,6 @@ class CategoryItem extends Item {
     render() {
         const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE, true);
 
-        var actions = (
-            <span className="actions">
-                <a onClick={this.handleToggleExpand.bind(this)} className="arrow" title={"txid " + this.props.item.txid}>{this.state.isExpanded ? "▶" : "▼"}</a>
-                {this.state.isExpanded && <a className="action" onClick={this.handleEdit.bind(this)}>edit</a>}
-                {this.state.isExpanded && <a className="action" onClick={this.handleDelete.bind(this)}>delete</a>}
-            </span>);
-
-
         return (
             <li id={this.props.item.txid} className="category">
 
@@ -21,12 +13,9 @@ class CategoryItem extends Item {
                             <a href={"#" + this.props.item.txid} onClick={this.handleUpvote.bind(this)}>{this.props.item.name}</a>
                             {!this.props.item.height && <span className="pending">pending</span>}
                             <span className="category-count">({this.props.item.entries})</span>
-                            {actions}
                         </h3>
                         <ReactMarkdown className="description" source={this.props.item.description} />
-                        {this.state.action == "editing" && <div className="column"><EditCategoryForm category={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} onSubmit={this.clearForm.bind(this)} /></div>}
                         {this.state.action == "tipping" && <TipchainItem item={this.props.item} items={this.props.items} onSuccessHandler={this.handleSuccessfulTip.bind(this)} onErrorHandler={this.props.onErrorHandler} />}
-                        {this.state.action == "deleting"  && <DeleteItem item={this.props.item} onSuccessHandler={this.handleSuccessfulDelete.bind(this)} onErrorHandler={this.props.onErrorHandler} />}
                     </div>
                     <div className="clearfix"></div>
                 </div>
@@ -213,7 +202,6 @@ class EditCategoryForm extends React.Component {
     render() {
         return (
             <div className="column" id={this.getCategoryID()}>
-                <br />
                 <h3>Edit <span className="highlight">{this.props.category.name}</span></h3>
                 <form onSubmit={this.handleSubmit}>
                     <fieldset>

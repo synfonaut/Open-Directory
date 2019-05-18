@@ -19,6 +19,9 @@ body {
     position: relative;
 }
 
+.list-wrapper {
+    margin-top: 20px;
+}
 
 .open-directory
 {
@@ -59,7 +62,7 @@ h1 {
     background: #efefef33;
     margin: 0 -20px 0 -20px;
     padding: 10px 25px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     border-bottom: 1px solid #efefef;
 }
 
@@ -469,7 +472,8 @@ form {
 .fork input,
 .fork textarea,
 .fork select,
-.fork input[type=submit] {
+.fork input[type=submit],
+.fork input[type=button] {
     max-width: 100%;
 }
 
@@ -618,6 +622,22 @@ form {
     font-size: 12px;
 }
 
+.fork .tipchain label {
+    font-size: 12px;
+}
+
+.fork .tipchain input[type=button] {
+    font-size: 9px;
+}
+
+.fork .tipchain fieldset {
+    margin-top: 8px;
+}
+
+.fork .tipchain input {
+    margin-top: 4px;
+}
+
 .fork .tipchain td {
     padding: 3px 8px 9px 8px;
     border: 0;
@@ -758,11 +778,14 @@ form {
     text-decoration: underline;
 }
 
+.category-meta .actions {
+    margin-left: 3px;
+}
+
 .notice {
     font-size: 14px;
-    background: white;
-    margin-top: 11px;
     width: 100%;
+    padding: 10px 5px;
 }
 
 .notice .warning {
@@ -784,6 +807,7 @@ form {
     border-radius: 0 0 3px 3px;
     border-size: 0 1px 1px 1px;
     border: 1px solid #DDD;
+    background: white;
     width: 100%;
     max-width: 500px;
 }
@@ -1018,6 +1042,13 @@ form {
 
 .category-meta .tipping {
     margin-left: 0px;
+}
+
+.category-container {
+    margin-left: 60px;
+    background: #efefef33;
+    padding: 5px 10px;
+    border-radius: 4px;
 }
 
 /** Orange Theme **/
@@ -1347,6 +1378,11 @@ form {
     color: #666;
 }
 
+.fork input[type=button] {
+    border: 1px solid #ccc !important;
+    color: #666 !important;
+}
+
 
 /* Larger than mobile screen */
 @media (min-width: 45.0rem) {
@@ -1399,12 +1435,6 @@ form {
     .clearfix.three-column:after {
         clear: none;
     }
-
-    .tipping {
-        margin-left: 60px;
-        width: 92%;
-    }
-
 
     .fork {
         width: 420px;

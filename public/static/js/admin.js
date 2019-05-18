@@ -53,8 +53,6 @@ function fetchAdminActions(admin_address) {
                         return (a.height===null)-(b.height===null) || +(a.height>b.height) || -(a.height<b.height);
                     });
 
-                    console.log("SORTED", data);
-
                     resolve(sorted);
                 });
             }
@@ -66,14 +64,13 @@ function getCachedAdminActions(cache_mins=60) { // TODO: Re-cache
     return new Promise((resolve, reject) => {
         const now = (new Date()).getTime();
 
-        const cache_key = "admin_actions_" + OPENDIR_ADMIN_ADDRESS;
+        const cache_key = "admin_actions_" + SETTINGS.admin_address;
         const cache = lscache.get(cache_key);
         if (cache) {
-            console.log("Found cached admin actions for", OPENDIR_ADMIN_ADDRESS);
             return resolve(cache);
         }
 
-        fetchAdminActions(OPENDIR_ADMIN_ADDRESS).then(results => {
+        fetchAdminActions(SETTINGS.admin_address).then(results => {
             if (results) {
                 lscache.set(cache_key, results, cache_mins);
             }

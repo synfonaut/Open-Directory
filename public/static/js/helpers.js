@@ -19,6 +19,19 @@ function satoshisToDollars(satoshis, bitcoin_price=BSV_PRICE, show_zero=false) {
     }
 }
 
+function numberFormat(number, length=3) {
+    if (number > 0) {
+        const val = number.toLocaleString(undefined, {'minimumFractionDigits':2, 'maximumFractionDigits':length});
+
+        if (val.slice(-3) == ".00") {
+            return val.slice(0, -3);
+        }
+        return val;
+    } else {
+        return "0";
+    }
+}
+
 
 // https://stackoverflow.com/a/6109105
 function timeDifference(current, previous) {

@@ -31,7 +31,7 @@ class ChangeLog extends React.Component {
         // For now only show open directory protocol changes in changelog—in future may want to
         // pull in related bitcoin media
         const changelog = (this.props.changelog ? this.props.changelog.slice(0).reverse() : []).filter(i => {
-            return i.data.s1 == OPENDIR_PROTOCOL || i.data.s1 == OPENDIR_ADMIN_ADDRESS;
+            return i.data.s1 == OPENDIR_PROTOCOL || i.data.s1 == SETTINGS.admin_address;
         });
 
         return (changelog && changelog.length > 0 && 

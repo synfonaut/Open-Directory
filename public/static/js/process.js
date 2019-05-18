@@ -14,16 +14,8 @@ const SUPPORTED_TIPCHAIN_PROTOCOLS = [
     "bcat://",
 ];
 
-const OPENDIR_TIP_CURRENCY = "USD";
-
 // Open Directory Bitcom Protocol
 const OPENDIR_PROTOCOL = "1dirxA5oET8EmcdW4saKXzPqejmMXQwg2";
-
-// Address included in tipchain
-const OPENDIR_TIP_ADDRESS = "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL";
-
-// Address that gets admin privileges, like update versino and detatch
-const OPENDIR_ADMIN_ADDRESS = "18yPrJqrcoxAeGByXHaLhzVtmfb4ToQAWd";
 
 // Allowed actions
 const OPENDIR_ACTIONS = [
@@ -446,9 +438,11 @@ function calculateEntryHottness(result, gravity=1.8) {
 }
 
 function processTipchainResult(result, processing, txpool, media) {
-    const opendir_tip = {"address": OPENDIR_TIP_ADDRESS, "name": "Open Directory", "type": "opendirectory"};
+
+    const opendir_tips = JSON.parse(JSON.stringify(SETTINGS.tip_addresses)); // hacky deep copy
+
     const result_tip = {address: result.address, txid: result.txid, type: result.type};
-    var tipchain = [opendir_tip, result_tip];
+    var tipchain = opendir_tips.concat(result_tip);
 
     if (result.category) {
         const category = findObjectByTX(result.category, processing);
@@ -757,6 +751,11 @@ function convertKeyValues(orig_args) {
 }
 
 function calculateTipchainSplits(tipchain) {
+
+    if (tipchain.length == 0) {
+        return [];
+    }
+
     const weights = [];
     for (var i = 1; i <= tipchain.length; i++) {
         weights.push(1 + Math.log(i));
@@ -982,8 +981,6 @@ function findRootActionID(result, results=[]) {
 
 if (typeof window == "undefined") {
     module.exports = {
-        "OPENDIR_TIP_ADDRESS": OPENDIR_TIP_ADDRESS,
-        "OPENDIR_TIP_CURRENCY": OPENDIR_TIP_CURRENCY,
         "OPENDIR_PROTOCOL": OPENDIR_PROTOCOL,
         "OPENDIR_ACTIONS": OPENDIR_ACTIONS,
         "fetch_from_network": fetch_from_network,

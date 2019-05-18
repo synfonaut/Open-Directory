@@ -39,9 +39,9 @@ function fetchUpdates() {
         "v": 3,
         "q": {
             "find": {
-                "out.s1": OPENDIR_ADMIN_ADDRESS,
+                "out.s1": SETTINGS.admin_address,
                 "out.s2": "uri",
-                "in.e.a": OPENDIR_ADMIN_ADDRESS,
+                "in.e.a": SETTINGS.admin_address,
             },
             "limit": 9999 // can eventually do paging here if necessary, admin log should stay small though
         },

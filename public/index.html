@@ -8,6 +8,24 @@
     <link rel="stylesheet" href="/static/css/milligram.css" />
     <link rel="stylesheet" href="/static/css/app.css" />
 
+    <!-- BEGIN SETTINGS -->
+    <script>
+      var SETTINGS = {
+        "api_key": "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z",
+        "api_endpoint": "https://bitomation.com/{api_action}/{api_key}/{query}",
+        "tip_amount": 0.05,
+        "admin_address": "18yPrJqrcoxAeGByXHaLhzVtmfb4ToQAWd",
+        "tip_addresses": [
+          {"address": "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", "name": "Open Directory", "type": "opendirectory"}
+        ],
+        "title": "Open Directory",
+        "intro_markdown": "# Open Directory\n`v1—beta`\n\nOpen Directory lets anyone build resources like [Reddit](https://www.reddit.com), [Awesome Lists](https://github.com/sindresorhus/awesome) and [DMOZ](http://dmoz-odp.org) ontop of Bitcoin (SV). With Open Directory you can:\n\n* 💡 Create your own resource and earn money when people tip through upvotes\n* 💰 Incentivize quality submissions by sharing a portion of tips back to contributors\n* 🛠 Organize an existing directory or fork it with 1-click and start your own\n\nCreate your own directory or view the existing ones below.",
+        "about_markdown": "# about markdown\nhello world",
+        "theme": "orange-theme",
+        "currency": "USD",
+      };
+    </script>
+    <!-- END SETTINGS -->
 
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
@@ -18,6 +36,7 @@
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@8.4.2/dist/markdown-it.min.js"></script>
 
     <script src="https://www.moneybutton.com/moneybutton.js"></script>
+    <script src="https://unpkg.com/bsv@0.27.1/bsv.min.js"></script>
     <script src="https://unpkg.com/datapay"></script>
     <script src="/static/js/lscache.js"></script>
 

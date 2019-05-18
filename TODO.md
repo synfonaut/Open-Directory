@@ -1,10 +1,10 @@
 ## Alpha
 
-* finish forking
-* add edit/upvote on category page
+* fork should upload application with MAP protocol? or post two transactions?
 * display list of forks for each category
-- Search
 
+* show entry page
+- Search
 
 * split out lib and my JS file organization
 
@@ -18,13 +18,6 @@
 
 - Plug bitdb into bit:// for genesis bitdb so we don't have to hardcode it (then we can't default to bitomation...)
 should only be able to edit a category on the actual category page
-
-- Forking
- - custom category, no back button
- - custom theme
- - customize intro blurb
- - customize css
- - change base tip chain address
 
 - compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output
 
@@ -83,6 +76,7 @@ about
 - Upload website (dir.sv)
 - Reset protocol id
 - Polish content
+- publish admin console on npm
 - create good examples (collab with bsvdevs, onchain games, onchain art, onchain utilities)
 
 ## Pre-launch (Atlantis)

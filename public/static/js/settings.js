@@ -1,8 +1,21 @@
-var SETTINGS = {
-    "api_key": "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z",
-    "api_endpoint": "https://bitomation.com/{api_action}/{api_key}/{query}",
-    "tip_amount": 0.05,
-};
+if (!SETTINGS) {
+
+    // always expect global settings in browser...if not throw error so we don't accidentally let users continue using the app with a broken tipchain (for example)
+    if (typeof window == "object") {
+        throw "Error reading global settings...";
+
+    } else {
+
+        // in node, if no settings, set bare minimum
+        var SETTINGS = {
+            "api_key": "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z",
+            "api_endpoint": "https://bitomation.com/{api_action}/{api_key}/{query}",
+            "tip_addresses": [
+                {"address": "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", "name": "Open Directory", "type": "opendirectory"}
+            ],
+        };
+    }
+}
 
 function get_local_settings() {
     const storage = window.localStorage;

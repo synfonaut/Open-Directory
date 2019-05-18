@@ -53,7 +53,7 @@ class TipchainItem extends React.Component {
         const amount = Number(this.state.tip);
 
         console.log("tipchain", tipchain);
-        const payments = calculateTipPayment(tipchain, amount, OPENDIR_TIP_CURRENCY);
+        const payments = calculateTipPayment(tipchain, amount, SETTINGS.currency);
         console.log("payments", payments);
 
         const button = document.getElementById(this.props.item.txid).querySelector(".tip-money-button");

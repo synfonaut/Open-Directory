@@ -5,7 +5,7 @@ class OpenDirectoryApp extends React.Component {
             isLoading: true,
             isError: false,
 
-            isForking: false,
+            isForking: true,
 
             location: [""],
             messages: [],
@@ -21,10 +21,10 @@ class OpenDirectoryApp extends React.Component {
 
             category: {"txid": null, "needsupdate": true},
 
-            title: "Open Directory",
-            intro_markdown: "# Open Directory\n`v1—beta`\n\nOpen Directory lets anyone build resources like [Reddit](https://www.reddit.com), [Awesome Lists](https://github.com/sindresorhus/awesome) and [DMOZ](http://dmoz-odp.org) ontop of Bitcoin (SV). With Open Directory you can:\n\n* 💡 Create your own resource and earn money when people tip through upvotes\n* 💰 Incentivize quality submissions by sharing a portion of tips back to contributors\n* 🛠 Organize an existing directory or fork it with 1-click and start your own\n\nCreate your own directory or view the existing ones below.",
-            about_markdown: "# about markdown\nhello world",
-            theme: "orange-theme",
+            title: SETTINGS.title,
+            intro_markdown: SETTINGS.intro_markdown,
+            about_markdown: SETTINGS.about_markdown,
+            theme: SETTINGS.theme,
         };
 
         this.NETWORK_DELAY = 0;
@@ -146,6 +146,20 @@ class OpenDirectoryApp extends React.Component {
         return sorted;
     }
 
+    handleChangeCategory(txid) {
+        const category = {
+            "txid": txid,
+            "needsdata": true
+        };
+
+        if (!txid) { txid = "" }
+
+        // better way to handle this?
+        this.setState({"category": category});
+        window.history.pushState(null, null, "#" + txid)
+        this.didUpdateLocation();
+    }
+
     // TODO: Split this up
     render() {
         const hash = this.state.location[0];
@@ -173,7 +187,7 @@ class OpenDirectoryApp extends React.Component {
 
             if (!this.state.isError) {
                 const filtered_items = this.filterOutDetaches(this.state.items);
-                body = <List items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
+                body = <div className="list-wrapper"><List items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} /></div>;
             }
 
             loading = <div className="loading">
@@ -200,7 +214,7 @@ class OpenDirectoryApp extends React.Component {
 
         return (
             <div className={this.state.theme + " wrapper"}>
-                {this.state.isForking && <Fork onSubmitFork={this.handleSubmitFork.bind(this)} onCloseFork={this.handleCloseFork.bind(this)} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} aboutMarkdown={this.state.about_markdown} onAboutChange={this.didChangeAboutHandler.bind(this)} />}
+                {this.state.isForking && <Fork onSubmitFork={this.handleSubmitFork.bind(this)} onCloseFork={this.handleCloseFork.bind(this)} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} aboutMarkdown={this.state.about_markdown} onAboutChange={this.didChangeAboutHandler.bind(this)} items={this.state.items} category={this.state.category} onChangeCategory={this.handleChangeCategory.bind(this)} />}
                 <nav className="navigation">
                   <section className="container">
                     <a href="/#" className="navigation-title">{this.state.title}</a>
@@ -267,7 +281,7 @@ class OpenDirectoryApp extends React.Component {
                 const redirect_url = <a href={update.uri}>new version</a>;
                 this.addSuccessMessage(<div>{this.state.title} has a {redirect_url} available, check it out!</div>, null, 10000);
             } else {
-                console.log("Didn't find a more recent version of application");
+                console.log("Using most recent version of app");
             }
         });
     }
@@ -286,7 +300,7 @@ class OpenDirectoryApp extends React.Component {
                         delete result["detached"];
                     }
                 } else {
-                    console.log("unable to find result for tach", tach);
+                    // console.log("unable to find result for tach", tach);
                 }
             }
         }
