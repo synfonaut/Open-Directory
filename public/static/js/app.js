@@ -5,7 +5,7 @@ class OpenDirectoryApp extends React.Component {
             isLoading: true,
             isError: false,
 
-            isForking: true,
+            isForking: false,
 
             location: [""],
             messages: [],
@@ -173,6 +173,8 @@ class OpenDirectoryApp extends React.Component {
             body = <div className="about">
                     <ReactMarkdown source={this.state.about_markdown} />
                 </div>
+        } else if (hash == "search") {
+            body = <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} />
         } else {
 
             if (!this.state.isLoading && !this.state.isError) {
@@ -225,6 +227,7 @@ class OpenDirectoryApp extends React.Component {
                     </div>
                     <ul className="navigation-list float-right">
                       <li className="navigation-item">
+                        <a className="navigation-link" href="#search">Search</a>
                         <a className="navigation-link" onClick={this.handleToggleFork.bind(this)}>Fork</a>
                         <a className="navigation-link" href="#about">About</a>
                       </li>
@@ -242,7 +245,7 @@ class OpenDirectoryApp extends React.Component {
                           </PoseGroup>
                           {hash == "" && intro}
                           {body}
-                          {this.state.isLoading && loading}
+                          {(this.state.isLoading && this.state.items.length == 0) && loading}
                           {this.state.isError && error}
                           <hr />
                           <div className="row">
@@ -252,7 +255,6 @@ class OpenDirectoryApp extends React.Component {
                               </div>
                               {(shouldShowAddNewEntryForm ? null : <div className="column"></div>)}
                           </div>
-
                           {(shouldShowAddNewEntryForm || shouldShowAddNewCategoryForm) && <hr />}
                             <ChangeLog changelog={changelog} txpool={this.state.txpool} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
                       </div>
@@ -321,14 +323,19 @@ class OpenDirectoryApp extends React.Component {
         var category = this.state.category;
         var items = [];
         var title = this.state.title;
+        var needsupdate = false;
 
         if (hash == "about") {
             title = "About " + this.state.title;
+        } else if (hash == "search") {
+            title = "Search " + this.state.title;
+            needsupdate = true;
         } else {
             const category_id = (hash == "" ? null : hash);
             const cached = this.state.cache[category_id];
 
             category = {"txid": category_id, "needsdata": true};
+            needsupdate = true;
 
             if (cached) {
                 items = cached;
@@ -353,7 +360,7 @@ class OpenDirectoryApp extends React.Component {
             "category": category,
             "items": items,
         }, () => {
-            if (category && category.needsdata) {
+            if (needsupdate) {
                 this.networkAPIFetch();
             }
         });

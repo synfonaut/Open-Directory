@@ -2,14 +2,6 @@ body, html {
     height: 100%;
 }
 
-.box {
-    width: 100px;
-    height: 100px;
-    background-color: red;
-    display: block;
-    border: 1px solid red;
-}
-
 body {
     background: url("/static/img/bg-70.png") repeat;
     color: #5d5d5d;
@@ -185,7 +177,7 @@ form {
     border-bottom: 1px solid #ddd;
     background-color: #555;
     min-height: 49px;
-    padding: 11px;
+    padding: 12px 3px;
     position: relative;
     z-index: 2;
     box-shadow: 1px 1px 2px #CCCCCCcc;
@@ -217,10 +209,11 @@ form {
 
 .navigation-list {
     list-style: none;
+    margin-top: 1px;
 }
 
 .navigation-link {
-    padding-left: 25px;
+    padding-left: 10px;
 }
 
 .intro h1 {
@@ -905,6 +898,7 @@ form {
     margin-top: 7px;
     width: 100%;
     word-break: break-all;
+    table-layout: fixed;
 }
 
 #changelog td.undo {
@@ -1051,6 +1045,83 @@ form {
     border-radius: 4px;
 }
 
+.search {
+    text-align: center;
+    margin-top: 50px;
+    padding-bottom: 10px;
+}
+
+.search .search-results {
+    text-align: left;
+    padding: 20px;
+}
+
+.search .search-result {
+    margin-bottom: 20px;
+    padding: 0;
+}
+
+.search .search-result p {
+    margin-bottom: 0;
+    font-size: 15px;
+    color: #666;
+}
+.search .badge {
+    background-color: #AAA;
+    color: #fff;
+    padding: 2px 7px 3px 7px;
+    margin-left: 2px;
+    font-size: 11px;
+    opacity: 0.75;
+    border-radius: 5px;
+}
+
+.search .search-result h4 {
+    font-size: 20px;
+}
+
+.search h2 {
+    margin-bottom: 5px;
+}
+
+.search .blurb {
+    font-size: 13px;
+}
+
+.search .num-results {
+    font-size: 12px;
+    font-style: italic;
+    padding: 0;
+    margin: 0;
+}
+
+.search .pages {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.search input[type=search] {
+    max-width: 350px;
+}
+
+.search input[type=submit] {
+    height: 37px;
+    margin-left: 7px;
+}
+
+.search .url {
+    font-size: 14px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #AAA;
+}
+
+.search .url:hover {
+    text-decoration: underline;
+}
+
 /** Orange Theme **/
 .orange-theme a {
     color: #FF6384;
@@ -1086,8 +1157,13 @@ form {
 .orange-theme .navigation a {
     color: #FFFFFFEE;
 }
-.orange-theme .block {
+.orange-theme .block,
+.orange-theme .badge {
     background-color: #FF6384;
+}
+
+.orange-theme .search .badge.badge-type-entry {
+    background-color: #FF6384aa;
 }
 
 .orange-theme .error {
@@ -1170,8 +1246,13 @@ form {
 .blue-theme .navigation a {
     color: #FFFFFFEE;
 }
-.blue-theme .block {
+.blue-theme .block,
+.blue-theme .badge {
     background-color: #0081CF;
+}
+
+.blue-theme .search .badge.badge-type-entry {
+    background-color: #0081CFaa;
 }
 
 .blue-theme .error {
@@ -1245,8 +1326,13 @@ form {
 }
 
 
-.purple-theme .block {
+.purple-theme .block,
+.purple-theme .badge {
     background-color: #9b4dca;
+}
+
+.purple-theme .search .badge.badge-type-entry {
+    background-color: #9b4dcaaa;
 }
 
 .purple-theme .pages a.active {
@@ -1301,8 +1387,13 @@ form {
 .green-theme .navigation a {
     color: #FFFFFFEE;
 }
-.green-theme .block {
+.green-theme .block,
+.green-theme .badge {
     background-color: #37AB85;
+}
+
+.green-theme .search .badge.badge-type-entry {
+    background-color: #37AB85aa;
 }
 
 .green-theme .error {
@@ -1439,6 +1530,16 @@ form {
     .fork {
         width: 420px;
     }
+
+    .navigation-link {
+        padding-left: 20px;
+    }
+
+    .search .search-results {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
 }
 
 /* Larger than tablet screen */
@@ -1456,6 +1557,14 @@ form {
         clear: both;
     }
 
+    .navigation-link {
+        padding-left: 25px;
+    }
+
+    .search .search-results {
+        padding-left: 75px;
+        padding-right: 75px;
+    }
 }
 
 /* Larger than desktop screen */

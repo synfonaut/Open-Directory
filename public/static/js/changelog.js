@@ -48,7 +48,7 @@ class ChangeLog extends React.Component {
                                 })}
                                 </tbody>
                                 {(!this.state.isShowingWarning && changelog.length > max) && <tbody><tr>
-                                    <td colSpan="5" className="expand">
+                                    <td colSpan="6" className="expand">
                                         <a onClick={this.handleToggleShowAll.bind(this)}>{this.state.isShowAll ? "Hide" : "Show"} all {changelog.length} changes from changelog</a>
                                         &nbsp;<a onClick={this.handleToggleExpand.bind(this)}>expanded</a>
                                     </td>

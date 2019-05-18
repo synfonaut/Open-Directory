@@ -3,9 +3,6 @@
 * fork should upload application with MAP protocol? or post two transactions?
 * display list of forks for each category
 
-* show entry page
-- Search
-
 * split out lib and my JS file organization
 
 - Redesign
