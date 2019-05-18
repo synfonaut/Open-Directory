@@ -169,7 +169,7 @@ class List extends React.Component {
                 entryListing = (
                     <div className="empty-entry-listing">
                     <img src="/static/img/link.png" />
-                    <p>There's no links here yet. Go ahead and add a new link below. 👍</p>
+                    <p>There's no links here yet—you should submit one! If you submit a good one and it gets upvoted, you'll get paid Bitcoin (SV)! 👍</p>
                     </div>
                 );
             }

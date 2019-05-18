@@ -175,6 +175,8 @@ class OpenDirectoryApp extends React.Component {
                 </div>
         } else if (hash == "search") {
             body = <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} />
+        } else if (hash == "add-directory") {
+            body = <AddDirectoryPage category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
         } else {
 
             if (!this.state.isLoading && !this.state.isError) {
@@ -248,10 +250,27 @@ class OpenDirectoryApp extends React.Component {
                           {(this.state.isLoading && this.state.items.length == 0) && loading}
                           {this.state.isError && error}
                           <hr />
+                          {(shouldShowAddNewEntryForm && !shouldShowAddNewCategoryForm) && <div className="row">
+                              <div className="column">
+                                <p className="callout">💡 Earn Bitcoin (SV) by submitting valuable content—when it gets upvoted you'll receive a portion of the tip!</p>
+                              </div>
+                              </div>}
+                          {(!shouldShowAddNewEntryForm && shouldShowAddNewCategoryForm) && <div className="row">
+                              <div className="column">
+                                <p className="callout">💡 Earn Bitcoin (SV) by creating a new directory—when someone submits content and it gets upvoted you'll receive a portion of the tip!</p>
+                              </div>
+                              </div>}
+                          {(shouldShowAddNewEntryForm && shouldShowAddNewCategoryForm) && <div className="row">
+                              <div className="column">
+                                <p className="callout">💡 Earn Bitcoin (SV) by submitting valuable content or creating a new category—when content gets submitted or upvoted you'll receive a portion of the tip!</p>
+                              </div>
+                              </div>}
                           <div className="row">
                               {(shouldShowAddNewEntryForm ? <div className="column"><AddEntryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} /></div> : null )}
                               <div className="column">
-                              {(shouldShowAddNewCategoryForm ? <div><AddCategoryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} /></div> : null)}
+                              {(shouldShowAddNewCategoryForm ? <div>
+                                  <AddCategoryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
+                                   </div> : null)}
                               </div>
                               {(shouldShowAddNewEntryForm ? null : <div className="column"></div>)}
                           </div>
@@ -329,6 +348,9 @@ class OpenDirectoryApp extends React.Component {
             title = "About " + this.state.title;
         } else if (hash == "search") {
             title = "Search " + this.state.title;
+            needsupdate = true;
+        } else if (hash == "add-directory") {
+            title = "Add directory to " + this.state.title;
             needsupdate = true;
         } else {
             const category_id = (hash == "" ? null : hash);

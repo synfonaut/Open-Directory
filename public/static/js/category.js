@@ -45,6 +45,7 @@ class AddCategoryForm extends React.Component {
 
 
     render() {
+        const dirtype = (this.props.category.txid ? "category" : "directory");
         var header = <h3>Add new directory</h3>
         if (this.props.category.txid) {
             header = <h3>Add new subcategory under <span className="highlight">{this.props.category.name}</span></h3>
@@ -350,5 +351,14 @@ class EditCategoryForm extends React.Component {
 
     handleDescriptionChange(e) {
         this.setState({description: e.target.value});
+    }
+}
+
+class AddDirectoryPage extends React.Component {
+    render() {
+        return <div>
+            <br />
+            <AddCategoryForm category={this.props.category} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />
+        </div>;
     }
 }

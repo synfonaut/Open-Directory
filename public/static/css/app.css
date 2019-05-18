@@ -96,6 +96,15 @@ a {
     cursor: pointer;
 }
 
+.callout {
+    padding: 10px 5px;
+    font-weight: 400;
+    font-size: 16px;
+    color: #666;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 .loading {
     text-align: center;
     padding: 30px;
@@ -423,7 +432,7 @@ form {
 
 .empty-entry-listing {
     background: rgba(255, 255, 255, 0.50);
-    padding: 30px 20px;
+    padding: 30px 50px;
     margin-bottom: 40px;
     border-radius: 5px;
     border: 1px dashed #e8e2d699;
@@ -1540,6 +1549,11 @@ form {
         padding-right: 20px;
     }
 
+    .empty-entry-listing {
+        padding-left: 120px;
+        padding-right: 120px;
+    }
+
 }
 
 /* Larger than tablet screen */
@@ -1564,6 +1578,11 @@ form {
     .search .search-results {
         padding-left: 75px;
         padding-right: 75px;
+    }
+
+    .empty-entry-listing {
+        padding-left: 180px;
+        padding-right: 180px;
     }
 }
 

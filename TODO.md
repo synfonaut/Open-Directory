@@ -4,18 +4,6 @@
 * display list of forks for each category
 
 * split out lib and my JS file organization
-
-- Redesign
- - dedicated add directory page
- - favicon
- - changelog should be able to toggle all, then close individually
- - edit form design
- - hide create category by default
- - better iconography and graphics
-
-- Plug bitdb into bit:// for genesis bitdb so we don't have to hardcode it (then we can't default to bitomation...)
-should only be able to edit a category on the actual category page
-
 - compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output
 
 - Test performance on bitcoinscaling.io
