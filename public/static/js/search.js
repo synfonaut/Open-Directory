@@ -29,11 +29,11 @@ class SearchForm extends React.Component {
     render() {
         var searching;
         if (this.props.category && this.props.category.name) {
-            searching = <span>Searching <a href={"#" + this.props.category.txid}>{this.props.category.name}</a></span>;
+            searching = <span>Search <a href={"#" + this.props.category.txid}>{this.props.category.name}</a></span>;
         } else if (this.props.category && this.props.category.txid) {
-            searching = <span>Searching category {this.props.category.txid}</span>;
+            searching = <span>Search category {this.props.category.txid.slice(0, 5)}...</span>;
         } else if (this.props.category && !this.props.category.txid) {
-            searching = <span>Searching <a href="#">Open Directory</a></span>;
+            searching = <span>Search <a href="#">Open Directory</a></span>;
         }
         return (<div className="search">
                     <h2>{searching}</h2>
@@ -79,7 +79,19 @@ class SearchResults extends React.Component {
             return false;
         });
 
-        var slice = results.slice(this.state.cursor, this.state.cursor + this.state.limit);
+        const sorted = results.sort((a, b) => {
+                if (a.hottness < b.hottness) { return 1; }
+                if (a.hottness > b.hottness) { return -1; }
+                if (a.satoshis < b.satoshis) { return 1; }
+                if (a.satoshis > b.satoshis) { return -1; }
+                if (a.votes < b.votes) { return 1; }
+                if (a.votes > b.votes) { return -1; }
+                if (a.height < b.height) { return 1; }
+                if (a.height > b.height) { return -1; }
+                return 0;
+        });
+
+        var slice = sorted.slice(this.state.cursor, this.state.cursor + this.state.limit);
 
         var numPages = Math.ceil(results.length / this.state.limit);
 
@@ -119,6 +131,7 @@ class SearchResult extends React.Component {
         return (<div className="search-result">
                     <h4><a href={url}>{this.props.item.name}</a> <span className={"badge badge-type-" + this.props.item.type}>{this.props.item.type}</span></h4>
                     {(this.props.item.type == "entry") && <a className="url" href={this.props.item.link}>{this.props.item.link}</a>}
+                    <div className="satoshis">{satoshisToDollars(this.props.item.satoshis)}</div>
                     <ReactMarkdown source={this.props.item.description} />
                 </div>);
     }

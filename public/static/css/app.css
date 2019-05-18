@@ -1118,12 +1118,23 @@ form {
     margin-left: 7px;
 }
 
+.search .satoshis {
+    font-size: 14px;
+    display: block;
+    color: #AAA;
+}
+
+.search .search-results {
+    overflow: hidden;
+}
+
 .search .url {
     font-size: 14px;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: block;
     color: #AAA;
 }
 
