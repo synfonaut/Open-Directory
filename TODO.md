@@ -1,7 +1,5 @@
 ## Alpha
 
-* display list of forks for each category
-
 * split out lib and my JS file organization
 - compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output
 

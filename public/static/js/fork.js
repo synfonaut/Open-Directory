@@ -412,3 +412,40 @@ class AddTipchainAddressForm extends React.Component {
         )
     }
 }
+
+
+class ForkLog extends React.Component {
+
+    render() {
+        const timestamp = (new Date()).getTime();
+        const forks = this.props.forks;
+        return (forks && forks.length > 0 && 
+                  <div className="row">
+                      <div className="column">
+                        <div id="forklog">
+                            <h3>Forks</h3>
+                            <table>
+                                <tbody>
+                                {forks.map(i => {
+                                    console.log(i);
+                                    var amount = satoshisToDollars(i.satoshis, BSV_PRICE);
+                                    if (!amount) {
+                                        amount = "$0.00";
+                                    }
+                                    const sats = (i.satoshis > 0 ? i.satoshis + " sats" : "");
+                                    return (<tr key={i.txid}>
+                                        <td className="amount" title={sats}>{amount}</td>
+                                        <td className="time">{timeDifference(timestamp, i.time * 1000)}</td>
+                                        <td className="url"><a href={i.fork_url}>{i.fork_url}</a></td>
+                                    </tr>);
+                                })}
+                                </tbody>
+                            </table>
+                            <br />
+                            <hr />
+                        </div>
+                      </div>
+                  </div>
+        )
+    }
+}

@@ -684,6 +684,34 @@ form {
     display: inline-block ;
 }
 
+#forklog {
+    font-size: 14px;
+}
+
+#forklog td {
+    border: 0;
+    padding: 0;
+    font-size: 12px;
+    vertical-align: top;
+}
+
+#forklog .url {
+    word-break: break-all;
+    padding: 3px;
+}
+
+#forklog .time {
+    width: 110px;
+    color: #999;
+    padding: 3px;
+}
+
+#forklog .amount {
+    color: #999;
+    width: 50px;
+    padding: 3px;
+}
+
 @keyframes lds-circle {
     0%, 100% {
         animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5);
@@ -885,6 +913,7 @@ form {
 #changelog .height {
     white-space: nowrap;
     padding: 3px;
+    width: 93px;
 }
 
 #changelog .action {
@@ -892,6 +921,7 @@ form {
     white-space: nowrap;
     padding: 3px;
     font-weight: 400;
+    width: 100px;
 }
 
 #changelog .address {
@@ -904,7 +934,9 @@ form {
     padding: 4px;
     color: #999;
     word-break: none;
-    white-space: nowrap;
+    width: 8px;
+    width: 50px;
+    display: none;
 }
 
 #changelog .time {
@@ -912,9 +944,11 @@ form {
     white-space: nowrap;
     padding: 4px;
     color: #999;
+    width: 100px;
 }
 
 #changelog .description {
+    width: 114px;
     display: none;
 }
 
@@ -1563,6 +1597,10 @@ form {
         display: table-cell;
     }
 
+    #changelog .amount {
+        padding: 4px;
+        display: table-cell;
+    }
 
     .clearfix.two-column:after {
         clear: both;

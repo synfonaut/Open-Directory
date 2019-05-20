@@ -27,7 +27,7 @@ class OpenDirectoryApp extends React.Component {
             theme: SETTINGS.theme,
         };
 
-        this.NETWORK_DELAY = 0;
+        this.NETWORK_DELAY = 9999;
         this._isMounted = false;
         this.addSuccessMessage = this.addSuccessMessage.bind(this);
         this.addErrorMessage = this.addErrorMessage.bind(this);
@@ -80,10 +80,6 @@ class OpenDirectoryApp extends React.Component {
         this.setState({ "messages": messages });
     }
 
-
-    handleSubmitFork(e) {
-        console.log("SUBMIT", e);
-    }
 
     handleCloseFork() {
         this.setState({"isForking": false});
@@ -160,6 +156,22 @@ class OpenDirectoryApp extends React.Component {
         this.didUpdateLocation();
     }
 
+    getForks() {
+        const txid = this.state.category.txid;
+
+        const forks = this.state.txpool.filter(i => {
+            return i.type == "fork";
+        });
+
+        const sorted = forks.sort(function(a, b) {
+            if (a.satoshis < b.satoshis) { return 1; }
+            if (a.satoshis > b.satoshis) { return -1; }
+            return 0;
+        });
+
+        return sorted;
+    }
+
     // TODO: Split this up
     render() {
         const hash = this.state.location[0];
@@ -168,6 +180,8 @@ class OpenDirectoryApp extends React.Component {
         var shouldShowAddNewCategoryForm = false,
             shouldShowAddNewEntryForm = false;
         var changelog;
+
+        const forks = this.getForks();
 
         if (hash == "about") {
             body = <div className="about">
@@ -218,7 +232,7 @@ class OpenDirectoryApp extends React.Component {
 
         return (
             <div className={this.state.theme + " wrapper"}>
-                {this.state.isForking && <Fork onSubmitFork={this.handleSubmitFork.bind(this)} onCloseFork={this.handleCloseFork.bind(this)} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} aboutMarkdown={this.state.about_markdown} onAboutChange={this.didChangeAboutHandler.bind(this)} items={this.state.items} category={this.state.category} onChangeCategory={this.handleChangeCategory.bind(this)} />}
+                {this.state.isForking && <Fork onCloseFork={this.handleCloseFork.bind(this)} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} aboutMarkdown={this.state.about_markdown} onAboutChange={this.didChangeAboutHandler.bind(this)} items={this.state.items} category={this.state.category} onChangeCategory={this.handleChangeCategory.bind(this)} />}
                 <nav className="navigation">
                   <section className="container">
                     <a href="/#" className="navigation-title">{this.state.title}</a>
@@ -275,7 +289,8 @@ class OpenDirectoryApp extends React.Component {
                               {(shouldShowAddNewEntryForm ? null : <div className="column"></div>)}
                           </div>
                           {(shouldShowAddNewEntryForm || shouldShowAddNewCategoryForm) && <hr />}
-                            <ChangeLog changelog={changelog} txpool={this.state.txpool} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
+                            {!this.state.isLoading && <ForkLog forks={forks} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
+                            {!this.state.isLoading && <ChangeLog changelog={changelog} txpool={this.state.txpool} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
                       </div>
 
                 </div>

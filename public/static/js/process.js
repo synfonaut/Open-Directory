@@ -631,7 +631,11 @@ function processForkResult(result, existing, rows) {
     }
 
     const satoshis = convertOutputs(result.outputs, tipchain_addresses);
-    result.satoshis += satoshis;
+    if (!result.satoshis) {
+        result.satoshis = satoshis;
+    } else {
+        result.satoshis += satoshis;
+    }
 
     // Hacky: Backfill the raw change logs with satoshis
     if (satoshis > 0) {
