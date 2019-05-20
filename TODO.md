@@ -1,7 +1,9 @@
 ## Alpha
 
+* fork away with tip
 * fork should upload application with MAP protocol? or post two transactions?
 * display list of forks for each category
+
 
 * split out lib and my JS file organization
 - compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output

@@ -4,6 +4,10 @@ class TipchainItem extends React.Component {
         this.state = {
             "showingTipchain": false,
             "tip": SETTINGS["tip_amount"],
+
+            // tipchains can appear in many different contexts, so we don't want to use a entry or category id for the parent, just a random key
+            "rand": Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+
         };
 
         this.handleTipSubmit = this.handleTipSubmit.bind(this);
@@ -19,7 +23,7 @@ class TipchainItem extends React.Component {
     }
 
     clearMoneyButton() {
-        const container = document.getElementById(this.props.item.txid);
+        const container = document.getElementById(this.state.rand);
         if (container) {
             const voteButton = container.querySelector(".tip-money-button");
             if (voteButton) {
@@ -37,13 +41,24 @@ class TipchainItem extends React.Component {
             e.preventDefault();
         }
 
-        const OP_RETURN = [
-            OPENDIR_PROTOCOL,
-            "vote",
-            this.props.item.txid,
-        ];
+        var OP_RETURN;
+        if (this.props.custom_OP_RETURN) {
+            OP_RETURN = this.props.custom_OP_RETURN(this.props.item.txid);
+        } else {
+            OP_RETURN = [
+                OPENDIR_PROTOCOL,
+                "vote",
+                this.props.item.txid,
+            ];
+        }
 
-        var tipchain = this.props.item.tipchain;
+        if (!OP_RETURN || OP_RETURN.length == 0) {
+            return alert("Invalid OP_RETURN generated for tip... please try again or contact the developers");
+        }
+
+        console.log("OP_RETURN", OP_RETURN);
+
+        var tipchain = this.get_tipchain();
         if (!tipchain || tipchain.length == 0) {
             if (!confirm("Tipchain is invalid, please refresh or press OK to continue anyway")) {
                 return;
@@ -56,7 +71,7 @@ class TipchainItem extends React.Component {
         const payments = calculateTipPayment(tipchain, amount, SETTINGS.currency);
         console.log("payments", payments);
 
-        const button = document.getElementById(this.props.item.txid).querySelector(".tip-money-button");
+        const button = document.getElementById(this.state.rand).querySelector(".tip-money-button");
 
         databutton.build({
             data: OP_RETURN,
@@ -97,8 +112,13 @@ class TipchainItem extends React.Component {
         this.setState({"showingTipchain": !this.state.showingTipchain});
     }
 
+    get_tipchain() {
+        return (this.props.item.txid == null ? SETTINGS.tip_addresses : this.props.item.tipchain);
+    }
+
     render() {
-        const tipchain = expandTipchainInformation(this.props.item.tipchain, this.state.tip, this.props.items);
+
+        const tipchain = expandTipchainInformation(this.get_tipchain(), this.state.tip, this.props.items);
 
         return <div className="tipping">
             <form onSubmit={this.handleTipSubmit.bind(this)}>
@@ -135,7 +155,7 @@ class TipchainItem extends React.Component {
                     })}
                 </ul>
                }
-               <div className="money-button-wrapper">
+               <div className="money-button-wrapper" id={this.state.rand}>
                    <div className="tip-money-button"></div>
                </div>
             </div>

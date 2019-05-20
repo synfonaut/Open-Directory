@@ -5,31 +5,112 @@ class Fork extends React.Component {
 
         this.state = {
             "action": null,
+            "fork_address": null,
             "tip_addresses": JSON.parse(JSON.stringify(SETTINGS.tip_addresses)),
             "admin_address": SETTINGS.admin_address,
         };
     }
 
-    handleSubmit(e) {
-        e.preventDefault();
+    validate() {
 
         if (this.state.tip_addresses.length == 0) {
             if (!confirm("The tipchain doesn't have any addresses, are you sure you want to continue?")) {
-                return;
+                return false;
             }
         }
 
         if (!bsv.Address.isValid(this.state.admin_address)) {
-            return alert("The admin address doesn't look valid, please use a Bitcom generated address through the admin console");
+            alert("The admin address doesn't look valid, please use a Bitcom generated address through the admin console");
+            return false;
         }
 
         if (this.state.admin_address == SETTINGS.admin_address) {
             if (!confirm("The admin address hasn't changed—you won't be able to admin this directory if you don't control this address. Are you sure you want to continue?")) {
-                return;
+                return false;
             }
         }
 
+
+        return true;
     }
+
+    prepareOPReturnForPingback(txid) {
+        return [OPENDIR_PROTOCOL, "fork.soft", txid];
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+
+        if (!this.validate()) {
+            return;
+        }
+
+        console.log("FORKING");
+        this.setState({"action": "forking"}, () => {
+
+            const OP_RETURN = [
+                B_MEDIA_PROTOCOL,
+                "DATA",
+                "text/html",
+                "utf-8",
+                "Open Directory.html",
+            ];
+
+            console.log(OP_RETURN);
+
+            const el = document.querySelector(".fork-money-button");
+
+            databutton.build({
+                data: OP_RETURN,
+                button: {
+                    $el: el,
+                    onPayment: (msg) => {
+                        console.log("HANDLE RESPONSE", msg)
+                        this.handleForkResponse(msg);
+                    }
+                }
+            })
+
+        });
+    }
+
+    handleForkResponse(txid) {
+
+        if (!txid) {
+            alert("There was an error while forking—we didn't receive a valid txid. Please try again or contact the developers");
+            return;
+        }
+
+        console.log("Successfully forked to txid", txid);
+
+        const url = "bit://" + B_MEDIA_PROTOCOL + "/" + txid;
+        console.log("Forked to", url);
+        this.setState({"action": "post-fork", "fork_address": url}, () => {
+
+            const OP_RETURN = [
+                OPENDIR_PROTOCOL,
+                "fork.soft",
+                url,
+            ];
+
+            console.log(OP_RETURN);
+
+            const el = document.querySelector(".pingback-money-button");
+
+            databutton.build({
+                data: OP_RETURN,
+                button: {
+                    $el: el,
+                    onPayment: (msg) => {
+                        console.log("PINGBACK RESPONSE", msg)
+                        this.handleSuccessfulTip();
+                    }
+                }
+            })
+
+        });
+    }
+
 
     removeTipChainTip(address) {
         const tip_addresses = this.state.tip_addresses.filter(tip => { return tip.address !== address });
@@ -84,6 +165,13 @@ class Fork extends React.Component {
         var txid = e.target.value;
         if (txid == "") { txid = null }
         this.props.onChangeCategory(txid);
+    }
+
+    handleSuccessfulTip() {
+        console.log("SUCCESSFUL TIP");
+        this.setState({"action": "post-ping"});
+
+        //this.props.onSuccessHandler("Successfully upvoted " + this.props.item.type + ", it will appear automatically—please refresh the page if it doesn't");
     }
 
     render() {
@@ -210,14 +298,53 @@ class Fork extends React.Component {
                                     <textarea value={this.props.aboutMarkdown} onChange={this.props.onAboutChange}></textarea>
                                 </div>
                             </div>
-                            <div className="row">
+
+                            {(!this.state.action || this.state.action == "forking") && <div className="row">
                                 <div className="column">
-                                    <p>You are about to fork ...</p>
+                                    <p>⚠️ <strong>You are about to fork.</strong> This will upload a new version of this application to the Bitcoin (SV) blockchain.</p>
+                                    <p>Please take a moment to double check the settings above are correct. The most important one is the admin address
+                                    <br />
+                                    <mark><strong>{this.state.admin_address}</strong></mark></p>
+                                    <p>If you lose control of this address, you lose control of the directory.</p>
                                     <input type="submit" className="button" value="Add new link" value="Fork" />
+
                                 </div>
-                            </div>
+                            </div>}
+
+                            {this.state.action == "forking" && <div className="row">
+                                <div className="column">
+                                        <br />
+                                       <p><strong>Forking {this.props.title}...</strong></p>
+                                        <p>Swipe the button below to fork this directory.</p>
+                                        <div>
+                                            <div className="fork-money-button"></div>
+                                        </div>
+                                </div>
+                                </div>}
                         </fieldset>
                     </form>
+
+                    {this.state.action == "post-fork" && <div className="row">
+                        <div className="column">
+                               <p><strong>✅ Successfully forked {this.props.title} to </strong></p>
+                               <p><strong><a className="url" href={this.state.fork_address}>{this.state.fork_address}</a></strong></p>
+
+                                <br />
+                                <p>Would you like to send a parting ping? This will help users find your directory—you can pay to rank higher up the list.</p>
+                                <div>
+                                    <TipchainItem item={this.props.category} items={this.props.items} onSuccessHandler={this.handleSuccessfulTip.bind(this)} onErrorHandler={this.props.onErrorHandler} custom_OP_RETURN={this.prepareOPReturnForPingback.bind(this)} />
+                                </div>
+                        </div>
+                        </div>}
+
+                    {this.state.action == "post-ping" && <div className="row">
+                        <div className="column">
+                               <p><strong>✅ Successfully pinged {this.props.title}</strong></p>
+                               <p>Please refresh to see your directory listed as a fork.</p>
+                               <p><strong>Visit your directory at <a className="url" href={this.state.fork_address}>{this.state.fork_address}</a></strong></p>
+
+                        </div>
+                        </div>}
             </div>
 
     }

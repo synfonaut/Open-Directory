@@ -149,7 +149,7 @@ class List extends React.Component {
                 <span className="label">sort by</span>
                 <ul>
                 <li><a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.state.sort == "hot" ? "active" : ""}>hot</a></li>
-                <li><a onClick={() => { this.handleChangeSortOrder("money") }} className={this.state.sort == "money" ? "active" : ""}>$</a></li>
+                <li><a onClick={() => { this.handleChangeSortOrder("money") }} className={this.state.sort == "money" ? "active" : ""}>money</a></li>
                 <li><a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.state.sort == "votes" ? "active" : ""}>votes</a></li>
                 <li><a onClick={() => { this.handleChangeSortOrder("time") }} className={this.state.sort == "time" ? "active" : ""}>new</a></li>
                 </ul>

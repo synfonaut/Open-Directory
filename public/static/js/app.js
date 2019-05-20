@@ -5,7 +5,7 @@ class OpenDirectoryApp extends React.Component {
             isLoading: true,
             isError: false,
 
-            isForking: false,
+            isForking: true,
 
             location: [""],
             messages: [],

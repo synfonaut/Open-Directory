@@ -471,6 +471,10 @@ form {
     padding: 15px 18px;
 }
 
+.fork .url {
+    word-break: break-all;
+}
+
 .fork input,
 .fork textarea,
 .fork select,
@@ -663,6 +667,21 @@ form {
 
 .fork .tipchain .remove a {
     text-decoration: none;
+}
+
+.fork .tipping,
+.fork .tipping p
+{
+    color: #333;
+}
+
+.fork .tipping a {
+    color: #333 !important;
+}
+
+.fork .tipping .button {
+    width: 50px !important;
+    display: inline-block ;
 }
 
 @keyframes lds-circle {
@@ -1140,6 +1159,12 @@ form {
 
 .search .url:hover {
     text-decoration: underline;
+}
+
+.fork mark {
+    background-color: #777;
+    color: #fff;
+    font-weight: 400;
 }
 
 /** Orange Theme **/
