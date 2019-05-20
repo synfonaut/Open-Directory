@@ -80,3 +80,7 @@ function pluralize(val, singular, plural) {
     return val + " " + plural;
 }
 
+
+function getBMediaURLForTXID(txid) {
+    return "bit://" + B_MEDIA_PROTOCOL + "/" + txid;
+}

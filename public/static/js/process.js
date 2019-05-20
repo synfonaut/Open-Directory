@@ -228,9 +228,19 @@ function get_bitdb_query(category_id=null, cursor=0, limit=500, maxDepth=5) {
     } else {
         // only select categories that don't have a subcategory id
         query["q"]["aggregate"][0]["$match"]["$and"].push({
-            "$and": [
-                {"out.s2": "category.create"},
-                {"out.s3": "name"}
+            "$or": [
+                {
+                    "$and": [
+                        {"out.s2": "fork.soft"},
+                        {"out.s4": null}
+                    ]
+                },
+                {
+                    "$and": [
+                        {"out.s2": "category.create"},
+                        {"out.s3": "name"}
+                    ]
+                }
             ]
         });
     }
@@ -408,8 +418,9 @@ function processResults(rows, txpool) {
     // process tipchain, which right now only includes entries and categories
     processing = processTipchain(processing, txpool);
 
-    // vote
+    // vote & forks
     for (const result of txpool.filter(r => { return r.type == "vote" })) { processing = process(result) }
+    for (const result of txpool.filter(r => { return r.type == "fork" })) { processing = process(result) }
 
     // update final counts
     const process_pipeline = [updateCategoryEntryCounts, updateCategoryMoneyCounts, updateEntryHottness];
@@ -592,7 +603,7 @@ function processVoteResult(result, existing, undo, rows) {
             obj.satoshis += satoshis;
         }
 
-        // Backfill the raw change logs with satoshis
+        // Hacky: Backfill the raw change logs with satoshis
         if (satoshis > 0) {
             for (var i in rows) {
                 if (rows[i].txid == result.txid) {
@@ -607,6 +618,33 @@ function processVoteResult(result, existing, undo, rows) {
     return existing;
 }
 
+function processForkResult(result, existing, rows) {
+
+    var tipchain_addresses = [];
+    if (result.action_id) {
+        const obj = findObjectByTX(result.action_id, existing);
+        if (obj) {
+            tipchain_addresses = obj.tipchain.map(o => { return o.address });
+        }
+    } else {
+        tipchain_addresses = SETTINGS.tip_address;
+    }
+
+    const satoshis = convertOutputs(result.outputs, tipchain_addresses);
+    result.satoshis += satoshis;
+
+    // Hacky: Backfill the raw change logs with satoshis
+    if (satoshis > 0) {
+        for (var i in rows) {
+            if (rows[i].txid == result.txid) {
+                rows[i].satoshis = satoshis;
+            }
+        }
+    }
+
+    return existing;
+}
+
 function processResult(result, existing, undo, rows) {
     switch (result.type) {
         case "category":
@@ -615,6 +653,8 @@ function processResult(result, existing, undo, rows) {
             return processEntryResult(result, existing, undo, rows);
         case "vote":
             return processVoteResult(result, existing, undo, rows);
+        case "fork":
+            return processForkResult(result, existing, rows);
         default:
             console.log("error processing result", result);
             return existing;
@@ -906,6 +946,15 @@ function processOpenDirectoryTransaction(result) {
         }
     } else if (item_type == "vote") {
         obj.action_id = args.shift();
+    } else if (item_type == "fork") {
+        if (args.length == 1) {
+            obj.fork_url = args.shift();
+        } else if (args.length == 2) {
+            obj.action_id = args.shift();
+            obj.fork_url = args.shift();
+        } else {
+            console.log("unknown number of args", result);
+        }
     } else if (item_type == "undo") {
         if (args.length == 1) {
             obj.reference_id = args.shift();

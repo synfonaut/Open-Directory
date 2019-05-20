@@ -35,7 +35,12 @@ class Fork extends React.Component {
     }
 
     prepareOPReturnForPingback(txid) {
-        return [OPENDIR_PROTOCOL, "fork.soft", txid];
+        if (txid) {
+            const url = getBMediaURLForTXID(txid);
+            return [OPENDIR_PROTOCOL, "fork.soft", url];
+        } else {
+            return [OPENDIR_PROTOCOL, "fork.soft"];
+        }
     }
 
     handleSubmit(e) {
@@ -83,7 +88,7 @@ class Fork extends React.Component {
 
         console.log("Successfully forked to txid", txid);
 
-        const url = "bit://" + B_MEDIA_PROTOCOL + "/" + txid;
+        const url = getBMediaURLForTXID(txid);
         console.log("Forked to", url);
         this.setState({"action": "post-fork", "fork_address": url}, () => {
 
