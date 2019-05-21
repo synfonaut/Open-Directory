@@ -43,6 +43,62 @@ class Fork extends React.Component {
         }
     }
 
+    fetchTemplateByTXID(txid) {
+
+        // TODO: REMOVE
+        txid = "8f9cad5aba4f60f4c5610443a786a08e7ab0876468fd8e2c3d152cefa36c22f4";
+
+        const query = {
+            "v": 3,
+            "sort": {
+                "txid": 1
+            },
+            "q": {
+                "find": {
+                    "tx.h": txid,
+                },
+                "limit": 1
+            },
+            "r": {
+                "f": "[.[] | {                  \
+                \"height\": .blk.i?,        \
+                \"time\": .blk.t?,        \
+                \"address\": .in[0].e.a,    \
+                \"txid\": .tx.h,            \
+                \"data\": .out[0]}]"
+            }
+        };
+
+        const encoded_query = toBase64(JSON.stringify(query));
+        const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
+        const url = api_url.replace("{query}", encoded_query);
+
+        const header = { headers: { key: SETTINGS.api_key } };
+
+        return new Promise((resolve, reject) => {
+            console.log("Fetching template for txid", txid);
+
+            fetch(url, header).then(function(r) {
+                if (!r) {
+                    reject("Error response while fetching template");
+                } else if (r.status !== 200) {
+                    reject("Error response status code while fetching template" + r.status);
+                } else {
+                    r.json().then(data => {
+                        const results = data.c.concat(data.u);
+                        if (results.length == 0) {
+                            reject("Couldn't find template with txid " + txid);
+                        } else if (results.length > 1) {
+                            reject("Found too many templates for " + txid);
+                        } else {
+                            resolve(results[0]);
+                        }
+                    });
+                }
+            });
+        });
+    }
+
     handleSubmit(e) {
         e.preventDefault();
 
@@ -50,32 +106,84 @@ class Fork extends React.Component {
             return;
         }
 
-        console.log("FORKING");
-        this.setState({"action": "forking"}, () => {
+        var template_txid = this.props.template_txid;
+        if (!template_txid) {
+            template_txid = prompt("We didn't detect a template_txid — this is a b:// file that gets replicated when forking. Please enter one now to continue", "enter template txid");
+            if (!template_txid) {
+                return;
+            }
+        }
 
-            const OP_RETURN = [
-                B_MEDIA_PROTOCOL,
-                "DATA",
-                "text/html",
-                "utf-8",
-                "Open Directory.html",
+        this.fetchTemplateByTXID(template_txid).then(template_tx => {
+            if (!template_tx) {
+                throw "Error while fetching template during fork, please try again";
+            }
+
+            var data = template_tx.data;
+
+            if (data.s1 !== B_MEDIA_PROTOCOL && data.s3.toLowerCase() !== "text/html" && data.s4.toLowerCase() !== "utf-8") {
+                throw "Unknown template protocol, only b:// HTML templates currently supported";
+            }
+
+            if (data.ls2.indexOf("<!-- BEGIN SETTINGS -->") == -1) {
+                throw "Missing <!-- BEGIN SETTINGS --> marker in template tag";
+            }
+
+            if (data.ls2.indexOf("<!-- END SETTINGS -->") == -1) {
+                throw "Missing <!-- END SETTINGS --> marker in template tag";
+            }
+
+            var OP_RETURN = [
+                data.s1,
+                data.ls2,
+                data.s3,
+                data.s4,
+                data.s5
             ];
 
-            console.log(OP_RETURN);
+            const new_settings = Object.assign(SETTINGS, {
+                "about_markdown": this.props.aboutMarkdown,
+                "intro_markdown": this.props.introMarkdown,
+                "theme": this.props.theme,
+                "tip_addresses": this.state.tip_addresses,
+                "admin_address": this.state.admin_addres,
+                "title": this.props.title,
+                "tip_amount": 0.05,  // TODO: Make configurable in admin
+            });
 
-            const el = document.querySelector(".fork-money-button");
+            const new_html_settings = "<!-- BEGIN SETTINGS -->\n<script>var SETTINGS = " + JSON.stringify(new_settings, null, 4) + ";</script>\n<!-- END SETTINGS -->";
 
-            databutton.build({
-                data: OP_RETURN,
-                button: {
-                    $el: el,
-                    onPayment: (msg) => {
-                        console.log("HANDLE RESPONSE", msg)
-                        this.handleForkResponse(msg);
+            const new_html = data.ls2.replace(/<!-- BEGIN SETTINGS -->.*<!-- END SETTINGS -->/, new_html_settings);
+
+            console.log("NEW_HTML", new_html);
+
+            OP_RETURN[1] = new_html;
+            OP_RETURN[2] = this.props.title;
+
+            console.log("OP_RETURN", OP_RETURN);
+
+            this.setState({"action": "forking"}, () => {
+
+                const el = document.querySelector(".fork-money-button");
+
+                databutton.build({
+                    data: OP_RETURN,
+                    button: {
+                        $el: el,
+                        onPayment: (msg) => {
+                            console.log("HANDLE RESPONSE", msg)
+                            this.handleForkResponse(msg);
+                        }
                     }
-                }
-            })
+                })
 
+            });
+
+
+
+        }).catch(e => {
+            console.log("error", e);
+            this.props.onErrorHandler("Error while fetching template during fork, please try again");
         });
     }
 
@@ -386,6 +494,7 @@ class AddTipchainAddressForm extends React.Component {
     handleSubmit() {
         this.props.onSubmit({
             "address": this.state.address,
+            "type": "opendirectory",
             "name": this.state.name,
         });
     }
@@ -419,33 +528,35 @@ class ForkLog extends React.Component {
     render() {
         const timestamp = (new Date()).getTime();
         const forks = this.props.forks;
-        return (forks && forks.length > 0 && 
-                  <div className="row">
-                      <div className="column">
-                        <div id="forklog">
-                            <h3>Forks</h3>
-                            <table>
-                                <tbody>
-                                {forks.map(i => {
-                                    console.log(i);
-                                    var amount = satoshisToDollars(i.satoshis, BSV_PRICE);
-                                    if (!amount) {
-                                        amount = "$0.00";
-                                    }
-                                    const sats = (i.satoshis > 0 ? i.satoshis + " sats" : "");
-                                    return (<tr key={i.txid}>
-                                        <td className="amount" title={sats}>{amount}</td>
-                                        <td className="time">{timeDifference(timestamp, i.time * 1000)}</td>
-                                        <td className="url"><a href={i.fork_url}>{i.fork_url}</a></td>
-                                    </tr>);
-                                })}
-                                </tbody>
-                            </table>
-                            <br />
-                            <hr />
-                        </div>
-                      </div>
-                  </div>
-        )
+        if (forks && forks.length > 0) {
+            return (
+                      <div className="row">
+                          <div className="column">
+                            <div id="forklog">
+                                <h3>Forks</h3>
+                                <table>
+                                    <tbody>
+                                    {forks.map(i => {
+                                        var amount = satoshisToDollars(i.satoshis, BSV_PRICE);
+                                        if (!amount) {
+                                            amount = "$0.00";
+                                        }
+                                        const sats = (i.satoshis > 0 ? i.satoshis + " sats" : "");
+                                        return (<tr key={i.txid}>
+                                            <td className="amount" title={sats}>{amount}</td>
+                                            <td className="time">{timeDifference(timestamp, i.time * 1000)}</td>
+                                            <td className="url"><a href={i.fork_url}>{i.fork_url}</a></td>
+                                        </tr>);
+                                    })}
+                                    </tbody>
+                                </table>
+                                <br />
+                                <hr />
+                            </div>
+                          </div>
+                      </div>);
+        } else {
+            return null;
+        }
     }
 }

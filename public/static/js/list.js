@@ -117,7 +117,11 @@ class List extends React.Component {
         var heading;
         if (this.props.category) {
             if (parent) {
-                back = <div className="back"><a href={"/#" + parent.txid}>&laquo; {parent.name}</a><hr /></div>;
+                var parent_url = "/#" + parent.txid;
+                if (parent.txid == get_root_category_txid()) {
+                    parent_url = "/#";
+                }
+                back = <div className="back"><a href={parent_url}>&laquo; {parent.name}</a><hr /></div>;
             }
             if (this.props.category.name) {
                 heading = (<div className="category-meta" id={this.props.category.txid}>
@@ -211,7 +215,7 @@ class List extends React.Component {
     }
 
     getCategories() {
-        const category_id = (this.props.category ? this.props.category.txid : null);
+        const category_id = (this.props.category ? this.props.category.txid : get_root_category_txid());
         const categories = this.props.items.filter(i => { return !i.deleted && i.type == "category" && i.category == category_id });
         return categories.sort((a, b) => {
             if (a.satoshis < b.satoshis) { return 1; }

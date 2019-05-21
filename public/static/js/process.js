@@ -40,6 +40,10 @@ function toBase64(str) {
 
 function get_bitdb_query(category_id=null, cursor=0, limit=500, maxDepth=5) {
 
+    if (category_id == null) {
+        category_id = get_root_category_txid();
+    }
+
     // this is a monster query. if you're thinking of building a query this complex, you might
     // reconsider and build a Planaria instead—future versions will
 
@@ -252,6 +256,11 @@ function get_bitdb_query(category_id=null, cursor=0, limit=500, maxDepth=5) {
 
 
 function fetch_from_network(category_id=null, cursor=0, limit=500, results=[]) {
+
+    if (category_id == null) {
+        category_id = get_root_category_txid();
+    }
+
     const query = get_bitdb_query(category_id, cursor, limit);
     const encoded_query = toBase64(JSON.stringify(query));
     const api_url = SETTINGS.api_endpoint.replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
@@ -880,12 +889,6 @@ function processOpenDirectoryTransaction(result) {
     }
 
     if (OPENDIR_ACTIONS.indexOf(opendir_action) == -1) {
-        // TODO: Remove these when you switch protocols...they were an iteration on the design and right now they're cluterring debugging
-        if (txid == "2c330d313d196c835743fe38c27e0790bfb9ec1e598041d3577f9410efbda7ea") {
-            return null;
-        } else if (txid == "ab6283414902787171d79b025ef90357053882abc755f1f26c16a4aa41678f05") {
-            return null;
-        }
         console.log("Error while processing open directory transaction: invalid action", result);
         return null;
     }

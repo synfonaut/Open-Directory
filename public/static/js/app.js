@@ -17,17 +17,21 @@ class OpenDirectoryApp extends React.Component {
 
             admin_actions: [],
 
+
             taches: [], // attach and detaches
 
-            category: {"txid": null, "needsupdate": true},
+            category: {"txid": get_root_category_txid(), "needsupdate": true},
 
             title: SETTINGS.title,
             intro_markdown: SETTINGS.intro_markdown,
             about_markdown: SETTINGS.about_markdown,
             theme: SETTINGS.theme,
+            template_txid: SETTINGS.template_txid,
         };
 
-        this.NETWORK_DELAY = 9999;
+        console.log("SETTINGS CATEGORY", SETTINGS.category);
+
+        this.NETWORK_DELAY = 0;
         this._isMounted = false;
         this.addSuccessMessage = this.addSuccessMessage.bind(this);
         this.addErrorMessage = this.addErrorMessage.bind(this);
@@ -41,6 +45,7 @@ class OpenDirectoryApp extends React.Component {
         this._isMounted = true;
         this.didUpdateLocation();
         this.performAdminActionsFetch();
+        this.detectTemplateIDFromAddress();
         updateBitcoinSVPrice();
 
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
@@ -78,6 +83,42 @@ class OpenDirectoryApp extends React.Component {
         });
 
         this.setState({ "messages": messages });
+    }
+
+    detectTemplateIDFromAddress() {
+        // If template_txid is not set, attempt to detect it from our current address
+        if (!this.state.template_txid) {
+            const url = document.location.href;
+            var template_txid;
+
+            if (url.indexOf("bit://") !== -1) {
+                const parts = url.split("/");
+                if (parts.length !== 4) {
+                    console.log("Unable to detect template ID from address, unknown parts in url");
+                    return;
+                }
+
+                if ((parts[2] !== B_MEDIA_PROTOCOL) && (parts[2] !== BCAT_MEDIA_PROTOCOL)) {
+                    console.log("Unable to detect template ID from address, unknown parts in url");
+                    return;
+                }
+
+                template_txid = parts[3];
+            } else if ((url.indexOf("b://") !== -1) || (url.indexOf("bcat://") !== -1)) {
+                const parts = url.split("/");
+                template_txid = parts[2];
+            }
+
+            if (template_txid) {
+                if (template_txid.length !== 64) {
+                    console.log("Unable to detect valid template ID from address, invalid tx");
+                    return;
+                }
+
+                console.log("Successfully detected template_txid", template_txid, "from address", url);
+                this.setState({"template_txid": template_txid});
+            }
+        }
     }
 
 
@@ -143,16 +184,7 @@ class OpenDirectoryApp extends React.Component {
     }
 
     handleChangeCategory(txid) {
-        const category = {
-            "txid": txid,
-            "needsdata": true
-        };
-
-        if (!txid) { txid = "" }
-
-        // better way to handle this?
-        this.setState({"category": category});
-        window.history.pushState(null, null, "#" + txid)
+        SETTINGS.category = txid;
         this.didUpdateLocation();
     }
 
@@ -180,8 +212,7 @@ class OpenDirectoryApp extends React.Component {
         var shouldShowAddNewCategoryForm = false,
             shouldShowAddNewEntryForm = false;
         var changelog;
-
-        const forks = this.getForks();
+        var forks;
 
         if (hash == "about") {
             body = <div className="about">
@@ -202,6 +233,8 @@ class OpenDirectoryApp extends React.Component {
             }
 
             changelog = this.buildChangeLog(this.state.category.txid);
+            forks = this.getForks();
+
 
             if (!this.state.isError) {
                 const filtered_items = this.filterOutDetaches(this.state.items);
@@ -232,7 +265,7 @@ class OpenDirectoryApp extends React.Component {
 
         return (
             <div className={this.state.theme + " wrapper"}>
-                {this.state.isForking && <Fork onCloseFork={this.handleCloseFork.bind(this)} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} aboutMarkdown={this.state.about_markdown} onAboutChange={this.didChangeAboutHandler.bind(this)} items={this.state.items} category={this.state.category} onChangeCategory={this.handleChangeCategory.bind(this)} />}
+                {this.state.isForking && <Fork onCloseFork={this.handleCloseFork.bind(this)} onErrorHandler={this.addErrorMessage} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} aboutMarkdown={this.state.about_markdown} onAboutChange={this.didChangeAboutHandler.bind(this)} items={this.state.items} category={this.state.category} onChangeCategory={this.handleChangeCategory.bind(this)} template_txid={this.props.template_txid} />}
                 <nav className="navigation">
                   <section className="container">
                     <a href="/#" className="navigation-title">{this.state.title}</a>
@@ -368,7 +401,7 @@ class OpenDirectoryApp extends React.Component {
             title = "Add directory to " + this.state.title;
             needsupdate = true;
         } else {
-            const category_id = (hash == "" ? null : hash);
+            const category_id = (hash == "" ? get_root_category_txid() : hash);
             const cached = this.state.cache[category_id];
 
             category = {"txid": category_id, "needsdata": true};
@@ -416,7 +449,7 @@ class OpenDirectoryApp extends React.Component {
         this.setState(state);
         setTimeout(() => {
 
-            const category_id = (this.state.category ? this.state.category.txid : null);
+            const category_id = (this.state.category ? this.state.category.txid : get_root_category_txid());
             fetch_from_network(category_id).then((rows) => {
 
                 const txpool = processOpenDirectoryTransactions(rows);
@@ -479,7 +512,7 @@ class OpenDirectoryApp extends React.Component {
             console.log("setting up new network socket");
         }
 
-        const query = get_bitdb_query(this.state.category ? this.state.category.txid : null);
+        const query = get_bitdb_query(this.state.category ? this.state.category.txid : get_root_category_txid());
         const encoded_query = toBase64(JSON.stringify(query));
         const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "s");;
         const url = api_url.replace("{query}", encoded_query);
