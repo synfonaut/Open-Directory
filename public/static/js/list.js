@@ -101,7 +101,7 @@ class List extends React.Component {
 
         var actions = (
             <span className="actions">
-                <a onClick={this.handleToggleExpand.bind(this)} className="arrow" title={"txid " + this.props.category.txid}>{this.state.isExpanded ? "▶" : "▼"}</a>
+                <a onClick={this.handleToggleExpand.bind(this)} className="arrow" title={"txid " + this.props.category.txid}>{this.state.isExpanded ? <i class="fas fa-caret-right"></i> : <i className="fas fa-caret-down"></i>}</a>
                 {this.state.isExpanded && <a className="action" onClick={this.handleEdit.bind(this)}>edit</a>}
                 {this.state.isExpanded && <a className="action" onClick={this.handleDelete.bind(this)}>delete</a>}
             </span>);

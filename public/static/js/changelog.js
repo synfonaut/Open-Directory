@@ -168,7 +168,7 @@ class ChangeLogItem extends React.Component {
         return (<React.Fragment>
                     <tr>
                         <td className="height">
-                            <a onClick={this.handleToggleExpand.bind(this)} className="arrow">{(this.props.isExpanded || this.state.isExpanded) ? <i className="fas fa-minus"></i> : <i className="fas fa-plus"></i>}</a>
+                            <a onClick={this.handleToggleExpand.bind(this)} className="arrow">{(this.props.isExpanded || this.state.isExpanded) ? <i className="fas fa-caret-down"></i> : <i className="fas fa-caret-right"></i>}</a>
                             {this.props.item.height ? <span className="block">#{this.props.item.height}</span> : <span className="pending">pending</span>}
                         </td>
                         <td className="action">{action}</td>

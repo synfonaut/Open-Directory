@@ -319,6 +319,13 @@ form {
     padding: 0;
 }
 
+.homepage > .category > .category {
+    padding: 10px;
+}
+
+.homepage > .category > .category h3 {
+}
+
 .category .description p:after {
     content: " ";
 }
@@ -390,6 +397,10 @@ form {
 
 .category-meta .upvoteContainer h1 {
     margin-left: 60px;
+}
+
+.category-meta .upvoteContainer h1 .arrow .fas {
+    font-size: 19px;
 }
 
 .category-meta .upvoteContainer .markdown {
@@ -849,6 +860,10 @@ form {
     font-size: 11px;
 }
 
+.actions .fas {
+    font-size: 14px;
+}
+
 .actions a {
     margin-right: 6px;
 }
@@ -937,6 +952,11 @@ form {
 }
 
 #changelog .arrow {
+    font-size: 17px;
+    line-height: 9px;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
     margin-right: 2px;
 }
 
@@ -1687,6 +1707,12 @@ form {
     .faq p {
         max-width: 750px;
     }
+
+    .entry .tipping {
+        margin-left: 60px;
+        margin-right: 60px;
+    }
+
 
 
 
