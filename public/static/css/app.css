@@ -1602,9 +1602,8 @@ form {
 }
 
 .faq ul {
-    font-size: 14px;
-    padding: 0;
-    margin: 0;
+    padding: 0 30px 0 0;
+    margin: 0 0 20px 30px;
     max-width: 700px;
 }
 

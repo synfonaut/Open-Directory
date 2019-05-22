@@ -1,13 +1,26 @@
 ## Alpha
 
+* add new subcategory link next to subcategories
+* add new link link under links
+* make them both expandable
+* reduce icon intensity in headers
+* better spacing on homepage with main categories
+* move Earn BSV under "Add Directory" which turns into expandable link
+
 - create good images for tweet storm (tipchain)
 * split out lib and my JS file organization
 - compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output
 - Check on slow network
+- followup with BSV/DEVS
+
+* BSV Games
+* BSV Art
+* BSV Apps
+* BSV Devs
 
 ## Beta (Friends)
 - Upload website (dir.sv)
-- Upload twitter card image and verify
+- Upload twitter card image with new logo and verify
 - Reset protocol id
 * register bitcom protocol
 - Polish content

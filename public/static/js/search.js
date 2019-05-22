@@ -37,7 +37,7 @@ class SearchForm extends React.Component {
         }
         return (<div className="search">
                     <h2>{searching}</h2>
-                    <p className="blurb">Search by name, description, txid, address...</p>
+                    <p className="blurb">Search by name, description, link, txid, address...</p>
                     <form onSubmit={this.handleSubmit.bind(this)}>
                         <input type="search" value={this.props.search} onChange={this.props.onSearch.bind(this)} />
                         <input type="submit" className="button-outline" value="Search" />
@@ -71,6 +71,7 @@ class SearchResults extends React.Component {
             if (item.description.toLowerCase().indexOf(search) !== -1) { return true }
             if (item.txid.toLowerCase().indexOf(search) !== -1) { return true }
             if (item.address.toLowerCase().indexOf(search) !== -1) { return true }
+            if (item.link && item.link.toLowerCase().indexOf(search) !== -1) { return true }
 
             for (const tipchain of item.tipchain) {
                 if (tipchain.address.toLowerCase().indexOf(search) !== -1) { return true }
