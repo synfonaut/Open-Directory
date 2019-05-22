@@ -7,7 +7,7 @@ class CategoryItem extends Item {
             <li id={this.props.item.txid} className="category">
 
                 <div className="upvoteContainer">
-                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number" title={this.props.item.satoshis + " sats"}>{price}</span><br /><span className="number votes">{this.props.item.votes}</span></div>
+                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}><i className="fas fa-chevron-up"></i>&nbsp;</a> <span className="number" title={this.props.item.satoshis + " sats"}>{price}</span><br /><span className="number votes">{this.props.item.votes}</span></div>
                     <div className="category">
                         <h3>
                             <a href={"#" + this.props.item.txid} onClick={this.handleUpvote.bind(this)}>{this.props.item.name}</a>
@@ -46,9 +46,9 @@ class AddCategoryForm extends React.Component {
 
     render() {
         const dirtype = (this.props.category.txid ? "category" : "directory");
-        var header = <h3>Add new directory</h3>
+        var header = <h3><i className="fas fa-folder"></i> Add new directory</h3>
         if (this.props.category.txid) {
-            header = <h3>Add new subcategory under <span className="highlight">{this.props.category.name}</span></h3>
+            header = <h3><i className="fas fa-folder"></i> Add new subcategory under <span className="highlight">{this.props.category.name}</span></h3>
         }
 
         return (

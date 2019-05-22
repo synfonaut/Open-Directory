@@ -38,7 +38,7 @@ class ChangeLog extends React.Component {
                   <div className="row">
                       <div className="column">
                         <div id="changelog">
-                            <h3>Changelog</h3>
+                            <h3><i className="fas fa-history"></i> Changelog</h3>
                             <table>
                                 <tbody>
                                 {changelog.map(i => {
@@ -168,7 +168,7 @@ class ChangeLogItem extends React.Component {
         return (<React.Fragment>
                     <tr>
                         <td className="height">
-                            <a onClick={this.handleToggleExpand.bind(this)} className="arrow">{(this.props.isExpanded || this.state.isExpanded) ? "▼" : "▶"}</a>
+                            <a onClick={this.handleToggleExpand.bind(this)} className="arrow">{(this.props.isExpanded || this.state.isExpanded) ? <i className="fas fa-minus"></i> : <i className="fas fa-plus"></i>}</a>
                             {this.props.item.height ? <span className="block">#{this.props.item.height}</span> : <span className="pending">pending</span>}
                         </td>
                         <td className="action">{action}</td>

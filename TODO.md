@@ -1,19 +1,16 @@
 ## Alpha
 
-
-* verify works well in Bottle
 * run tweet storm, faq and stuff through grammarly
-* put handcash $synfonaut name in app
+
 - clean up protocol language
 - create good images for tweet storm (tipchain)
-* search icon
 * split out lib and my JS file organization
 - compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output
 - Check on slow network
 
 ## Beta (Friends)
 - Upload website (dir.sv)
-- Verify twitter card
+- Upload twitter card image and verify
 - Reset protocol id
 * register bitcom protocol
 - Polish content

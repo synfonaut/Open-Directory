@@ -258,7 +258,7 @@ class OpenDirectoryApp extends React.Component {
 
         var intro;
         if (this.state.intro_markdown) {
-            intro = <div className="intro"><ReactMarkdown source={this.state.intro_markdown} /></div>;
+            intro = <div className="intro"><h1><i className="fas fa-sitemap"></i> Open Directory</h1><ReactMarkdown source={this.state.intro_markdown} /></div>;
         }
 
         return (
@@ -266,7 +266,7 @@ class OpenDirectoryApp extends React.Component {
                 {this.state.isForking && <Fork onCloseFork={this.handleCloseFork.bind(this)} onErrorHandler={this.addErrorMessage} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} faqMarkdown={this.state.faq_markdown} onFAQChange={this.didChangeFAQHandler.bind(this)} items={this.state.items} onChangeCategory={this.handleChangeCategory.bind(this)} template_txid={this.props.template_txid} />}
                 <nav className="navigation">
                   <section className="container">
-                    <a href="/#" className="navigation-title">{this.state.title}</a>
+                    <a href="/#" className="navigation-title"><i className="fas fa-sitemap"></i>{this.state.title}</a>
                     <div className={this.state.networkActive ? "spinner white active" : "spinner white"}>
                         <div className="bounce1"></div>
                         <div className="bounce2"></div>
@@ -274,9 +274,9 @@ class OpenDirectoryApp extends React.Component {
                     </div>
                     <ul className="navigation-list float-right">
                       <li className="navigation-item">
-                        <a className="navigation-link" href="#search">Search</a>
-                        <a className="navigation-link" href="#faq">FAQ</a>
-                        <a className="navigation-link" onClick={this.handleToggleFork.bind(this)}>Fork</a>
+                        <a className="navigation-link nav-search" href="#search"><i className="fas fa-search"> </i>Search</a>
+                        <a className="navigation-link nav-faq" href="#faq">FAQ</a>
+                        <a className="navigation-link nav-fork" onClick={this.handleToggleFork.bind(this)}>Fork</a>
                       </li>
                     </ul>
                   </section>
@@ -297,17 +297,17 @@ class OpenDirectoryApp extends React.Component {
                           <hr />
                           {(shouldShowAddNewEntryForm && !shouldShowAddNewCategoryForm) && <div className="row">
                               <div className="column">
-                                <p className="callout">💡 Earn Bitcoin (SV) by submitting valuable content—when it gets upvoted you'll receive a portion of the tip!</p>
+                                <p className="callout"><i className="fab fa-bitcoin"></i> Earn Bitcoin (SV) by submitting valuable content—when it gets upvoted you'll receive a portion of the tip!</p>
                               </div>
                               </div>}
                           {(!shouldShowAddNewEntryForm && shouldShowAddNewCategoryForm) && <div className="row">
                               <div className="column">
-                                <p className="callout">💡 Earn Bitcoin (SV) by creating a new directory—when someone submits content and it gets upvoted you'll receive a portion of the tip!</p>
+                                <p className="callout"><i className="fab fa-bitcoin"></i> Earn Bitcoin (SV) by creating a new directory—when someone submits content and it gets upvoted you'll receive a portion of the tip!</p>
                               </div>
                               </div>}
                           {(shouldShowAddNewEntryForm && shouldShowAddNewCategoryForm) && <div className="row">
                               <div className="column">
-                                <p className="callout">💡 Earn Bitcoin (SV) by submitting valuable content or creating a new category—when content gets submitted or upvoted you'll receive a portion of the tip!</p>
+                                <p className="callout"><i className="fab fa-bitcoin"></i> Earn Bitcoin (SV) by submitting valuable content or creating a new category—when content gets submitted or upvoted you'll receive a portion of the tip!</p>
                               </div>
                               </div>}
                           <div className="row">

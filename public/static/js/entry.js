@@ -20,7 +20,7 @@ class EntryItem extends Item {
 
         return <li id={this.props.item.txid} className="entry">
                 <div className="upvoteContainer">
-                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number" title={this.props.item.satoshis + " sats"}>{price}</span><br /><span className="number" title={this.props.item.hottness.toFixed(2) + " hot score"}>{this.props.item.votes}</span></div>
+                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}><i className="fas fa-chevron-up"></i></a> <span className="number" title={this.props.item.satoshis + " sats"}>{price}</span><br /><span className="number" title={this.props.item.hottness.toFixed(2) + " hot score"}>{this.props.item.votes}</span></div>
                     <div className="entry">
                         <h5><a href={this.get_link()}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>}  <span className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</span> {actions}</h5>
 
@@ -41,7 +41,7 @@ class AddEntryForm extends React.Component {
     render() {
         return (
             <div className="column">
-                <h3>Add new link to <span className="highlight">{this.props.category.name}</span></h3>
+                <h3><i className="fas fa-link"></i> Add new link to <span className="highlight">{this.props.category.name}</span></h3>
                 <form onSubmit={this.handleSubmit}>
                     <fieldset>
                         <div className="row">

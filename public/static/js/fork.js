@@ -301,7 +301,7 @@ class Fork extends React.Component {
 
         return <div className="fork">
                     <a className="close" onClick={this.props.onCloseFork}>X</a>
-                    <h2>⑂ Fork</h2>
+                    <h2><i className="fas fa-code-branch"></i> Fork</h2>
                     <p>Forking allows you to take control of a directory—to be the admin, change the theme, insert yourself in the tipchain—whatever you want.</p>
                     <form onSubmit={this.handleSubmit.bind(this)}>
                         <fieldset>
@@ -410,7 +410,7 @@ class Fork extends React.Component {
 
                             {(!this.state.action || this.state.action == "forking") && <div className="row">
                                 <div className="column">
-                                    <p>⚠️ <strong>You are about to fork.</strong> This will upload a new version of this application to the Bitcoin (SV) blockchain.</p>
+                                    <p><i className="fas fa-exclamation-triangle"></i> <strong>You are about to fork.</strong> This will upload a new version of this application to the Bitcoin (SV) blockchain.</p>
                                     <p>Please take a moment to double check the settings above are correct. The most important one is the admin address
                                     <br />
                                     <mark><strong>{this.state.admin_address}</strong></mark></p>
@@ -435,7 +435,7 @@ class Fork extends React.Component {
 
                     {this.state.action == "post-fork" && <div className="row">
                         <div className="column">
-                               <p><strong>✅ Successfully forked {this.props.title} to </strong></p>
+                               <p><strong><i className="far fa-check-circle"></i> Successfully forked {this.props.title} to </strong></p>
                                <p><strong><a className="url" href={this.state.fork_address}>{this.state.fork_address}</a></strong></p>
 
                                 <br />
@@ -448,7 +448,7 @@ class Fork extends React.Component {
 
                     {this.state.action == "post-ping" && <div className="row">
                         <div className="column">
-                               <p><strong>✅ Successfully pinged {this.props.title}</strong></p>
+                               <p><strong><i className="far fa-check-circle"></i> Successfully pinged {this.props.title}</strong></p>
                                <p>Please refresh to see your directory listed as a fork.</p>
                                <p><strong>Visit your directory at <a className="url" href={this.state.fork_address}>{this.state.fork_address}</a></strong></p>
 
@@ -534,7 +534,7 @@ class ForkLog extends React.Component {
                       <div className="row">
                           <div className="column">
                             <div id="forklog">
-                                <h3>Forks</h3>
+                                <h3><i className="fas fa-code-branch"></i> Forks</h3>
                                 <table>
                                     <tbody>
                                     {slice.map(i => {

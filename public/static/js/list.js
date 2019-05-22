@@ -124,7 +124,7 @@ class List extends React.Component {
                         parent_url = "/#";
                     }
 
-                    back = <div className="back"><a href={parent_url}>&laquo; {parent.name}</a><hr /></div>;
+                    back = <div className="back"><a href={parent_url}><i className="fas fa-long-arrow-alt-left"></i> {parent.name}</a><hr /></div>;
                 }
 
             }
@@ -132,7 +132,7 @@ class List extends React.Component {
                 heading = (<div className="category-meta" id={this.props.category.txid}>
                     {back}
                     <div className="upvoteContainer">
-                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number" title={this.props.category.satoshis + " sats"}>{price}</span><br /><span className="number">{this.props.category.votes}</span></div>
+                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}><i className="fas fa-chevron-up"></i></a> <span className="number" title={this.props.category.satoshis + " sats"}>{price}</span><br /><span className="number">{this.props.category.votes}</span></div>
                     <div>
                     <h1>{this.props.category.name}
                     {actions}
@@ -177,7 +177,7 @@ class List extends React.Component {
             if (!this.props.isError && !this.props.isLoading && this.props.category && this.props.category.txid) {
                 entryListing = (
                     <div className="empty-entry-listing">
-                    <img src="/static/img/link.png" />
+                    <p><i className="fas fa-link"></i></p>
                     <p>There's no links here yet—you should submit one! If you submit a good one and it gets upvoted, you'll get paid Bitcoin (SV)! 👍</p>
                     </div>
                 );
