@@ -30,7 +30,7 @@ If you are managing your own Open Directory, check out the [Open Directory Admin
 
 ## Open Directory Protocol
 
-Check out the [Open Directory Protocol][/protocol.md] to learn more.
+Check out the [Open Directory Protocol](/protocol.md) to learn more.
 
 ## Open Directory v2
 
