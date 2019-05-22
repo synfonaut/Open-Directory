@@ -10,6 +10,7 @@
 * BSV Art
 * BSV Apps
 * BSV Devs
+https://github.com/bico-media/awesome
 
 ## Beta (Friends)
 - Upload website (dir.sv)

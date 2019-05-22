@@ -10,7 +10,19 @@
     <meta property="og:description" content="Open Directory is an open source way to organize the Bitcoin (SV) blockchain and earn money." />
     <meta property="og:image" content="https://bico.media/ca9c06e4f38332ee87afce3df40fbef1ec0268ac9478abb4c4e5d6b46d08cae0" />
 
-    <link rel="stylesheet" href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
+    <link rel="stylesheet" href="bit://19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut/ab2e376b477c1b9a9f2b7812e91b0fef903783ac1e48b3a010c3bd0e90674930" />
+    <script>
+      function transformBitLink(link, provider="https://bico.media/") {
+        if (link.href.indexOf("bit://") == 0) {
+          link.href = provider + link.href;
+        }
+      }
+
+      const links = document.querySelectorAll("link");
+      for (const link of links) {
+        transformBitLink(link);
+      }
+    </script>
     <link rel="stylesheet" href="/static/css/milligram.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/css/app.css" />
