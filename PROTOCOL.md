@@ -79,21 +79,17 @@ Forking needs more thinking behind it—currently, there are two ways to fork:
 * Soft fork — changing meta parameters, theme, title, about, main category, intro, and base tipchain address
 * Hard fork — bulk replaying transactions, so you own 100% of tipchain
 
-Soft forking specifies a new URI along with the category txid it's forking
-
 ```
-    # soft fork uploads a new frontend, adds a redirect, but underlying data stays the same
-    fork.soft
-    <uri>
-    [category_txid]
+# soft fork uploads a new frontend, adds a redirect, but underlying data stays the same
+fork.soft
+<uri>
+[category_txid]
 ```
 
 
-Hard forking needs more thinking...
-
 ```
-    # (proposed) hard fork replays every transaction to take over ownership, likely combo of protocol + client side
-    fork.hard
+# (proposed) hard fork replays every transaction to take over ownership, likely combo of protocol + client side ...needs more thinking
+fork.hard
     ...
 ```
 
