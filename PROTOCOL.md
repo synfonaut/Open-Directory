@@ -85,9 +85,11 @@ Forking needs more thinking behind it—currently, there are two ways to fork:
     <uri>
     [category_txid]
 
+
     # (proposed) hard fork replays every transaction to take over ownership, likely combo of protocol + client side. needs more thinking....
     fork.hard
     ...
+
 
 ### Moderation (proposed)
 
@@ -174,6 +176,7 @@ Step 4b. Can also add moderators with AIP
     <signature>
 
 Step 5. Delete a moderator
+
     # delete moderator
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     moderator.delete
