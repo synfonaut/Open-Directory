@@ -24,12 +24,10 @@ class OpenDirectoryApp extends React.Component {
 
             title: SETTINGS.title,
             intro_markdown: SETTINGS.intro_markdown,
-            about_markdown: SETTINGS.about_markdown,
+            faq_markdown: SETTINGS.faq_markdown,
             theme: SETTINGS.theme,
             template_txid: SETTINGS.template_txid,
         };
-
-        console.log("SETTINGS CATEGORY", SETTINGS.category);
 
         this.NETWORK_DELAY = 0;
         this._isMounted = false;
@@ -130,8 +128,8 @@ class OpenDirectoryApp extends React.Component {
         this.setState({"title": e.target.value});
     }
 
-    didChangeAboutHandler(e) {
-        this.setState({"about_markdown": e.target.value});
+    didChangeFAQHandler(e) {
+        this.setState({"faq_markdown": e.target.value});
     }
 
     handleToggleFork() {
@@ -214,9 +212,9 @@ class OpenDirectoryApp extends React.Component {
         var changelog;
         var forks;
 
-        if (hash == "about") {
-            body = <div className="about">
-                    <ReactMarkdown source={this.state.about_markdown} />
+        if (hash == "faq") {
+            body = <div className="faq">
+                    <ReactMarkdown source={this.state.faq_markdown} />
                 </div>
         } else if (hash == "search") {
             body = <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} />
@@ -265,7 +263,7 @@ class OpenDirectoryApp extends React.Component {
 
         return (
             <div className={this.state.theme + " wrapper"}>
-                {this.state.isForking && <Fork onCloseFork={this.handleCloseFork.bind(this)} onErrorHandler={this.addErrorMessage} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} aboutMarkdown={this.state.about_markdown} onAboutChange={this.didChangeAboutHandler.bind(this)} items={this.state.items} category={this.state.category} onChangeCategory={this.handleChangeCategory.bind(this)} template_txid={this.props.template_txid} />}
+                {this.state.isForking && <Fork onCloseFork={this.handleCloseFork.bind(this)} onErrorHandler={this.addErrorMessage} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} faqMarkdown={this.state.faq_markdown} onFAQChange={this.didChangeFAQHandler.bind(this)} items={this.state.items} onChangeCategory={this.handleChangeCategory.bind(this)} template_txid={this.props.template_txid} />}
                 <nav className="navigation">
                   <section className="container">
                     <a href="/#" className="navigation-title">{this.state.title}</a>
@@ -277,8 +275,8 @@ class OpenDirectoryApp extends React.Component {
                     <ul className="navigation-list float-right">
                       <li className="navigation-item">
                         <a className="navigation-link" href="#search">Search</a>
+                        <a className="navigation-link" href="#faq">FAQ</a>
                         <a className="navigation-link" onClick={this.handleToggleFork.bind(this)}>Fork</a>
-                        <a className="navigation-link" href="#about">About</a>
                       </li>
                     </ul>
                   </section>
@@ -392,8 +390,8 @@ class OpenDirectoryApp extends React.Component {
         var title = this.state.title;
         var needsupdate = false;
 
-        if (hash == "about") {
-            title = "About " + this.state.title;
+        if (hash == "faq") {
+            title = "FAQ " + this.state.title;
         } else if (hash == "search") {
             title = "Search " + this.state.title;
             needsupdate = true;

@@ -1,6 +1,6 @@
 # Open Directory
 
-> Organize the world's information on Bitcoin
+> Organize the world's information on Bitcoin (SV)
 
 Open Directory lets you build resources like [Reddit](https://www.reddit.com), [Awesome Lists](https://github.com/sindresorhus/awesome) and [DMOZ](http://dmoz-odp.org) ontop of Bitcoin. With Open Directory you can:
 
@@ -24,6 +24,10 @@ Open Directory is open source in two ways.
 
 2. The Open Directory Protocol is 100% open to build for your own use or implementation. Read about it below.
 
+## Admin Console
+
+If you are managing your own Open Directory, check out the [Open Directory Admin Console](https://github.com/synfonaut/OpenDirectory-Admin-Console) for a few helpful commands.
+
 ## Open Directory Protocol
 
 Check out the [Open Directory Protocol][/protocol.md] to learn more.
@@ -43,6 +47,8 @@ Check out the [Open Directory Protocol][/protocol.md] to learn more.
 * Make protocol more generic by using Bitcom schema protocol
 * Different algorithms for tipchain, specifying default splits
 * Comment pages
+* Twitter bot
+* TonicPOW integration
 * Search
 
 * Open Question: Should actions take into account historical economic costs? ex. undoing a $50 entry costs $50

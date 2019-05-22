@@ -84,3 +84,7 @@ function pluralize(val, singular, plural) {
 function getBMediaURLForTXID(txid) {
     return "bit://" + B_MEDIA_PROTOCOL + "/" + txid;
 }
+
+function isBottle() {
+    return navigator.userAgent.indexOf("Bottle") !== -1;
+}

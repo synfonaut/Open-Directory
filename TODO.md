@@ -1,9 +1,14 @@
 ## Alpha
 
+* faqs
+* who what where when why
+
+* twitter card support
+
+* verify works well in Bottle
+* search icon
 * split out lib and my JS file organization
 - compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output
-
-- Test performance on bitcoinscaling.io
 - Check on slow network
 
 about

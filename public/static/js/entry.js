@@ -1,4 +1,12 @@
 class EntryItem extends Item {
+
+    get_link() {
+        if (isBottle()) {
+            return this.props.item.link;
+        } else {
+            return "https://bico.media/" + this.props.item.link;
+        }
+    }
     render() {
         const timestamp = (new Date()).getTime();
         const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE, true);
@@ -14,10 +22,10 @@ class EntryItem extends Item {
                 <div className="upvoteContainer">
                     <div className="upvote"><a onClick={this.handleUpvote.bind(this)}>▲</a> <span className="number" title={this.props.item.satoshis + " sats"}>{price}</span><br /><span className="number" title={this.props.item.hottness.toFixed(2) + " hot score"}>{this.props.item.votes}</span></div>
                     <div className="entry">
-                        <h5><a href={this.props.item.link}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>}  <span className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</span> {actions}</h5>
+                        <h5><a href={this.get_link()}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>}  <span className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</span> {actions}</h5>
 
                         <p className="description">{this.props.item.description}</p>
-                        <p className="url"><a href={this.props.item.link}>{this.props.item.link}</a></p>
+                        <p className="url"><a href={this.get_link()}>{this.props.item.link}</a></p>
                         {this.state.action == "editing" && <div className="inline-edit"><EditEntryForm item={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} onSubmit={this.clearForm.bind(this)} /></div>}
                         {this.state.action == "tipping" && <TipchainItem item={this.props.item} items={this.props.items} onSuccessHandler={this.handleSuccessfulTip.bind(this)} onErrorHandler={this.props.onErrorHandler} />}
                         {this.state.action == "deleting"  && <div className="inline-delete"><DeleteItem item={this.props.item} onSuccessHandler={this.handleSuccessfulDelete.bind(this)} onErrorHandler={this.props.onErrorHandler} /></div>}

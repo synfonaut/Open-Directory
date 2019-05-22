@@ -45,9 +45,6 @@ class Fork extends React.Component {
 
     fetchTemplateByTXID(txid) {
 
-        // TODO: REMOVE
-        txid = "8f9cad5aba4f60f4c5610443a786a08e7ab0876468fd8e2c3d152cefa36c22f4";
-
         const query = {
             "v": 3,
             "sort": {
@@ -142,7 +139,7 @@ class Fork extends React.Component {
             ];
 
             const new_settings = Object.assign(SETTINGS, {
-                "about_markdown": this.props.aboutMarkdown,
+                "faq_markdown": this.props.faqMarkdown,
                 "intro_markdown": this.props.introMarkdown,
                 "theme": this.props.theme,
                 "tip_addresses": this.state.tip_addresses,
@@ -281,10 +278,7 @@ class Fork extends React.Component {
     }
 
     handleSuccessfulTip() {
-        console.log("SUCCESSFUL TIP");
         this.setState({"action": "post-ping"});
-
-        //this.props.onSuccessHandler("Successfully upvoted " + this.props.item.type + ", it will appear automatically—please refresh the page if it doesn't");
     }
 
     render() {
@@ -295,7 +289,9 @@ class Fork extends React.Component {
             opendir_tips[i].split = splits[i];
         }
 
-        const select_value = (this.props.category.txid ? this.props.category.txid : "");
+        const select_value = (SETTINGS.category ? SETTINGS.category : "");
+
+        const selected_category = this.props.items.filter(i => { return i.txid == select_value }).unshift();
 
         var categories = this.props.items.filter(i => { return i.type == "category" });
         categories.unshift({
@@ -337,7 +333,7 @@ class Fork extends React.Component {
                                     <label>
                                         Admin Address
                                     </label>
-                                    <p>Set the address that gets special rights, like notifying users about updated versions and detatching directories. <a href="https://github.com/synfonaut/OpenDirectory-Admin-Console" target="_blank">Generate an OpenDirectory Admin Address</a></p>
+                                    <p>Set the address that gets special rights, like notifying users about updated versions and detatching directories. <a href="https://github.com/synfonaut/OpenDirectory-Admin-Console" target="_blank">Generate an Open Directory Admin Address</a></p>
                                     <input type="text" value={this.state.admin_address} onChange={this.handleChangeAdminAddress.bind(this)} />
                                 </div>
                             </div>
@@ -405,10 +401,10 @@ class Fork extends React.Component {
                             <div className="row">
                                 <div className="column form-item">
                                     <label>
-                                        About
+                                       FAQ 
                                     </label>
-                                    <p>Optional text that goes on about page (markdown supported)</p>
-                                    <textarea value={this.props.aboutMarkdown} onChange={this.props.onAboutChange}></textarea>
+                                    <p>Optional text that goes on FAQ page (markdown supported)</p>
+                                    <textarea value={this.props.faqMarkdown} onChange={this.props.onFAQChange}></textarea>
                                 </div>
                             </div>
 
@@ -445,7 +441,7 @@ class Fork extends React.Component {
                                 <br />
                                 <p>Would you like to send a parting ping? This will help users find your directory—you can pay to rank higher up the list.</p>
                                 <div>
-                                    <TipchainItem item={this.props.category} items={this.props.items} onSuccessHandler={this.handleSuccessfulTip.bind(this)} onErrorHandler={this.props.onErrorHandler} custom_OP_RETURN={this.prepareOPReturnForPingback.bind(this)} />
+                                    <TipchainItem item={selected_category} items={this.props.items} onSuccessHandler={this.handleSuccessfulTip.bind(this)} onErrorHandler={this.props.onErrorHandler} custom_OP_RETURN={this.prepareOPReturnForPingback.bind(this)} />
                                 </div>
                         </div>
                         </div>}
@@ -527,7 +523,12 @@ class ForkLog extends React.Component {
 
     render() {
         const timestamp = (new Date()).getTime();
-        const forks = this.props.forks;
+        var forks = this.props.forks;
+        if (!forks) {
+            forks = [];
+        }
+
+        const slice = forks.slice(0, 10);
         if (forks && forks.length > 0) {
             return (
                       <div className="row">
@@ -536,7 +537,7 @@ class ForkLog extends React.Component {
                                 <h3>Forks</h3>
                                 <table>
                                     <tbody>
-                                    {forks.map(i => {
+                                    {slice.map(i => {
                                         var amount = satoshisToDollars(i.satoshis, BSV_PRICE);
                                         if (!amount) {
                                             amount = "$0.00";

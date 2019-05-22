@@ -117,11 +117,16 @@ class List extends React.Component {
         var heading;
         if (this.props.category) {
             if (parent) {
-                var parent_url = "/#" + parent.txid;
-                if (parent.txid == get_root_category_txid()) {
-                    parent_url = "/#";
+                const root_category_txid = get_root_category_txid();
+                if (root_category_txid == null || this.props.category.txid !== root_category_txid) {
+                    var parent_url = "/#" + parent.txid;
+                    if (parent.txid == root_category_txid) {
+                        parent_url = "/#";
+                    }
+
+                    back = <div className="back"><a href={parent_url}>&laquo; {parent.name}</a><hr /></div>;
                 }
-                back = <div className="back"><a href={parent_url}>&laquo; {parent.name}</a><hr /></div>;
+
             }
             if (this.props.category.name) {
                 heading = (<div className="category-meta" id={this.props.category.txid}>
