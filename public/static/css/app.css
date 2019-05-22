@@ -1549,6 +1549,20 @@ form {
     color: #666 !important;
 }
 
+.faq h1 {
+    margin-bottom: 10px;
+}
+
+.faq h2 {
+    padding-top: 20px;
+    margin-bottom: 10px;
+}
+
+.faq {
+    padding: 5px 0px;
+}
+
+
 
 /* Larger than mobile screen */
 @media (min-width: 45.0rem) {
@@ -1624,6 +1638,14 @@ form {
         padding-right: 120px;
     }
 
+    .faq {
+        padding: 5px 20px;
+    }
+
+    .faq p {
+        max-width: 750px;
+    }
+
 }
 
 /* Larger than tablet screen */
@@ -1654,6 +1676,7 @@ form {
         padding-left: 180px;
         padding-right: 180px;
     }
+
 }
 
 /* Larger than desktop screen */

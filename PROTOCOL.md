@@ -79,6 +79,7 @@ Forking needs more thinking behind it—currently there's two ways to fork:
 * Soft fork — changing meta parameters, theme, title, about, main category, intro, and base tipchain address
 * Hard fork — bulk replaying transactions so you own 100% of tipchain
 
+
     # soft fork uploads a new frontend, adds a redirect, but underlying data stays the same
     fork.soft
     <uri>
