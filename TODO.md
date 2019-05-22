@@ -1,8 +1,5 @@
 ## Alpha
 
-* run tweet storm, faq and stuff through grammarly
-
-- clean up protocol language
 - create good images for tweet storm (tipchain)
 * split out lib and my JS file organization
 - compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output

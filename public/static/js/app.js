@@ -129,6 +129,7 @@ class OpenDirectoryApp extends React.Component {
     }
 
     didChangeFAQHandler(e) {
+        console.log("FAQ", e.target.value);
         this.setState({"faq_markdown": e.target.value});
     }
 

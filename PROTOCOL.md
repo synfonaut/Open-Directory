@@ -60,11 +60,11 @@ Open Directory protocols have two primary forms, creating new items (categories 
 
 ### Undo
 
-Undo has an additional <reference_id> parameter, which always refers to the original object being changed.
+Undo has an additional <reference_id> parameter, which always refers to the original object changed.
 
-The reason for this duplication because is otherwise undo becomes a very long recursive chain and introduces querying issues for clients.
+The reason for duplication is because otherwise undo becomes a very long recursive chain and introduces querying issues for clients.
 
-Description is optional and is a message about why you are undoing a change.
+The description field is optional and is a message about why you are undoing a change.
 
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     undo
@@ -74,10 +74,10 @@ Description is optional and is a message about why you are undoing a change.
 
 ### Forking
 
-Forking needs more thinking behind it—currently there's two ways to fork:
+Forking needs more thinking behind it—currently, there are two ways to fork:
 
 * Soft fork — changing meta parameters, theme, title, about, main category, intro, and base tipchain address
-* Hard fork — bulk replaying transactions so you own 100% of tipchain
+* Hard fork — bulk replaying transactions, so you own 100% of tipchain
 
 
     # soft fork uploads a new frontend, adds a redirect, but underlying data stays the same
@@ -85,21 +85,21 @@ Forking needs more thinking behind it—currently there's two ways to fork:
     <uri>
     [category_txid]
 
-    # (proposed) hard fork replays every transaction to takeover ownership, likely combo of protocol + client side. needs more thinking....
+    # (proposed) hard fork replays every transaction to take over ownership, likely combo of protocol + client side. needs more thinking....
     fork.hard
     ...
 
 ### Moderation (proposed)
 
-There are three kinds of proposed moderation, they're loosely inspired by IRC moderation—where a list of approved operators can set the directory into moderation "modes" at any time.
+There are three kinds of proposed moderation; they're loosely inspired by IRC moderation—where a list of approved operators can set the directory into moderation "modes" at any time.
 
 * 0 - open (anyone can do anything)
-* 1 - restricted (only moderator can delete)
+* 1 - restricted (only moderators can delete)
 * 2 - preapproved (everything must be approved)
 
-Moderation could be added with four changes:
+Adding moderation to the protocol could be done with four changes:
 
-Step 1a. Whoever creates category is owner and default moderator
+Step 1a. Whoever creates a category is the owner and default moderator
 
     1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
     category.create
@@ -179,4 +179,6 @@ Step 5. Delete a moderator
     moderator.delete
     <publickey>
 
+## Feedback
 
+Send feedback to @synfonaut
