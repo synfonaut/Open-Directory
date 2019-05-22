@@ -15,14 +15,14 @@ body {
 {
     font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
     background: white;
-    border-left: 1px solid #e8e2d699;
-    border-right: 1px solid #e8e2d699;
+    border-left: 1px solid rgba(232,226,214,0.6);
+    border-right: 1px solid rgba(232,226,214,0.6);
     padding: 6px 20px;
     min-height: 100vh;
 }
 
 input[type='email'], input[type='number'], input[type='password'], input[type='search'], input[type='tel'], input[type='text'], input[type='url'], textarea, select {
-    background-color: #ffffffaa
+    background-color: rgba(255,255,255,0.666);
 }
 
 input[type='email']:focus, input[type='number']:focus, input[type='password']:focus, input[type='search']:focus, input[type='tel']:focus, input[type='text']:focus, input[type='url']:focus, textarea:focus, select:focus {
@@ -57,8 +57,9 @@ h1 {
 .blurb {
     padding: 7px 0 3px 0;
 }
+
 hr {
-    border-top: 1px dashed #e8e2d699;
+    border-top: 1px dashed rgba(232,226,214,0.6);
 }
 
 .back {
@@ -76,7 +77,7 @@ p.nopadding {
     border-radius: 10px;
     font-weight: 400;
     padding: 3px 6px;
-    background: #efefef99;
+    background: rgba(239,239,239,0.6);
 }
 
 ul.list {
@@ -185,7 +186,7 @@ form {
     padding: 12px 3px;
     position: relative;
     z-index: 2;
-    box-shadow: 1px 1px 2px #CCCCCCcc;
+    box-shadow: 1px 1px 2px rgba(204,204,204,0.8);
     color: white;
 }
 
@@ -201,7 +202,7 @@ form {
 
 .navigation a {
     color: white;
-    text-shadow: 1px 1px 1px #00000022;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.133);
 }
 
 .navigation a:hover {
@@ -243,7 +244,7 @@ form {
 
 .subcategories ul.category {
     padding: 7px 14px;
-    background: #efefef33;
+    background: rgba(239,239,239,0.2);
 }
 
 .subcategories ul.category li {
@@ -431,7 +432,7 @@ form {
     padding: 30px 50px;
     margin-bottom: 40px;
     border-radius: 5px;
-    border: 1px dashed #e8e2d699;
+    border: 1px dashed rgba(232,226,214,0.6);
     text-align: center;
 }
 
@@ -453,7 +454,7 @@ form {
 .fork {
     background: #4a4a4a;
     border-left: 1px solid #424242;
-    box-shadow: -2px 0px 7px #73737375;
+    box-shadow: -2px 0px 7px rgba(115,115,115,0.458);
     color: #e6e6e6;
     font-size: 14px;
     position: absolute;
@@ -586,7 +587,7 @@ form {
 .fork .form-item {
     margin-bottom: 13px;
     padding-top: 5px;
-    border-bottom: 1px solid #efefef33;
+    border-bottom: 1px solid rgba(239,239,239,0.2);
 }
 
 .fork .percentage {
@@ -750,7 +751,7 @@ form {
 .spinner > div {
     width: 12px;
     height: 12px;
-    background-color: #55555577;
+    background-color: rgba(85,85,85,0.466);
 
     border-radius: 100%;
     display: inline-block;
@@ -759,7 +760,7 @@ form {
 }
 
 .spinner.white > div {
-    background-color: #ffffffcc;
+    background-color: rgba(255,255,255,0.8);
 }
 
 .loading .spinner {
@@ -1071,7 +1072,7 @@ form {
 .inline-edit {
     width: 50%;
     margin-left: 60px;
-    background: #efefef33;
+    background: rgba(239,239,239,0.2);
     padding: 11px 15px;
     border-radius: 5px;
 }
@@ -1098,7 +1099,7 @@ form {
 
 .category-container {
     margin-left: 60px;
-    background: #efefef33;
+    background: rgba(239,239,239,0.2);
     padding: 5px 10px;
     border-radius: 4px;
 }
@@ -1227,10 +1228,10 @@ form {
 
 .orange-theme .navigation {
     background-image: linear-gradient(to right, #ff6384, #ff6e79, #ff7b70, #ff8769, #ff9464);
-    border-color: #FF6384cc;
+    border-color: rgba(255,99,132,0.8);
 }
 .orange-theme .navigation a {
-    color: #FFFFFFEE;
+    color: rgba(255,255,255,0.933);
 }
 .orange-theme .block,
 .orange-theme .badge {
@@ -1238,7 +1239,7 @@ form {
 }
 
 .orange-theme .search .badge.badge-type-entry {
-    background-color: #FF6384aa;
+    background-color: rgba(255,99,132,0.666);
 }
 
 .orange-theme .error {
@@ -1319,7 +1320,7 @@ form {
 .blue-theme .navigation {
 }
 .blue-theme .navigation a {
-    color: #FFFFFFEE;
+    color: rgba(255,255,255,0.933);
 }
 .blue-theme .block,
 .blue-theme .badge {
@@ -1407,7 +1408,7 @@ form {
 }
 
 .purple-theme .search .badge.badge-type-entry {
-    background-color: #9b4dcaaa;
+    background-color: rgba(155,77,202,0.666);
 }
 
 .purple-theme .pages a.active {
@@ -1460,7 +1461,7 @@ form {
 .green-theme .navigation {
 }
 .green-theme .navigation a {
-    color: #FFFFFFEE;
+    color: rgba(255,255,255,0.933);
 }
 .green-theme .block,
 .green-theme .badge {
@@ -1468,7 +1469,7 @@ form {
 }
 
 .green-theme .search .badge.badge-type-entry {
-    background-color: #37AB85aa;
+    background-color: rgba(55,171,133,0.666);
 }
 
 .green-theme .error {
