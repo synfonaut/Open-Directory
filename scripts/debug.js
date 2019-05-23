@@ -1,4 +1,4 @@
-const process = require("./public/static/js/process.js");
+const process = require("../public/static/js/process.js");
 
 var category_id;
 category_id = null;
