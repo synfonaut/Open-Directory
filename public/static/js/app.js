@@ -356,7 +356,10 @@ class OpenDirectoryApp extends React.Component {
 
     performAdminUpdateCheck() {
 
-        if (document.location.protocol == "http:" || document.location.protocol == "https:") {
+        // TODO: Figure out best way to handle this
+        // General thought was if deployed to http then don't redirect, but that doesn't work for bico.media and others
+        // Need a good way to know when should we redirect?
+        if (document.location.hostname == "dir1.sv") {
             console.log("Skipping app update check since running at http/https");
             return;
         }
