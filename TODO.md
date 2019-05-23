@@ -1,24 +1,24 @@
 ## Alpha
 
+* only read updates when not using http:// or https://
+* expandable forms with good call to actions
+
 * dir.sv working in all major browsers: chrome, safari, firefox, bottle
 - create good images for tweet storm (tipchain)
 - Check on slow network
+- verify you control admin key
 
+## Beta (Friends)
+- Upload twitter card image with new logo and verify
+* register bitcom protocol
+- Polish content
+- create good examples (collab with bsvdevs, onchain games, onchain art, onchain utilities)
 - followup with BSV/DEVS
 * BSV Games
 * BSV Art
 * BSV Apps
 * BSV Devs
 https://github.com/bico-media/awesome
-
-## Beta (Friends)
-- Upload website (dir.sv)
-- Upload twitter card image with new logo and verify
-- Reset protocol id
-* register bitcom protocol
-- Polish content
-- publish admin console on npm
-- create good examples (collab with bsvdevs, onchain games, onchain art, onchain utilities)
 
 ## Pre-launch (Atlantis)
 - Test uploading to chain

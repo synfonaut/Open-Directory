@@ -1,11 +1,11 @@
 # Open Directory Protocol
 
-> [Bitcom](https://bitcom.bitdb.network) protocol `1dirxA5oET8EmcdW4saKXzPqejmMXQwg2`
+> [Bitcom](https://bitcom.bitdb.network) protocol `1dirzgocAsru3SdhetQkEJraQgYTf5xQm`
 
 The Open Directory protocol is an open protocol for creating resources on Bitcoin (SV). If you've never heard of Bitcom protocols, [learn more here](https://bitcom.bitdb.network). The main key to understanding Bitcom protocols is they store data in the OP_RETURN of a Bitcoin transaction in a specific format. Here's a simple example:
 
 <pre>
-<strong style="color: #9B4DCA">1dirxA5oET8EmcdW4saKXzPqejmMXQwg2</strong>
+<strong style="color: #9B4DCA">1dirzgocAsru3SdhetQkEJraQgYTf5xQm</strong>
 <span style="color: #EB48AB">category.create</span>
 <span style="color: #FF6384">name</span>
 <em>Category Name Goes Here</em>
@@ -16,7 +16,7 @@ Along with a *markdown* description
 Open Directory protocols have two primary forms, creating new items (categories and entries) and then doing things to those entries (edits, deletes, votes)
 
 
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     category.update
     <category_txid>
     name
@@ -24,14 +24,14 @@ Open Directory protocols have two primary forms, creating new items (categories 
     description
     <description
     
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     category.delete
     <category_txid>
     [description]
 
 ### Entry
 
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     entry.create
     <category_txid>
     name
@@ -39,7 +39,7 @@ Open Directory protocols have two primary forms, creating new items (categories 
     description
     <description>
     
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     entry.update
     <entry_txid>
     name
@@ -47,14 +47,14 @@ Open Directory protocols have two primary forms, creating new items (categories 
     description
     <description
     
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     entry.delete
     <entry_txid>
     [description]
 
 ### Vote
 
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     vote
     <txid>
 
@@ -66,7 +66,7 @@ The reason for duplication is because otherwise undo becomes a very long recursi
 
 The description field is optional and is a message about why you are undoing a change.
 
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     undo
     <reference_id>
     <txid>
@@ -106,7 +106,7 @@ Adding moderation to the protocol could be done with four changes:
 
 Step 1a. Whoever creates a category is the owner and default moderator
 
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     category.create
     name
     <name>
@@ -116,7 +116,7 @@ Step 1a. Whoever creates a category is the owner and default moderator
 
 Step 1b. Can also use AIP to sign authorship
 
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     category.create
     name
     <name>
@@ -131,7 +131,7 @@ Step 1b. Can also use AIP to sign authorship
 Step 2a. Enable open moderation
 
     # enable moderated
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     moderation.set
     <category_txid>
     0
@@ -139,7 +139,7 @@ Step 2a. Enable open moderation
 Step 2a. Enable restricted moderation
 
     # enable moderated
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     moderation.set
     <category_txid>
     2
@@ -148,19 +148,19 @@ Step 2a. Enable restricted moderation
 Step 3. Moderation now requires changes to be approved
 
     # approve change
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     moderation.approve
     <txid>
 
     # reject change
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     moderation.reject
     <txid>
 
 Step 4a. Add other moderators
 
     # add moderator
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     moderator.create
     <category_txid>
     <publickey>
@@ -168,7 +168,7 @@ Step 4a. Add other moderators
 Step 4b. Can also add moderators with AIP
 
     # add moderator
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     moderator.create
     <category_txid>
     <publickey>
@@ -181,7 +181,7 @@ Step 4b. Can also add moderators with AIP
 Step 5. Delete a moderator
 
     # delete moderator
-    1dirxA5oET8EmcdW4saKXzPqejmMXQwg2
+    1dirzgocAsru3SdhetQkEJraQgYTf5xQm
     moderator.delete
     <publickey>
 
