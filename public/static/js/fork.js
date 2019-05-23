@@ -143,14 +143,18 @@ class Fork extends React.Component {
                 "intro_markdown": this.props.introMarkdown,
                 "theme": this.props.theme,
                 "tip_addresses": this.state.tip_addresses,
-                "admin_address": this.state.admin_addres,
+                "admin_address": this.state.admin_address,
                 "title": this.props.title,
                 "tip_amount": 0.05,  // TODO: Make configurable in admin
             });
 
-            const new_html_settings = "<!-- BEGIN SETTINGS -->\n<script>var SETTINGS = " + JSON.stringify(new_settings, null, 4) + ";</script>\n<!-- END SETTINGS -->";
+            const new_html_settings = "<!-- BEGIN SETTINGS -->REPLACED\n<script>var SETTINGS = " + JSON.stringify(new_settings, null, 4) + ";</script>\n<!-- END SETTINGS -->";
 
-            const new_html = data.ls2.replace(/<!-- BEGIN SETTINGS -->.*<!-- END SETTINGS -->/, new_html_settings);
+            const new_html = data.ls2.replace(/\<\!\-\- BEGIN SETTINGS \-\-\>((.|[\n|\r|\r\n])*?)\<\!\-\- END SETTINGS \-\-\>[\n|\r|\r\n]?(\s+)?/g, new_html_settings);
+
+
+            console.log("NEW_SETTINGS", new_html_settings);
+            console.log("NEW_HTML", new_html);
 
             OP_RETURN[1] = new_html;
             OP_RETURN[4] = this.props.title;
@@ -166,7 +170,6 @@ class Fork extends React.Component {
                     button: {
                         $el: el,
                         onPayment: (msg) => {
-                            console.log("HANDLE RESPONSE", msg)
                             this.handleForkResponse(msg.txid);
                         }
                     }
