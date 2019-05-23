@@ -16,6 +16,8 @@ class TipchainItem extends React.Component {
 
     componentDidMount() {
         window.addEventListener('hashchange', this.clearMoneyButton.bind(this), false);
+
+        this.handleTipSubmit();
     }
 
     componentWillUnmount() {
