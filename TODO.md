@@ -1,14 +1,7 @@
 ## Alpha
 
-* how do you easily generate two versions? 
-* move js libs to diff folder
 * dir.sv working in all major browsers: chrome, safari, firefox, bottle
--> gulp build a new file and that's what gets uploaded to blockchain?
--> need build command anyway for babel...add optional --bitcoin command to pass meta parameter? how can we choose a different file? need a template system basically...
-
 - create good images for tweet storm (tipchain)
-* split out lib and my JS file organization
-- compile step, minify, remove in-browser babel, convert to c:// and export for web & bitcoin output
 - Check on slow network
 
 - followup with BSV/DEVS
