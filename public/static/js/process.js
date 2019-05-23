@@ -14,8 +14,7 @@ const SUPPORTED_TIPCHAIN_PROTOCOLS = [
 ];
 
 // Open Directory Bitcom Protocol
-//const OPENDIR_PROTOCOL = "1dirzgocAsru3SdhetQkEJraQgYTf5xQm";
-const OPENDIR_PROTOCOL = "1dirxA5oET8EmcdW4saKXzPqejmMXQwg2";
+const OPENDIR_PROTOCOL = "1dirzgocAsru3SdhetQkEJraQgYTf5xQm";
 
 // Allowed actions
 const OPENDIR_ACTIONS = [
@@ -549,8 +548,6 @@ function processCategoryResult(result, existing, undo, rows) {
 
     return existing;
 }
-
-// TODO: Can we merge processEntry and processCategory?
 
 function processEntryResult(result, existing, undo, rows) {
     if (undo.indexOf(result.txid) !== -1) {

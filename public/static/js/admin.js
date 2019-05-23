@@ -60,7 +60,7 @@ function fetchAdminActions(admin_address) {
     });
 }
 
-function getCachedAdminActions(cache_mins=60) { // TODO: Re-cache
+function getCachedAdminActions(cache_mins=60) {
     return new Promise((resolve, reject) => {
         const now = (new Date()).getTime();
 

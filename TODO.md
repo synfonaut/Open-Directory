@@ -1,7 +1,3 @@
-## Alpha
-* organize code and do a once over
-
-
 ## Beta
 - create good images for tweet storm (tipchain)
 - Upload twitter card image with new logo and verify
