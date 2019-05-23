@@ -34,12 +34,17 @@ class Fork extends React.Component {
         return true;
     }
 
-    prepareOPReturnForPingback(txid) {
-        if (txid) {
-            const url = getBMediaURLForTXID(txid);
-            return [OPENDIR_PROTOCOL, "fork.soft", url];
+    prepareOPReturnForPingback() {
+
+        if (!this.state.fork_address) {
+            alert("Invalid fork address....please try again");
+            return;
+        }
+
+        if (SETTINGS.category) {
+            return [OPENDIR_PROTOCOL, "fork.soft", this.state.fork_address, SETTINGS.category];
         } else {
-            return [OPENDIR_PROTOCOL, "fork.soft"];
+            return [OPENDIR_PROTOCOL, "fork.soft", this.state.fork_address];
         }
     }
 

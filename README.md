@@ -50,6 +50,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * Twitter bot
 * TonicPOW integration
 * Search
+* Get BSV price on-chain
 
 * Open Question: Should actions take into account historical economic costs? ex. undoing a $50 entry costs $50
 

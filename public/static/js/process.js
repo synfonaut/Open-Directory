@@ -1069,6 +1069,7 @@ function processOpenDirectoryTransaction(result) {
     } else if (item_type == "vote") {
         obj.action_id = args.shift();
     } else if (item_type == "fork") {
+        console.log("FORK", result);
         if (args.length == 1) {
             obj.fork_url = args.shift();
         } else if (args.length == 2) {
@@ -1076,6 +1077,7 @@ function processOpenDirectoryTransaction(result) {
             obj.fork_url = args.shift();
         } else {
             console.log("unknown number of args", result);
+            return null;
         }
     } else if (item_type == "undo") {
         if (args.length == 1) {
