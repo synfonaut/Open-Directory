@@ -10,22 +10,8 @@
     <meta property="og:description" content="Open Directory is an open source way to organize the Bitcoin (SV) blockchain and earn money." />
     <meta property="og:image" content="https://bico.media/ca9c06e4f38332ee87afce3df40fbef1ec0268ac9478abb4c4e5d6b46d08cae0" />
 
-    <link rel="stylesheet" href="bit://19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut/ab2e376b477c1b9a9f2b7812e91b0fef903783ac1e48b3a010c3bd0e90674930" />
-    <script>
-      function transformBitLink(link, provider="https://bico.media/") {
-        if (link.href.indexOf("bit://") == 0) {
-          link.href = provider + link.href;
-        }
-      }
-
-      const links = document.querySelectorAll("link");
-      for (const link of links) {
-        //transformBitLink(link);
-      }
-    </script>
-    <link rel="stylesheet" href="/static/css/milligram.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/css/app.css" />
+    <link rel="stylesheet" href="/static/css/bundle.min.css" />
 
     <!-- BEGIN SETTINGS -->
     <script>
@@ -46,51 +32,20 @@
     </script>
     <!-- END SETTINGS -->
 
-    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/history@4.9.0/umd/history.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/react-markdown@4.0.8/umd/react-markdown.js"></script>
-
-    <!-- possibly remove this -->
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it@8.4.2/dist/markdown-it.min.js"></script>
-
-    <script src="https://www.moneybutton.com/moneybutton.js"></script>
-    <script src="https://unpkg.com/bsv@0.27.1/bsv.min.js"></script>
-    <script src="https://unpkg.com/datapay"></script>
-    <script src="/static/js/lscache.js"></script>
-
-    <!-- modified custom databutton where currency is set by user -->
-    <script src="/static/js/databutton-0.0.4.js"></script>
-    
-    <!-- remove this in production: -->
-    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
     <script src="https://unpkg.com/react-pose@3.1.0"></script>
 
-    <!-- utils -->
-    <script src="/static/js/css.js"></script>
-    <script src="/static/js/settings.js"></script>
-    <script src="/static/js/helpers.js"></script>
-    <script src="/static/js/process.js"></script>
-    <script src="/static/js/bsv_price.js"></script>
-    <script src="/static/js/admin.js"></script>
+    <script src="https://unpkg.com/history@4.9.0/umd/history.js"></script>
+    <script src="https://unpkg.com/bsv@0.27.1/bsv.min.js"></script>
+    <script src="https://unpkg.com/datapay"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lscache/1.3.0/lscache.min.js"></script>
 
-    <!-- reusable react components -->
-    <script type="text/babel" src="/static/js/search.js"></script>
-    <script type="text/babel" src="/static/js/tipchain.js"></script>
-    <script type="text/babel" src="/static/js/delete.js"></script>
-    <script type="text/babel" src="/static/js/item.js"></script>
-
-    <!-- open directory react components -->
-    <script type="text/babel" src="/static/js/fork.js"></script>
-    <script type="text/babel" src="/static/js/entry.js"></script>
-    <script type="text/babel" src="/static/js/category.js"></script>
-    <script type="text/babel" src="/static/js/list.js"></script>
-    <script type="text/babel" src="/static/js/changelog.js"></script>
-
-    <!-- app -->
-    <script type="text/babel" src="/static/js/app.js"></script>
+    <script src="https://www.moneybutton.com/moneybutton.js"></script>
   </head>
   <body>
     <div id="app"></div>
+    <script src="/static/js/bundle.min.js"></script>
   </body>
 </html>

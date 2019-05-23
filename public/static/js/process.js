@@ -11,7 +11,6 @@ const SUPPORTED_TIPCHAIN_PROTOCOLS = [
     "bit://" + B_MEDIA_PROTOCOL + "/",
     "b://",
     "bit://" + BCAT_MEDIA_PROTOCOL + "/",
-    "bcat://",
 ];
 
 // Open Directory Bitcom Protocol
@@ -872,6 +871,7 @@ function processOpenDirectoryTransaction(result) {
     var args = Object.values(result.data);
     const protocol_id = args.shift();
     const opendir_action = args.shift();
+    var item_type, item_action;
 
     if (!txid) {
         console.log("Error while processing open directory transaction: no txid", result);
@@ -896,7 +896,14 @@ function processOpenDirectoryTransaction(result) {
     if (opendir_action == "vote" || opendir_action == "undo") {
         item_type = item_action = opendir_action;
     } else {
-        [item_type, item_action] = opendir_action.split(".");
+        const parts = opendir_action.split(".");
+        if (parts.length != 2) {
+            console.log("Error while processing open directory transaction: invalid action", result);
+            return null;
+        }
+
+        item_type = parts[0];
+        item_action = parts[1];
     }
 
     var obj = {

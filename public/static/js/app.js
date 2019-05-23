@@ -475,6 +475,7 @@ class OpenDirectoryApp extends React.Component {
 
                 this.setupNetworkSocket();
             }).catch((e) => {
+                throw e; // TODO REMOVE
                 console.log("error", e);
                 this.setState({
                     "isLoading": false,
