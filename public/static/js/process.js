@@ -397,10 +397,6 @@ function fetch_bmedia_from_network(txids, cursor=0, limit=500, results=[]) {
         var items = {};
         const rows = r.c.concat(r.u).reverse();
 
-        for (const row of rows) {
-            console.log("ROW", row);
-        }
-
         results = results.concat(rows);
         cursor += rows.length;
 
