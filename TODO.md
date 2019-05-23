@@ -45,3 +45,5 @@ https://github.com/bico-media/awesome
 ## Post-launch
 * reindex bitomation on new server then swap it out
 * keep adding content
+* bottle native content isn't working
+* bico.media forking isn't working

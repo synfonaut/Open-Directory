@@ -152,10 +152,8 @@ class Fork extends React.Component {
 
             const new_html = data.ls2.replace(/<!-- BEGIN SETTINGS -->.*<!-- END SETTINGS -->/, new_html_settings);
 
-            console.log("NEW_HTML", new_html);
-
             OP_RETURN[1] = new_html;
-            OP_RETURN[2] = this.props.title;
+            OP_RETURN[4] = this.props.title;
 
             console.log("OP_RETURN", OP_RETURN);
 
@@ -196,27 +194,6 @@ class Fork extends React.Component {
         const url = getBitLinkForBMediaTXID(txid);
         console.log("Forked to", url);
         this.setState({"action": "post-fork", "fork_address": url}, () => {
-
-            const OP_RETURN = [
-                OPENDIR_PROTOCOL,
-                "fork.soft",
-                url,
-            ];
-
-            console.log(OP_RETURN);
-
-            const el = document.querySelector(".pingback-money-button");
-
-            databutton.build({
-                data: OP_RETURN,
-                button: {
-                    $el: el,
-                    onPayment: (msg) => {
-                        console.log("PINGBACK RESPONSE", msg)
-                        this.handleSuccessfulTip();
-                    }
-                }
-            })
 
         });
     }
