@@ -14,7 +14,7 @@ const SUPPORTED_TIPCHAIN_PROTOCOLS = [
 ];
 
 // Open Directory Bitcom Protocol
-const OPENDIR_PROTOCOL = "1dirxA5oET8EmcdW4saKXzPqejmMXQwg2";
+const OPENDIR_PROTOCOL = "1dirzgocAsru3SdhetQkEJraQgYTf5xQm";
 
 // Allowed actions
 const OPENDIR_ACTIONS = [
