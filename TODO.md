@@ -1,14 +1,4 @@
 ## Alpha
-
-* ensure forking works dir.sv -> bico.media
- - after forking, which address do you get?
- - reference template_txid from dir.sv
- - does forking in browser work?
- - does forking in bottle work?
-
-* dir.sv working in all major browsers: chrome, safari, firefox, bottle
-* put all scripts on-chain so it always stays there
-
 * organize code and do a once over
 
 
@@ -28,12 +18,17 @@ https://github.com/bico-media/awesome
 - Check on slow network
 
 ## Upload On-Chain Version
+- put all scripts on-chain so it always stays there
+- manually upload render copy to blockchain
+- grab txid, save that to dir.sv—then try forking for real
+
 - verify you control admin key
 - verify updates work as expected
 - verify everything works in bottle
 - verify forking works
 
 ## Launch
+- verify all browsers chrome, safari, firefox, bottle
 - 🚀 Launch in Atlantis
 - 🚀 Launch on Twitter
 

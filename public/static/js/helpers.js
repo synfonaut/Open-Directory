@@ -80,11 +80,18 @@ function pluralize(val, singular, plural) {
     return val + " " + plural;
 }
 
+function isBottle() {
+    return navigator.userAgent.indexOf("Bottle") !== -1;
+}
 
-function getBMediaURLForTXID(txid) {
+function getBitLinkForBMediaTXID(txid) {
     return "bit://" + B_MEDIA_PROTOCOL + "/" + txid;
 }
 
-function isBottle() {
-    return navigator.userAgent.indexOf("Bottle") !== -1;
+function getBMediaURLForTXID(url) {
+    if (isBottle()) {
+        return url;
+    } else {
+        return "https://bico.media/" + url;
+    }
 }

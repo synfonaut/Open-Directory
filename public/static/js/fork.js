@@ -193,7 +193,7 @@ class Fork extends React.Component {
 
         console.log("Successfully forked to txid", txid);
 
-        const url = getBMediaURLForTXID(txid);
+        const url = getBitLinkForBMediaTXID(txid);
         console.log("Forked to", url);
         this.setState({"action": "post-fork", "fork_address": url}, () => {
 
