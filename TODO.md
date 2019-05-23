@@ -39,7 +39,7 @@ https://bico.media/f830cad9c888f1715b7af7350aeff24676a5c00295928da631a71fb965fb5
 https://github.com/bico-media/awesome
 
 ## Upload On-Chain Version
-- put all scripts and CSS on-chain
+- put all scripts, images CSS on-chain (upload for bitstagram)
 - manually upload render copy to blockchain
 - grab txid, save that to dir.sv—then try forking for real
 
