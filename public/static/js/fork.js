@@ -148,7 +148,7 @@ class Fork extends React.Component {
                 "tip_amount": 0.05,  // TODO: Make configurable in admin
             });
 
-            const new_html_settings = "<!-- BEGIN SETTINGS -->REPLACED\n<script>var SETTINGS = " + JSON.stringify(new_settings, null, 4) + ";</script>\n<!-- END SETTINGS -->";
+            const new_html_settings = "<!-- BEGIN SETTINGS -->\n<script>var SETTINGS = " + JSON.stringify(new_settings, null, 4) + ";</script>\n<!-- END SETTINGS -->";
 
             const new_html = data.ls2.replace(/\<\!\-\- BEGIN SETTINGS \-\-\>((.|[\n|\r|\r\n])*?)\<\!\-\- END SETTINGS \-\-\>[\n|\r|\r\n]?(\s+)?/g, new_html_settings);
 
