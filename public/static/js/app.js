@@ -473,6 +473,10 @@ class OpenDirectoryApp extends React.Component {
 
                 const txpool = processOpenDirectoryTransactions(rows);
 
+                // Hacky..
+                // At the 11th hour I found a bug where my bitomation.com genesis BitDB is missing some media transactions
+                // Rather than defer launch, this hack grabs the media txds from another genesis server...this should only matter for the first few days until it can be officially reindexed and fixed
+
                 const media_txids = txpool.filter(r => {
                     return r.type == "entry";
                 }).map(r => {
@@ -480,9 +484,6 @@ class OpenDirectoryApp extends React.Component {
                     return parseTransactionAddressFromURL(url);
                 }).filter(r => { return r });
 
-                // Hacky..
-                // At the 11th hour I found a bug where my bitomation.com genesis BitDB is missing some media transactions
-                // Rather than defer launch, this hack grabs the media txds from another genesis server...this should only matter for the first few days until it can be officially reindexed and fixed
                 fetch_bmedia_from_network(media_txids).then(media => {
 
                     const processed_media = processOpenDirectoryTransactions(media);
@@ -508,12 +509,7 @@ class OpenDirectoryApp extends React.Component {
                     });
 
                     this.setupNetworkSocket();
-
-                }).catch(e => {
-                    console.log("ERROR FETCHING MEDIA IDS...tipchains may not be fully accurate");
                 });
-
-
 
             }).catch((e) => {
                 console.log("error", e);
