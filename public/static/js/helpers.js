@@ -95,3 +95,7 @@ function getBMediaURLForTXID(url) {
         return "https://bico.media/" + url;
     }
 }
+
+function getTXIDFromURL(url) {
+    
+}

@@ -37,6 +37,47 @@ function toBase64(str) {
     return btoa(str);
 }
 
+function get_bmedia_bitdb_query(txids, cursor=0, limit=500) {
+    const query = {
+        "v": 3,
+        "q": {
+
+            // querying both confirmed and unconfirmed transactions
+            // mongodb doesn't have a clean way to join on both so nearly every query below is doubled, on for each db
+            "db": ["u", "c"],
+
+            "limit": limit,
+
+            // need sort here so cursor is consistent
+            "sort": {
+                "txid": 1
+            },
+            "aggregate": [
+                { "$match": { "tx.h": { "$in": txids } } },
+
+                // let users page results
+                { "$skip": cursor },
+            ]
+        },
+
+        //
+        // we can clean up the response to return exactly what we need, saving bandwidth
+        // the jq filter below says take all the elements in the array and return this object
+        // data is a little tricky, but it grabs all s1,s2,s3,s4 data no matter how many
+        "r": {
+            "f": "[.[] | {                  \
+                \"height\": .blk.i?,        \
+                \"time\": .blk.t?,        \
+                \"address\": .in[0].e.a,    \
+                \"outputs\": [.out[] | {\"address\": .e.a, \"sats\": .e.v}], \
+                \"txid\": .tx.h,            \
+                \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}]"
+        }
+    }
+
+    return query;
+}
+
 function get_bitdb_query(category_id=null, cursor=0, limit=500, maxDepth=5) {
 
     if (category_id == null) {
@@ -334,6 +375,68 @@ function fetch_from_network(category_id=null, cursor=0, limit=500, results=[]) {
                 return r.json();
             }).then(r => { handleResponse(resolve, reject, r) }).catch(reject);
         }
+
+    });
+}
+
+function fetch_bmedia_from_network(txids, cursor=0, limit=500, results=[]) {
+
+    const query = get_bmedia_bitdb_query(txids, cursor, limit);
+    var b64 = btoa(JSON.stringify(query));
+    const url = "https://genesis.bitdb.network/q/1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN/" + b64;
+
+    const header = { headers: { key: "1A4xFjNatCgAK5URARbVwoxo1E3MCMETb6" } };
+
+    function handleResponse(resolve, reject, r) {
+
+        if (r.errors) {
+            reject("error during query " + r.errors);
+            return;
+        }
+
+        var items = {};
+        const rows = r.c.concat(r.u).reverse();
+
+        for (const row of rows) {
+            console.log("ROW", row);
+        }
+
+        results = results.concat(rows);
+        cursor += rows.length;
+
+        if (rows.length >= limit) {
+            console.log("Seems like there's still more... polling for more");
+            fetch_bmedia_from_network(txids, cursor, limit, results).then(resolve).catch(reject);
+        } else {
+
+            const sorted = results.sort(function(a, b) {
+                return (a.height===null)-(b.height===null) || +(a.height>b.height) || -(a.height<b.height);
+            });
+
+            var items = new Map();
+            for (const item of sorted) {
+                const matched_item = items[item.txid];
+                if (!matched_item || (matched_item && !matched_item.height)) {
+                    items.set(item.txid, item)
+                }
+            }
+
+            const values = Array.from(items.values());
+            resolve(values);
+        }
+    }
+
+    return new Promise((resolve, reject) => {
+
+        console.log("Making HTTP request to server " + cursor + "," + limit);
+        fetch(url, header).then(function(r) {
+            if (r.status !== 200) {
+                reject("Error while retrieving response from server " + r.status);
+                return;
+            }
+
+            return r.json();
+        }).then(r => { handleResponse(resolve, reject, r) }).catch(reject);
 
     });
 }
@@ -672,7 +775,18 @@ function processResult(result, existing, undo, rows) {
 }
 
 
-
+function parseTransactionAddressFromURL(url) {
+    for (const protocol of SUPPORTED_TIPCHAIN_PROTOCOLS) {
+        const bmedia_parts = url.split(protocol);
+        if (bmedia_parts.length == 2) {
+            const bmedia_txid = bmedia_parts[1];
+            if (bmedia_txid.length == 64) {
+                return bmedia_txid;
+            }
+        }
+    }
+    return null;
+}
 
 function parseTipFromEntryMedia(item, media) {
     for (const protocol of SUPPORTED_TIPCHAIN_PROTOCOLS) {

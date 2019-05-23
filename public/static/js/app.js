@@ -472,28 +472,49 @@ class OpenDirectoryApp extends React.Component {
             fetch_from_network(category_id).then((rows) => {
 
                 const txpool = processOpenDirectoryTransactions(rows);
-                const results = processResults(rows, txpool);
-                const success = this.checkForUpdatedActiveCategory(results);
 
-                //console.log("RESULTS", JSON.stringify(results, null, 4));
+                const media_txids = txpool.filter(r => {
+                    return r.type == "entry";
+                }).map(r => {
+                    const url = r.change.link;
+                    return parseTransactionAddressFromURL(url);
+                }).filter(r => { return r });
 
-                const raw = this.state.raw;
-                raw[category_id] = rows;
+                // Hacky..
+                // At the 11th hour I found a bug where my bitomation.com genesis BitDB is missing some media transactions
+                // Rather than defer launch, this hack grabs the media txds from another genesis server...this should only matter for the first few days until it can be officially reindexed and fixed
+                fetch_bmedia_from_network(media_txids).then(media => {
 
-                const cache = this.state.cache;
-                cache[category_id] = results;
+                    const processed_media = processOpenDirectoryTransactions(media);
+                    const merged_txs = txpool.concat(processed_media);
 
-                this.setState({
-                    "networkActive": false,
-                    "isLoading": false,
-                    "isError": !success,
-                    "txpool": txpool,
-                    "items": results,
-                    "raw": raw,
-                    "cache": cache,
+                    const results = processResults(rows, merged_txs);
+                    const success = this.checkForUpdatedActiveCategory(results);
+
+                    const raw = this.state.raw;
+                    raw[category_id] = rows;
+
+                    const cache = this.state.cache;
+                    cache[category_id] = results;
+
+                    this.setState({
+                        "networkActive": false,
+                        "isLoading": false,
+                        "isError": !success,
+                        "txpool": merged_txs,
+                        "items": results,
+                        "raw": raw,
+                        "cache": cache,
+                    });
+
+                    this.setupNetworkSocket();
+
+                }).catch(e => {
+                    console.log("ERROR FETCHING MEDIA IDS...tipchains may not be fully accurate");
                 });
 
-                this.setupNetworkSocket();
+
+
             }).catch((e) => {
                 console.log("error", e);
                 this.setState({

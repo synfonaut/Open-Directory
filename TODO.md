@@ -1,4 +1,4 @@
-* bug: For some reason some b:// media isn't coming through in all cases and it's breaking the tipchain
+* add icon to twitter social share image
 
 two examples each way
 https://dir.sv/#1722fbdaaaa3a066787e98245704c23391d6c5a489bd1830ef2338385c33f238
@@ -59,3 +59,6 @@ https://github.com/bico-media/awesome
 * bitdb suggestion: nice to just say "give me OP_RETURN string array" in addition to s1,s2,s3,s4,s5—useful for variable length protocols like MAP
 * enable regex in jq for more advanced filtering
 
+## Post-launch
+* reindex bitomation on new server then swap it out
+* keep adding content
