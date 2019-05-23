@@ -320,7 +320,7 @@ class Fork extends React.Component {
                                     <label>
                                         Category
                                     </label>
-                                    <p>Select the category you want to fork. It will be published to the blockchain with a new address where everyone can access it with the changes you've made. You can even fork the entire Open Directory.</p>
+                                    <p>Select the category you want to fork. It will be published to the blockchain with a new Bitcoin URL where everyone can access it with the changes you've made. You can even fork the entire Open Directory.</p>
                                     <select onChange={this.handleCategoryChange.bind(this)} value={select_value}>
                                         {categories.map(category => {
                                             return <option value={category.txid} key={category.txid}>{category.name}</option>
@@ -415,6 +415,7 @@ class Fork extends React.Component {
                                     <br />
                                     <mark><strong>{this.state.admin_address}</strong></mark></p>
                                     <p>If you lose control of this address, you lose control of the directory.</p>
+                                    <p><strong>Remember this action is forever tied to your Bitcoin address.</strong></p>
                                     <input type="submit" className="button" value="Add new link" value="Fork" />
 
                                 </div>

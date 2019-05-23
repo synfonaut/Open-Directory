@@ -35,7 +35,11 @@ h3,
 h4,
 h5,
 h6 {
-    margin-bottom: 0;
+    margin-bottom: 5px;
+}
+
+h1 {
+    font-size: 40px;
 }
 
 
@@ -307,7 +311,7 @@ form {
 }
 
 .category {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
 .category .description {
@@ -1662,6 +1666,14 @@ form {
 
 /* Larger than mobile screen */
 @media (min-width: 45.0rem) {
+
+    h1 {
+        font-size: 46px;
+    }
+
+    .category {
+        margin-bottom: 15px;
+    }
 
     .intro h1 {
         font-weight: 300;

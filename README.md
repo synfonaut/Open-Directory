@@ -33,6 +33,33 @@ If you are managing your own Open Directory, check out the [Open Directory Admin
 
 Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Directory/blob/master/PROTOCOL.md) to learn more.
 
+## Open Directory v2 Plans
+* Planaria to reduce load on client
+* Planaria to remove entry and satoshi maxDepth restriction on categories and search
+* Planaria to crawl Bitcoin Stickers from websites for including C:// and other protocols in tipchain
+* Planaria to sort changelog by graph-dependant order (Neon Genesis?)
+* Recursive satoshi counts, categories count all sub-categories with no limit
+* Moderation tools
+* Statistics (money, categories, links, votes)
+* Custom currency support
+* Pretty in-browser Bitcom links like bit://<OPENDIR_PROTOCOL>/<txid>
+* Pretty in-app Bitcom links like bit://<B_MEDIA_PROTOCOL>/<txid> converted to <protocol name>: <txid>
+* Make protocol more generic by using Bitcom schema protocol
+* Different algorithms for tipchain, specifying default splits
+* Comment pages
+* Twitter bot
+* TonicPOW integration
+* Search
+
+* Open Question: Should actions take into account historical economic costs? ex. undoing a $50 entry costs $50
+
+## Ideas
+* AIP to sign data by author
+* Categories "pull up" and aggregate their sub-categories
+* Attach comments to votes?
+* on-chain planaria... end up doing similar "state processing" code to bring "objects" up to date, eventually will need full Planaria, but for lighter apps, planarium.js?
+* protocol processor that's a planaria state machine transformer, but embedded in a bitcoin tx, so everything is still onchain (schema)
+
 
 ## About
 

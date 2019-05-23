@@ -42,6 +42,7 @@ class AddEntryForm extends React.Component {
         return (
             <div className="column">
                 <h3><i className="fas fa-link"></i> Add new link to <span className="highlight">{this.props.category.name}</span></h3>
+                <p>Submit a link and earn money when it gets upvoted. Keep it high-quality, remember this action is forever tied to your Bitcoin address.</p>
                 <form onSubmit={this.handleSubmit}>
                     <fieldset>
                         <div className="row">

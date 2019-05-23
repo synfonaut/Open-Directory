@@ -106,8 +106,6 @@ class ChangeLogItem extends React.Component {
             alert("Error while finding undo object action_id, please try again");
         }
 
-        console.log("LOCKED ON TO ", action_id);
-
         const OP_RETURN = [
             OPENDIR_PROTOCOL,
             "undo",
@@ -165,6 +163,13 @@ class ChangeLogItem extends React.Component {
             action = this.props.item.data.s2;
         }
 
+        var isUndoable = true;
+        if (this.props.item.type == "admin") {
+            isUndoable = false;
+        } else if (this.props.item.type == "fork") {
+            isUndoable = false;
+        }
+
         return (<React.Fragment>
                     <tr>
                         <td className="height">
@@ -183,7 +188,7 @@ class ChangeLogItem extends React.Component {
                     {(this.props.isExpanded || this.state.isExpanded) && <tr>
                             <td className="undo" colSpan="6" id={"changelog-action-" + this.props.item.txid}>
                             <a href={"https://whatsonchain.com/tx/" + this.props.item.txid}>{this.props.item.txid}</a>&nbsp;
-                        {false && <a onClick={this.handleClickUndo.bind(this)}>undo</a>}
+                        {isUndoable && <a onClick={this.handleClickUndo.bind(this)}>undo</a>}
                             {this.state.isShowingWarning && <div className="notice"><span className="warning">You are undoing this change, are you sure you want to do this?</span><div className="explain"><p>If you undo this change, you'll be permanently undoing it in this directory for everyone else. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Why are you undoing this change?</strong></p>
 
                                 <form onSubmit={this.handleUndoSubmit.bind(this)}>

@@ -46,11 +46,16 @@ class AddCategoryForm extends React.Component {
 
     render() {
         const dirtype = (this.props.category.txid ? "category" : "directory");
-        var header = <h3><i className="fas fa-folder"></i> Add new directory</h3>
+        var header;
         if (this.props.category.txid) {
-            header = <h3><i className="fas fa-folder"></i> Add new subcategory under <span className="highlight">{this.props.category.name}</span></h3>
+            header = <div><h3><i className="fas fa-folder"></i> Add new subcategory under <span className="highlight">{this.props.category.name}</span></h3>
+                <p>Submit a new subcategory to earn money when links get submitted and upvoted. Keep it high-quality, remember this action is forever tied to your Bitcoin address.</p></div>
+        } else {
+            header = <div>
+                <h3><i className="fas fa-folder"></i> Add new directory</h3>
+                <p>Submit a new directory to earn money when links and categories get submitted and upvoted. Keep it high-quality, remember this action is forever tied to your Bitcoin address.</p>
+                </div>
         }
-
         return (
             <div className="column" id={this.getCategoryID()}>
                 {header}
