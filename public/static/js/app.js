@@ -355,6 +355,12 @@ class OpenDirectoryApp extends React.Component {
     }
 
     performAdminUpdateCheck() {
+
+        if (document.location.protocol == "http:" || document.location.protocol == "https:") {
+            console.log("Skipping app update check since running at http/https");
+            return;
+        }
+
         getLatestUpdate().then(update => {
             if (document.location.origin != update.uri) {
                 console.log("Current location doesn't match latest update URI...new version available", document.location.origin, update.uri);
