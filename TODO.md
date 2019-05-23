@@ -1,7 +1,9 @@
 ## Alpha
 
+* fix length of create directory form on home page
 * only read updates when not using http:// or https://
 * expandable forms with good call to actions
+* ensure forking works dir.sv -> bico.media
 
 * dir.sv working in all major browsers: chrome, safari, firefox, bottle
 - create good images for tweet storm (tipchain)

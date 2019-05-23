@@ -4,6 +4,8 @@ class OpenDirectoryApp extends React.Component {
         this.state = {
             isLoading: true,
             isError: false,
+            isExpandingAddCategoryForm: false,
+            isExpandingAddEntryForm: false,
 
             isForking: false,
 
@@ -203,7 +205,14 @@ class OpenDirectoryApp extends React.Component {
         return sorted;
     }
 
-    // TODO: Split this up
+    handleExpandAddCategoryForm() {
+        this.setState({"isExpandingAddCategoryForm": true});
+    }
+
+    handleExpandAddEntryForm() {
+        this.setState({"isExpandingAddEntryForm": true});
+    }
+
     render() {
         const hash = this.state.location[0];
 
@@ -296,29 +305,26 @@ class OpenDirectoryApp extends React.Component {
                           {(this.state.isLoading && this.state.items.length == 0) && loading}
                           {this.state.isError && error}
                           <hr />
-                          {(shouldShowAddNewEntryForm && !shouldShowAddNewCategoryForm) && <div className="row">
-                              <div className="column">
-                                <p className="callout"><i className="fab fa-bitcoin"></i> Earn Bitcoin (SV) by submitting valuable content—when it gets upvoted you'll receive a portion of the tip!</p>
-                              </div>
-                              </div>}
-                          {(!shouldShowAddNewEntryForm && shouldShowAddNewCategoryForm) && <div className="row">
-                              <div className="column">
-                                <p className="callout"><i className="fab fa-bitcoin"></i> Earn Bitcoin (SV) by creating a new directory—when someone submits content and it gets upvoted you'll receive a portion of the tip!</p>
-                              </div>
-                              </div>}
-                          {(shouldShowAddNewEntryForm && shouldShowAddNewCategoryForm) && <div className="row">
-                              <div className="column">
-                                <p className="callout"><i className="fab fa-bitcoin"></i> Earn Bitcoin (SV) by submitting valuable content or creating a new category—when content gets submitted or upvoted you'll receive a portion of the tip!</p>
-                              </div>
-                              </div>}
                           <div className="row">
-                              {(shouldShowAddNewEntryForm ? <div className="column"><AddEntryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} /></div> : null )}
-                              <div className="column">
-                              {(shouldShowAddNewCategoryForm ? <div>
-                                  <AddCategoryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
-                                   </div> : null)}
-                              </div>
-                              {(shouldShowAddNewEntryForm ? null : <div className="column"></div>)}
+
+                              {(shouldShowAddNewEntryForm) ? <div className="column"><div className="add-entry-callout">
+                                    <a onClick={this.handleExpandAddEntryForm.bind(this)}><i class="fas fa-link"></i> Submit a new link</a>
+                                    <p>Earn <i className="fab fa-bitcoin"></i> Bitcoin (SV) by submitting valuable content—when it gets upvoted you'll receive a portion of the tip!</p>
+                                  {this.state.isExpandingAddEntryForm && <AddEntryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
+                                   </div></div> : null}
+
+
+                              {(shouldShowAddNewCategoryForm && !shouldShowAddNewEntryForm) ? <div><div className="column"><div className="add-directory-callout">
+                                    <a onClick={this.handleExpandAddCategoryForm.bind(this)}><i class="fas fa-folder"></i> Create a new directory</a>
+                                    <p>Earn <i className="fab fa-bitcoin"></i> Bitcoin (SV) by creating a new directory—when someone submits content and it gets upvoted you'll receive a portion of the tip! </p>
+                                  {this.state.isExpandingAddCategoryForm && <AddCategoryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
+                                   </div></div></div> : null}
+
+                              {(shouldShowAddNewCategoryForm && shouldShowAddNewEntryForm) ? <div className="column"><div className="add-category-callout">
+                                    <a onClick={this.handleExpandAddCategoryForm.bind(this)}><i class="fas fa-folder"></i> Create a new subcategory </a>
+                                    <p>Earn <i className="fab fa-bitcoin"></i> Bitcoin (SV) by creating a new subcategory—when someone submits content and it gets upvoted you'll receive a portion of the tip! </p>
+                                  {this.state.isExpandingAddCategoryForm && <AddCategoryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
+                                   </div></div> : null}
                           </div>
                           {(shouldShowAddNewEntryForm || shouldShowAddNewCategoryForm) && <hr />}
                             {!this.state.isLoading && <ForkLog forks={forks} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
@@ -428,6 +434,8 @@ class OpenDirectoryApp extends React.Component {
             "location": location,
             "category": category,
             "items": items,
+            "isExpandingAddCategoryForm": false,
+            "isExpandingAddEntryForm": false,
         }, () => {
             if (needsupdate) {
                 this.networkAPIFetch();
@@ -475,7 +483,6 @@ class OpenDirectoryApp extends React.Component {
 
                 this.setupNetworkSocket();
             }).catch((e) => {
-                throw e; // TODO REMOVE
                 console.log("error", e);
                 this.setState({
                     "isLoading": false,

@@ -33,7 +33,6 @@ function getUpdates() {
     });
 }
 
-// TODO: Convert this to admin process and process admin commands (detatch)
 function fetchUpdates() {
     const query = {
         "v": 3,

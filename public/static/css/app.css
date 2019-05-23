@@ -458,6 +458,28 @@ form {
     animation: lds-circle 4.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 }
 
+.add-directory-callout,
+.add-category-callout,
+.add-entry-callout {
+    padding: 5px 15px;
+}
+
+.add-directory-callout a,
+.add-category-callout a,
+.add-entry-callout a {
+    display: block;
+    font-size: 21px;
+    padding: 5px;
+}
+
+.add-directory-callout p,
+.add-category-callout p,
+.add-entry-callout p {
+    padding: 5px;
+    font-size: 14px;
+    color: #555;
+}
+
 .pages {
     margin-top: 30px;
     margin-left: 60px;
