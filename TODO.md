@@ -1,7 +1,6 @@
 ## Beta
 - create good images for tweet storm (tipchain)
 - Upload twitter card image with new logo and verify
-* register bitcom protocol
 
 - Polish content
 - create good examples (collab with bsvdevs, onchain games, onchain art, onchain utilities)
