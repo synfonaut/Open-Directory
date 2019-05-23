@@ -169,7 +169,7 @@ class Fork extends React.Component {
                         $el: el,
                         onPayment: (msg) => {
                             console.log("HANDLE RESPONSE", msg)
-                            this.handleForkResponse(msg);
+                            this.handleForkResponse(msg.txid);
                         }
                     }
                 })
