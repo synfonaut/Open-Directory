@@ -138,7 +138,7 @@ class Fork extends React.Component {
                 data.s5
             ];
 
-            const new_settings = Object.assign(SETTINGS, {
+            const new_settings = Object.assign({}, SETTINGS, {
                 "faq_markdown": this.props.faqMarkdown,
                 "intro_markdown": this.props.introMarkdown,
                 "theme": this.props.theme,
