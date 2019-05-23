@@ -61,6 +61,16 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * on-chain planaria... end up doing similar "state processing" code to bring "objects" up to date, eventually will need full Planaria, but for lighter apps, planarium.js?
 * protocol processor that's a planaria state machine transformer, but embedded in a bitcoin tx, so everything is still onchain (schema)
 
+## Feedback
+* bitdb bug: event stream is getting messages it shouldn't
+* bitdb suggestion: nice to just say "give me OP_RETURN string array" in addition to s1,s2,s3,s4,s5—useful for variable length protocols like MAP
+* enable regex in jq for more advanced filtering
+
+## Bugs
+* reindex bitomation on new server then swap it out
+* bottle native content isn't working
+* bg isn't uploaded to blockchain
+* bug when listing forks....if you fork from home directory it goes from there...
 
 ## About
 
