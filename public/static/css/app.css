@@ -257,7 +257,7 @@ form {
 
 .intro h1 {
   font-weight: 300;
-  font-size: 60px;
+  font-size: 46px;
 }
 
 .intro img {
@@ -299,6 +299,11 @@ form {
 .subcategories .category h3 {
     padding-top: 2px;
     font-size: 17px;
+}
+
+.subcategories .category .show-more a {
+    color: rgba(115,115,115,0.75);
+    font-size: 13px;
 }
 
 .category {
@@ -1630,6 +1635,10 @@ form {
 }
 
 
+.faq {
+    word-wrap: break-word;
+}
+
 .faq h1 {
     margin-bottom: 10px;
 }
@@ -1653,6 +1662,12 @@ form {
 
 /* Larger than mobile screen */
 @media (min-width: 45.0rem) {
+
+    .intro h1 {
+        font-weight: 300;
+        font-size: 60px;
+    }
+
     ul.list li.category {
         width: 50%;
     }

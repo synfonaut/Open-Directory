@@ -2,11 +2,6 @@
 
 * remind people this is permanently on the blockchain when creating links, categories and forking
 * change fork to fork with a new bitcoin url
-* faq css overflow bug
-* remove $synfonaut
-* To more they pay spelling error
-* what is subcategory limit? can you view all?
-* make h1 smaller on mobile
 * upgrade bitomation server
 
 * in readme write rough plans for v2

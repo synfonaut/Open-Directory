@@ -5,6 +5,7 @@ class List extends React.Component {
         this.state = {
             "sort": "hot",
             "limit": 10,
+            "category_limit": 6,
             "cursor": 0,
             "action": null,
             "isExpanded": false,
@@ -60,6 +61,10 @@ class List extends React.Component {
         this.props.onSuccessHandler("Successfully upvoted " + this.props.category.type + ", it will appear automatically—please refresh the page if it doesn't");
     }
 
+    handleShowAllCategories() {
+        this.setState({"category_limit": -1});
+    }
+
     handleSuccessfulDelete() {
         this.setState({"action": null});
         this.props.onSuccessHandler("Successfully deleted " + this.props.category.type + ", it will appear automatically—please refresh the page if it doesn't");
@@ -87,6 +92,14 @@ class List extends React.Component {
 
     render() {
         const categories = this.getCategories();
+
+        var top_categories;
+        if (this.state.category_limit == -1) {
+            top_categories = categories;
+        } else {
+            top_categories = categories.slice(0, this.state.category_limit);
+        }
+
         const entries = this.getEntries();
         const price = satoshisToDollars(this.props.category.satoshis, BSV_PRICE, true);
 
@@ -192,7 +205,7 @@ class List extends React.Component {
             {categories && categories.length > 0 && 
                     <div className={isHome ? "homepage" : "subcategories"}>
                     <ul className="category list">
-                    {categories.map((category, i) => {
+                    {top_categories.map((category, i) => {
                         const output = <CategoryItem key={"category-" + category.txid} item={category} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />;
 
                         if (((i+1) % 3) == 0) {
@@ -209,6 +222,7 @@ class List extends React.Component {
                             return output;
                         }
                     })}
+                    {(categories.length > top_categories.length) && <li className="show-more"><a onClick={this.handleShowAllCategories.bind(this)}>Show all {categories.length} categories</a></li>}
                     <div className="clearfix"></div>
                     </ul>
                     <div className="clearfix"></div>
