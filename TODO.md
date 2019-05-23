@@ -1,9 +1,3 @@
-## utils
-
-
-## Upload On-Chain Version
-- verify forking works
-
 ## Launch
 - verify all browsers chrome, safari, firefox, bottle
 - 🚀 Launch in Atlantis
@@ -19,4 +13,5 @@
 * reindex bitomation on new server then swap it out
 * bottle native content isn't working
 * keep adding content
-* bico.media forking isn't working
+* bg isn't uploaded to blockchain
+* bug when listing forks....if you fork from home directory it goes from there...

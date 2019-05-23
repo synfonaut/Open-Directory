@@ -1069,12 +1069,11 @@ function processOpenDirectoryTransaction(result) {
     } else if (item_type == "vote") {
         obj.action_id = args.shift();
     } else if (item_type == "fork") {
-        console.log("FORK", result);
-        if (args.length == 1) {
+        if (args.length == 2) {
             obj.fork_url = args.shift();
-        } else if (args.length == 2) {
+        } else if (args.length == 3) {
+            obj.fork_url = args.shift();
             obj.action_id = args.shift();
-            obj.fork_url = args.shift();
         } else {
             console.log("unknown number of args", result);
             return null;
