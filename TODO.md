@@ -1,16 +1,9 @@
 ## Beta
-- create good images for tweet storm (tipchain)
-- Upload twitter card image with new logo and verify
-
-- Polish content
-- create good examples (collab with bsvdevs, onchain games, onchain art, onchain utilities)
-- followup with BSV/DEVS
 * BSV Games
 * BSV Art
 * BSV Apps
 * BSV Devs
 https://github.com/bico-media/awesome
-- Check on slow network
 
 ## Upload On-Chain Version
 - put all scripts on-chain so it always stays there
@@ -25,6 +18,7 @@ https://github.com/bico-media/awesome
 ## Launch
 - verify all browsers chrome, safari, firefox, bottle
 - 🚀 Launch in Atlantis
+- create good images for tweet storm (tipchain)
 - 🚀 Launch on Twitter
 
 ## FEEDBACK
