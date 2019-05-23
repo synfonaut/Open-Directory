@@ -6,7 +6,7 @@
 https://github.com/bico-media/awesome
 
 ## Upload On-Chain Version
-- put all scripts on-chain so it always stays there
+- put all scripts and CSS on-chain
 - manually upload render copy to blockchain
 - grab txid, save that to dir.sv—then try forking for real
 
