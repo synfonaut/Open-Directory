@@ -1,9 +1,29 @@
 ## Alpha
 
-* fix length of create directory form on home page
+* remind people this is permanently on the blockchain when creating links, categories and forking
+* change fork to fork with a new bitcoin url
+* faq css overflow bug
+* remove $synfonaut
+* To more they pay spelling error
+* what is subcategory limit? can you view all?
+* make h1 smaller on mobile
+* upgrade bitomation server
+
+* in readme write rough plans for v2
+
 * only read updates when not using http:// or https://
-* expandable forms with good call to actions
 * ensure forking works dir.sv -> bico.media
+ - after forking, which address do you get?
+* does forking in browser work?
+* does forking in bottle work?
+
+* check titles
+* put all scripts on-chain so it always stays there
+* reference template_txid from dir.sv
+
+* organize code and do a once over
+
+
 
 * dir.sv working in all major browsers: chrome, safari, firefox, bottle
 - create good images for tweet storm (tipchain)
@@ -39,12 +59,9 @@ https://github.com/bico-media/awesome
 ## FEEDBACK
 * bitdb bug: event stream is getting messages it shouldn't
 * bitdb suggestion: nice to just say "give me OP_RETURN string array" in addition to s1,s2,s3,s4,s5—useful for variable length protocols like MAP
-* on-chain planaria... end up doing similar "state processing" code to bring "objects" up to date, eventually will need full Planaria, but for lighter apps, planarium.js?
-* protocol processor that's a planaria state machine transformer, but embedded in a bitcoin tx, so everything is still onchain (schema)
 * enable regex in jq for more advanced filtering
 
 ## Open Directory v2
-
 * Planaria to reduce load on client
 * Planaria to remove entry and satoshi maxDepth restriction on categories and search
 * Planaria to crawl Bitcoin Stickers from websites for including C:// and other protocols in tipchain
@@ -68,3 +85,5 @@ https://github.com/bico-media/awesome
 * AIP to sign data by author
 * Categories "pull up" and aggregate their sub-categories
 * Attach comments to votes?
+* on-chain planaria... end up doing similar "state processing" code to bring "objects" up to date, eventually will need full Planaria, but for lighter apps, planarium.js?
+* protocol processor that's a planaria state machine transformer, but embedded in a bitcoin tx, so everything is still onchain (schema)
