@@ -67,10 +67,10 @@ class SearchResults extends React.Component {
 
         const search = this.props.search.toLowerCase();
         const results = this.props.items.filter(item => {
-            if (item.name.toLowerCase().indexOf(search) !== -1) { return true }
-            if (item.description.toLowerCase().indexOf(search) !== -1) { return true }
-            if (item.txid.toLowerCase().indexOf(search) !== -1) { return true }
-            if (item.address.toLowerCase().indexOf(search) !== -1) { return true }
+            if (item.name && item.name.toLowerCase().indexOf(search) !== -1) { return true }
+            if (item.description && item.description.toLowerCase().indexOf(search) !== -1) { return true }
+            if (item.txid && item.txid.toLowerCase().indexOf(search) !== -1) { return true }
+            if (item.address && item.address.toLowerCase().indexOf(search) !== -1) { return true }
             if (item.link && item.link.toLowerCase().indexOf(search) !== -1) { return true }
 
             for (const tipchain of item.tipchain) {

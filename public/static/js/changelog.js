@@ -1,3 +1,4 @@
+var TOTAL_SATOSHIS = 0;
 
 class ChangeLog extends React.Component {
 
@@ -155,6 +156,10 @@ class ChangeLogItem extends React.Component {
 
         var amount = satoshisToDollars(this.props.item.satoshis, BSV_PRICE);
         const sats = (this.props.item.satoshis > 0 ? this.props.item.satoshis + " sats" : "");
+
+        if (this.props.item.satoshis > 0) {
+            TOTAL_SATOSHIS += this.props.item.satoshis;
+        }
 
         var action;
         if (this.props.item.type == "admin") {

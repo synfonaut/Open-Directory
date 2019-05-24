@@ -72,6 +72,16 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * bg isn't uploaded to blockchain
 * bug when listing forks....if you fork from home directory it goes from there...
 * when you command click a category for a new link, it expands the tipchain
+* fork list sometimes shows up on wrong page when network is loading
+* make directories 3 columns wide on MBP
+* add another row
+* create an arrow in center that click to expand
+* network loading when it shouldn't?
+* downvote with a cost?
+* easy way to host directory with a domain name
+* should be able to detach monetary incentives as well, so you're not earning anything
+* search is broken
+
 
 ## About
 
