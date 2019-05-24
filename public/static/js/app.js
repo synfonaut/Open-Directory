@@ -484,8 +484,10 @@ class OpenDirectoryApp extends React.Component {
                 const media_txids = txpool.filter(r => {
                     return r.type == "entry";
                 }).map(r => {
-                    const url = r.change.link;
-                    return parseTransactionAddressFromURL(url);
+                    if (r.change && r.change.link) {
+                        const url = r.change.link;
+                        return parseTransactionAddressFromURL(url);
+                    }
                 }).filter(r => { return r });
 
                 fetch_bmedia_from_network(media_txids).then(media => {

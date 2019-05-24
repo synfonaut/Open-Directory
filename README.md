@@ -71,6 +71,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * bottle native content isn't working
 * bg isn't uploaded to blockchain
 * bug when listing forks....if you fork from home directory it goes from there...
+* when you command click a category for a new link, it expands the tipchain
 
 ## About
 
