@@ -810,6 +810,7 @@ function updateCategoryMoneyCounts(items) {
     return items.map(item => {
         if (item.type == "category") {
             item.satoshis = countMoneyUnderObject(item, items);
+            item.votes = countVotesUnderObject(item, items);
         }
         return item;
     });
@@ -823,6 +824,20 @@ function countMoneyUnderObject(obj, items) {
 
             if (item.type == "category") {
                 amount += countMoneyUnderObject(item, items);
+            }
+        }
+    }
+    return amount;
+}
+
+function countVotesUnderObject(obj, items) {
+    var amount = obj.votes;
+    for (const item of items) {
+        if (!item.deleted && item.category == obj.txid) {
+            amount += item.votes;
+
+            if (item.type == "category") {
+                amount += countVotesUnderObject(item, items);
             }
         }
     }

@@ -81,6 +81,15 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * easy way to host directory with a domain name
 * should be able to detach monetary incentives as well, so you're not earning anything
 * search is broken
+* need way to clearly show recent changes so community can "vote" on them
+* would be nice to have a recent feed that isn't changelog....like recent entry submissions, categories or votes
+* credit font awesome in about
+* easily change default tip amounts when forking
+* show "3 votes" under money or add divider to make it more clear
+* convert bitstagram link to bit link?
+* need recovery zone...stuff that's recently been deleted that can easily be restored with 1-click
+* when showing a deleted category ...should show it's actually deleted
+
 
 
 ## About
