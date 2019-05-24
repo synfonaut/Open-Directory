@@ -1,6 +1,11 @@
 class EntryItem extends Item {
 
     get_link() {
+
+        if (this.props.item.link.indexOf("http") == 0) {
+            return this.props.item.link;
+        }
+
         if (isBottle()) {
             return this.props.item.link;
         } else {
