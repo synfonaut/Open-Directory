@@ -37,7 +37,7 @@ function toBase64(str) {
     return btoa(str);
 }
 
-function get_bmedia_bitdb_query(txids, cursor=0, limit=500) {
+function get_bmedia_bitdb_query(txids, cursor=0, limit=1000) {
     const query = {
         "v": 3,
         "q": {
@@ -78,7 +78,7 @@ function get_bmedia_bitdb_query(txids, cursor=0, limit=500) {
     return query;
 }
 
-function get_bitdb_query(category_id=null, cursor=0, limit=500, maxDepth=5) {
+function get_bitdb_query(category_id=null, cursor=0, limit=1000, maxDepth=5) {
 
     if (category_id == null) {
         category_id = get_root_category_txid();
@@ -295,11 +295,12 @@ function get_bitdb_query(category_id=null, cursor=0, limit=500, maxDepth=5) {
 }
 
 
-function fetch_from_network(category_id=null, cursor=0, limit=500, results=[]) {
+function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[]) {
 
     if (category_id == null) {
         category_id = get_root_category_txid();
     }
+
 
     const query = get_bitdb_query(category_id, cursor, limit);
     const encoded_query = toBase64(JSON.stringify(query));
@@ -354,6 +355,13 @@ function fetch_from_network(category_id=null, cursor=0, limit=500, results=[]) {
 
     return new Promise((resolve, reject) => {
 
+        // Hack to keep the site up...homepage is bringing us down
+        if (category_id == null) {
+            resolve(CACHED_HOMEPAGE);
+            return;
+        }
+
+
         console.log("Making HTTP request to server " + cursor + "," + limit);
         if (isNode) {
             axios = require("axios");
@@ -379,12 +387,11 @@ function fetch_from_network(category_id=null, cursor=0, limit=500, results=[]) {
     });
 }
 
-function fetch_bmedia_from_network(txids, cursor=0, limit=500, results=[]) {
+function fetch_bmedia_from_network(txids, cursor=0, limit=1000, results=[]) {
 
     const query = get_bmedia_bitdb_query(txids, cursor, limit);
     var b64 = btoa(JSON.stringify(query));
     const url = "https://genesis.bitdb.network/q/1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN/" + b64;
-
     const header = { headers: { key: "1A4xFjNatCgAK5URARbVwoxo1E3MCMETb6" } };
 
     function handleResponse(resolve, reject, r) {
@@ -424,7 +431,7 @@ function fetch_bmedia_from_network(txids, cursor=0, limit=500, results=[]) {
 
     return new Promise((resolve, reject) => {
 
-        console.log("Making HTTP request to server " + cursor + "," + limit);
+        console.log("Making genesis HTTP request to server " + cursor + "," + limit);
         fetch(url, header).then(function(r) {
             if (r.status !== 200) {
                 reject("Error while retrieving response from server " + r.status);

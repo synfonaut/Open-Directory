@@ -18,6 +18,8 @@ gulp.task("default", function () {
         ,
 
         gulp.src([
+            "public/static/js/cached_homepage.js",
+
             "public/static/js/databutton-0.0.4.js", // customized databutton
 
             "public/static/js/settings.js",

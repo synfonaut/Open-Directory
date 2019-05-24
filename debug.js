@@ -441,12 +441,13 @@ var query = {
 };
 var s = JSON.stringify(query);
 var b64 = Buffer.from(s).toString('base64');
-var url = "https://bitgraph.network/q/" + b64;
+var url = "https://bitomation.com/query/" + b64;
 
 var header = {
-  headers: { key: "15YNrU8QovP1F224VQgru9FcpvhDZNYK3i" }
+  headers: { key: "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z" }
 };
 
 axios.get(url, header).then(function(r) {
   console.log("Fetched: ", r.data)
+  console.log("Fetched: ", JSON.stringify(r.data))
 })
