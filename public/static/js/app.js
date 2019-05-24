@@ -47,7 +47,7 @@ class OpenDirectoryApp extends React.Component {
         this.performAdminActionsFetch();
         this.detectTemplateIDFromAddress();
 
-        this.addSuccessMessage("Open Directory just launched and is under a lot of stress, so may be a bit slow. Everything should still load though, give it a few seconds. If you get an error, please refresh.", null, 10000);
+        this.addSuccessMessage("Open Directory just launched and is under a lot of stress, so may be a bit slow. Everything should still load though, give it up to 10 seconds. If you get an error, please refresh.", null, 10000);
 
         updateBitcoinSVPrice();
 
