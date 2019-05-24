@@ -89,6 +89,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * convert bitstagram link to bit link?
 * need recovery zone...stuff that's recently been deleted that can easily be restored with 1-click
 * when showing a deleted category ...should show it's actually deleted
+* easily see how much a category owner has earned...should be able to see how much everybody in every tipchain has earned
 
 
 
