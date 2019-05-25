@@ -8,6 +8,8 @@ const cache_file = __dirname + "/../public/static/js/cached_homepage.js";
 const num_to_fetch = 3000;
 const num_results_required = 900;
 
+const start_time = (new Date()).getTime();
+
 process.fetch_from_network(null, 0, num_to_fetch, [], false).then(rows => {
 
     if (rows.lenth == 0) {
@@ -27,7 +29,10 @@ process.fetch_from_network(null, 0, num_to_fetch, [], false).then(rows => {
                 throw err;
             }
 
-            console.log("successfully updated cache file at ", new Date(), "with", rows.length, "rows");
+            const end_time = (new Date()).getTime();
+            const elapsed_time = (end_time - start_time) / 1000;
+
+            console.log("successfully updated cache file at ", new Date(), "with", rows.length, "rows took", elapsed_time, "seconds");
         });
     }
 }).catch(e => {
