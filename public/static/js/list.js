@@ -5,7 +5,7 @@ class BaseList extends React.Component {
         this.state = {
             "sort": "hot",
             "limit": 10,
-            "category_limit": 10,
+            "category_limit": 15,
             "cursor": 0,
             "action": null,
             "isExpanded": false,
@@ -417,7 +417,7 @@ class HomepageList extends BaseList {
             <div className="num_per_page">
             <span className="label">per page</span>
             <ul>
-            <li><a onClick={() => { this.handleChangeCategoryLimit(10) }} className={this.state.category_limit == 10 ? "active" : ""}>10</a></li>
+            <li><a onClick={() => { this.handleChangeCategoryLimit(15) }} className={this.state.category_limit == 1 ? "active" : ""}>15</a></li>
             <li><a onClick={() => { this.handleChangeCategoryLimit(25) }} className={this.state.category_limit == 25 ? "active" : ""}>25</a></li>
             <li><a onClick={() => { this.handleChangeCategoryLimit(50) }} className={this.state.category_limit == 50 ? "active" : ""}>50</a></li>
             </ul>
