@@ -47,7 +47,7 @@ class OpenDirectoryApp extends React.Component {
         this.performAdminActionsFetch();
         this.detectTemplateIDFromAddress();
 
-        this.addSuccessMessage("Open Directory just launched and is under a lot of stress, so may be a bit slow. Everything should still load though, give it up to 10 seconds. If you get an error, please refresh.", null, 10000);
+        this.addSuccessMessage("Open Directory just launched and is having some scaling issues! The main homepage is the slowest, so for right now we've cached the data. No matter how many times you refresh, the home page will not change until we update the cache. Every sub category should work as expected though and you should see your updates. Will get this fixed ASAP!", null, 1000 * 60);
 
         updateBitcoinSVPrice();
 
