@@ -49,14 +49,6 @@ function use_local_settings(local_settings) {
     }
 }
 
-function get_root_category_txid() {
-    if (SETTINGS.category) {
-        return SETTINGS.category;
-    }
-
-    return null;
-}
-
 var BSV_PRICE = 53.00;
 
 if (typeof window == "object") {

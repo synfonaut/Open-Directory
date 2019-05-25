@@ -3,6 +3,7 @@ var isNode = (typeof window == "undefined");
 if (isNode) {
     axios = require("axios");
     SETTINGS = require("./settings.js");
+    CACHED_HOMEPAGE = [];
 }
 
 const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
@@ -28,6 +29,14 @@ const OPENDIR_ACTIONS = [
     "undo",
     "fork.soft",
 ];
+
+function get_root_category_txid() {
+    if (SETTINGS.category) {
+        return SETTINGS.category;
+    }
+
+    return null;
+}
 
 function toBase64(str) {
     if (isNode) {
@@ -295,7 +304,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=1000, maxDepth=5) {
 }
 
 
-function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[]) {
+function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], cache=true) {
 
     if (category_id == null) {
         category_id = get_root_category_txid();
@@ -333,7 +342,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[]) 
 
         if (rows.length >= limit) {
             console.log("Seems like there's still more... polling for more");
-            fetch_from_network(category_id, cursor, limit, results).then(resolve).catch(reject);
+            fetch_from_network(category_id, cursor, limit, results, cache).then(resolve).catch(reject);
         } else {
 
             const sorted = results.sort(function(a, b) {
@@ -355,10 +364,12 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[]) 
 
     return new Promise((resolve, reject) => {
 
-        // Hack to keep the site up...homepage is bringing us down
-        if (category_id == null) {
-            resolve(CACHED_HOMEPAGE);
-            return;
+        if (cache) {
+            // Hack to keep the site up...homepage is bringing us down
+            if (category_id == null) {
+                resolve(CACHED_HOMEPAGE);
+                return;
+            }
         }
 
 

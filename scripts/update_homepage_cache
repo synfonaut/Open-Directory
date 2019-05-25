@@ -1,0 +1,36 @@
+#!/usr/bin/env node
+
+const process = require("../public/static/js/process.js");
+const fs = require("fs");
+
+
+const cache_file = __dirname + "/../public/static/js/cached_homepage.js";
+const num_to_fetch = 3000;
+const num_results_required = 900;
+
+process.fetch_from_network(null, 0, num_to_fetch, [], false).then(rows => {
+
+    if (rows.lenth == 0) {
+        throw "unable to fetch valid data from network";
+    } else if (rows.length < num_results_required) {
+        throw "unable to fetch enough valid data from network";
+    } else {
+        console.log("successfully fetched from the network");
+
+        if (!fs.existsSync(cache_file)) {
+            throw "expected cache file to already exist...what's going on?";
+        }
+
+        const output = "const CACHED_HOMEPAGE = " + JSON.stringify(rows) + ";";
+        fs.writeFile(cache_file, output, function(err) {
+            if (err) {
+                throw err;
+            }
+
+            console.log("successfully updated cache file at ", new Date(), "with", rows.length, "rows");
+        });
+    }
+}).catch(e => {
+    console.log("error", e);
+});
+

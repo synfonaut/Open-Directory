@@ -3,10 +3,11 @@ const process = require("../public/static/js/process.js");
 var category_id;
 category_id = null;
 //category_id = "bb8ed614c5c851a8013b044e270d9ffc019f5a147d073fa802b02960da129c01";
-process.fetch_from_network(category_id).then(rows => {
+process.fetch_from_network(category_id, 0, 3000, [], false).then(rows => {
     console.log("ROWS", rows);
     console.log("found " + rows.length + " total rows");
 
+/*
     var idx = 1;
     for (const row of rows) {
         console.log("#" + idx++);
@@ -14,7 +15,6 @@ process.fetch_from_network(category_id).then(rows => {
         console.log("=".repeat(80));
     }
 
-    /*
     console.log("\n");
 
     const results = helpers.processResults(rows);

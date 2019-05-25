@@ -97,6 +97,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * what about a memcache for mongodb? why can't we say cache this query for 5 minutes?
 * on homepage let users sort categories by hot/new/money as well
 * bitpaste, literatus, and http://bico.media  included?
+* show price of BSV somewhere
 
 
 
