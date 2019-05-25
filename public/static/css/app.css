@@ -1751,6 +1751,10 @@ form {
         font-size: 60px;
     }
 
+    .subcategories ul.category.list {
+        margin-left: 60px;
+    }
+
     .subcategories ul.list li.category {
         width: 50%;
     }

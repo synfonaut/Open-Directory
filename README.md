@@ -95,13 +95,48 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * investigate how you would do *merge*
 * what about a memcache for mongodb? why can't we say cache this query for 5 minutes?
 * on homepage let users sort categories by hot/new/money as well
-* bitpaste, literatus, and http://bico.media  included?
 * show price of BSV somewhere
 * show embedded content?
 * need guiding principles on incentives. maximize degrees of freedom? let people make the decision, just make it easy for them to
 * when you upvote a category what if the people who were hot in that category got paid?
+* need NSFW tag/filter
+
+* need isomorphic javascript..or at least ability to render titles for crawlers
+* forks should link to bico.media if in chrome
+* should users be able to move entries to a more appropriate category? ...that might incentivize bad behavior...
+
+* dynamic: people are setting their own boundaries. "royalty free" X restrictions
+* dynamic: creating content and "seeding" it with upvotes to get it going viral
+
+* concept of time out box. see who was recently put in timeout,e asily bring them back out
+* search page should have link to category its in as well
+* users need to know the conteniousness of a change. a hot item that gets changed is contenous.
+* add new sort metric for categories... submissions?
+
+* should be able to create meta directory — linking to other interesting directories
+
+* image/video embeds
+* Bitcoin Sticker Protocol that could be used in markdown or twitter, so you get credit for content on other platforms where you can't inject an HTTP or HTML sticker
 
 
+## 0.0.2
+* move search to home page, fade out when typing
+* hot entries on home page
+* statistics, with a graph
+
+* entry page
+
+
+* links open in new tab by default? optimize for mobile
+* command clicking directories don't really work
+
+
+## 0.0.3
+* bitpaste, literatus, and http://bico.media and dir.sv included?
+* convert bitstagram link to bit link?
+* custom planaria for performance
+* comments
+* bitcoin sticker crawling
 
 ## About
 
