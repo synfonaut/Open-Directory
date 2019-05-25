@@ -98,6 +98,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * on homepage let users sort categories by hot/new/money as well
 * bitpaste, literatus, and http://bico.media  included?
 * show price of BSV somewhere
+* show embedded content?
 
 
 

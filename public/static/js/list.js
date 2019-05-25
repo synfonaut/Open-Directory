@@ -5,7 +5,7 @@ class List extends React.Component {
         this.state = {
             "sort": "hot",
             "limit": 10,
-            "category_limit": 6,
+            "category_limit": 12,
             "cursor": 0,
             "action": null,
             "isExpanded": false,
