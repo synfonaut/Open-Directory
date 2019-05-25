@@ -248,7 +248,16 @@ class OpenDirectoryApp extends React.Component {
 
             if (!this.state.isError) {
                 const filtered_items = this.filterOutDetaches(this.state.items);
-                body = <div className="list-wrapper"><List items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} /></div>;
+                var list, list_class_name;
+                if (this.state.category.txid) {
+                    list = <SubcategoryList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
+                    list_class_name = "subcategories";
+                } else {
+                    list = <HomepageList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
+                    list_class_name = "homepage";
+                }
+
+                body = <div className={list_class_name + " list-wrapper"}>{list}</div>;
             }
 
             loading = <div className="loading">

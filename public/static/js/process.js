@@ -548,7 +548,7 @@ function processResults(rows, txpool) {
     for (const result of txpool.filter(r => { return r.type == "fork" })) { processing = process(result) }
 
     // update final counts
-    const process_pipeline = [updateCategoryEntryCounts, updateCategoryMoneyCounts, updateEntryHottness];
+    const process_pipeline = [updateCategoryEntryCounts, updateCategoryMoneyCounts, updateHottness];
     for (const fn of process_pipeline) {
         processing = fn(processing);
     }
@@ -556,15 +556,17 @@ function processResults(rows, txpool) {
     return processing;
 }
 
-function updateEntryHottness(results) {
+function updateHottness(results) {
     return results.map(result => {
-        result.hottness = calculateEntryHottness(result);
+        if (result.type == "entry" || result.type == "category") {
+            result.hottness = calculateHottness(result);
+        }
         return result;
     });
 }
 
 // Hacker News score algorithm, thanks https://medium.com/hacking-and-gonzo/how-hacker-news-ranking-algorithm-works-1d9b0cf2c08d
-function calculateEntryHottness(result, gravity=1.8) {
+function calculateHottness(result, gravity=1.8) {
     const val = (result.satoshis + result.votes) * 1.0;
     const now = (new Date()).getTime() / 1000;
     const time_since = (!result.time ? 0 : (now - result.time));

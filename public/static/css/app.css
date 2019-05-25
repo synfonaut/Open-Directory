@@ -115,7 +115,7 @@ ul.list {
     list-style: none;
 }
 
-ul.list.category li {
+.subcategories ul.list.category li {
     float: left;
     width: 100%;
 }
@@ -186,8 +186,28 @@ form {
     font-size: 13px;
     float: left;
     text-align: center;
-    padding: 3px 1px;
+    padding: 1px 1px;
+    margin-right: 6px;
 }
+
+.upvote .number {
+    display: block;
+}
+
+.upvote .satoshis {
+    border-bottom: 1px solid rgba(200, 200, 200, 0.333);
+    margin-left: 5px;
+    margin-right: 5px;
+    padding-bottom: 2px;
+}
+
+.upvote .votes {
+    padding-top: 2px;
+    font-size: 10px;
+    color: #7b7b7b;
+    margin-bottom: 20px;
+}
+
 
 .category-count {
     font-size: 14px;
@@ -331,11 +351,12 @@ form {
     padding: 0;
 }
 
-.homepage > .category > .category {
-    padding: 10px;
+.homepage .sort {
+    margin-bottom: 15px;
 }
 
-.homepage > .category > .category h3 {
+.homepage .category h3 {
+    margin-bottom: 0;
 }
 
 .category .description p:after {
@@ -389,7 +410,6 @@ form {
 
 .subcategories .category .upvoteContainer .upvote .number {
     float: left;
-    padding-left: 2px;
     padding-right: 6px;
 }
 
@@ -420,6 +440,12 @@ form {
     padding: 1px 5px;
 }
 
+.controls i {
+    color: #bbb;
+    font-size: 12px;
+    margin-right: 1px;
+}
+
 .sort .label {
     float: left;
     font-weight: 500;
@@ -442,7 +468,7 @@ form {
     float: left;
     margin: 0;
     padding: 0;
-    margin-left: 14px;
+    margin-left: 17px;
 }
 
 .sort ul li a {
@@ -450,6 +476,40 @@ form {
 }
 
 .sort ul li a.active {
+    text-decoration: underline;
+    font-weight: 400;
+}
+
+.num_per_page .label {
+    float: left;
+    font-weight: 500;
+    color: #777;
+}
+
+.num_per_page {
+    font-size: 14px;
+    margin: 11px 0 16px 0;
+}
+
+.num_per_page ul {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+.num_per_page ul li {
+    list-style: none;
+    float: left;
+    margin: 0;
+    padding: 0;
+    margin-left: 17px;
+}
+
+.num_per_page ul li a {
+    color: #888;
+}
+
+.num_per_page ul li a.active {
     text-decoration: underline;
     font-weight: 400;
 }
@@ -492,7 +552,7 @@ form {
     color: #555;
 }
 
-.pages {
+.subcategories .pages {
     margin-top: 30px;
     margin-left: 60px;
 }
@@ -503,6 +563,18 @@ form {
     padding: 3px 7px;
     display: inline-block;
     font-size: 13px;
+}
+
+.pages a.disabled {
+    border-bottom: 2px solid #fff;
+    color: #ddd;
+    cursor: default;
+}
+
+.pages a.disabled:hover {
+    border-bottom: 2px solid #fff;
+    color: #ddd;
+    cursor: default;
 }
 
 .empty-entry-listing {
@@ -1674,16 +1746,12 @@ form {
         font-size: 46px;
     }
 
-    .category {
-        margin-bottom: 15px;
-    }
-
     .intro h1 {
         font-weight: 300;
         font-size: 60px;
     }
 
-    ul.list li.category {
+    .subcategories ul.list li.category {
         width: 50%;
     }
 
@@ -1766,14 +1834,30 @@ form {
     }
 
 
+    .homepage .controls {
+        margin-top: 10px;
+    }
 
+    .homepage .sort {
+        float: left;
+    }
 
+    .homepage .num_per_page {
+        float: left;
+        margin-left: 45px;
+        margin-bottom: 0;
+    }
+
+    .homepage .controls {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
 }
 
 /* Larger than tablet screen */
 @media (min-width: 85.0rem) {
 
-    ul.list li.category {
+    .subcategories ul.list li.category {
         width: 33%;
     }
 

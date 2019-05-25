@@ -7,7 +7,7 @@ class CategoryItem extends Item {
             <li id={this.props.item.txid} className="category">
 
                 <div className="upvoteContainer">
-                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}><i className="fas fa-chevron-up"></i>&nbsp;</a> <span className="number" title={this.props.item.satoshis + " sats"}>{price}</span><br /><span className="number votes">{this.props.item.votes}</span></div>
+                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}><i className="fas fa-chevron-up"></i>&nbsp;</a> <span className="number satoshis" title={this.props.item.satoshis + " sats"}>{price}</span><span className="number votes" title={this.props.item.hottness + " hottness"}>{pluralize(this.props.item.votes, "vote", "votes")}</span></div>
                     <div className="category">
                         <h3>
                             <a href={"#" + this.props.item.txid} onClick={this.handleUpvote.bind(this)}>{this.props.item.name}</a>

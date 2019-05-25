@@ -25,7 +25,7 @@ class EntryItem extends Item {
 
         return <li id={this.props.item.txid} className="entry">
                 <div className="upvoteContainer">
-                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}><i className="fas fa-chevron-up"></i></a> <span className="number" title={this.props.item.satoshis + " sats"}>{price}</span><br /><span className="number" title={this.props.item.hottness.toFixed(2) + " hot score"}>{this.props.item.votes}</span></div>
+                    <div className="upvote"><a onClick={this.handleUpvote.bind(this)}><i className="fas fa-chevron-up"></i></a> <span className="number satoshis" title={this.props.item.satoshis + " sats"}>{price}</span><span className="number votes" title={this.props.item.hottness.toFixed(2) + " hot score"}>{pluralize(this.props.item.votes, "vote", "votes")}</span></div>
                     <div className="entry">
                         <h5><a href={this.get_link()}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>}  <span className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</span> {actions}</h5>
 
