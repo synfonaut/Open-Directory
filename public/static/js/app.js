@@ -47,8 +47,6 @@ class OpenDirectoryApp extends React.Component {
         this.performAdminActionsFetch();
         this.detectTemplateIDFromAddress();
 
-        this.addSuccessMessage("Open Directory just launched and is having some growing pains! To reduce load on the server, we've cached the homepage—meaning changes on the homepage will appear slower than the rest of the site. All sub categories should work as expected and you can submit links and upvote! We're working on a better fix ASAP!", null, 1000 * 25);
-
         updateBitcoinSVPrice();
 
         window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);

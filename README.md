@@ -99,6 +99,8 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * bitpaste, literatus, and http://bico.media  included?
 * show price of BSV somewhere
 * show embedded content?
+* need guiding principles on incentives. maximize degrees of freedom? let people make the decision, just make it easy for them to
+* when you upvote a category what if the people who were hot in that category got paid?
 
 
 
