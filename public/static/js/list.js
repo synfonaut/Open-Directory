@@ -34,6 +34,13 @@ class BaseList extends React.Component {
         }
     }
 
+    scrollToTop() {
+        const top = document.getElementById("top");
+        if (top) {
+            top.scrollIntoView(true);
+        }
+    }
+
     findCategoryByTXID(txid) {
         return this.props.items.filter(i => { return i.type == "category" && i.txid == txid }).shift();
     }
@@ -56,10 +63,7 @@ class BaseList extends React.Component {
         const idx = (page - 1);
         const cursor = idx * this.state.limit;
         this.setState({"cursor": cursor});
-        const top = document.getElementById("top");
-        if (top) {
-            top.scrollIntoView(true);
-        }
+        this.scrollToTop();
     }
 
     handleSuccessfulTip() {
@@ -311,10 +315,7 @@ class HomepageList extends BaseList {
         const idx = (page - 1);
         const cursor = idx * this.state.category_limit;
         this.setState({"cursor": cursor});
-        const top = document.getElementById("top");
-        if (top) {
-            top.scrollIntoView(true);
-        }
+        this.scrollToTop();
     }
 
     setCursorWithBoundsCheck(cursor) {
@@ -332,10 +333,12 @@ class HomepageList extends BaseList {
 
     handleNextPageChange() {
         this.setCursorWithBoundsCheck(this.state.cursor + this.state.category_limit);
+        this.scrollToTop();
     }
 
     handlePreviousPageChange() {
         this.setCursorWithBoundsCheck(this.state.cursor - this.state.category_limit);
+        this.scrollToTop();
     }
 
     handleChangeCategoryLimit(num) {
