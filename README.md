@@ -44,6 +44,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * Custom currency support
 * Pretty in-browser Bitcom links like bit://<OPENDIR_PROTOCOL>/<txid>
 * Pretty in-app Bitcom links like bit://<B_MEDIA_PROTOCOL>/<txid> converted to <protocol name>: <txid>
+* Add comments (Metalens?)
 * Make protocol more generic by using Bitcom schema protocol
 * Different algorithms for tipchain, specifying default splits
 * Comment pages
@@ -83,6 +84,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * search is broken
 * need way to clearly show recent changes so community can "vote" on them
 * would be nice to have a recent feed that isn't changelog....like recent entry submissions, categories or votes
+* would be nice to see recent activity ...what categories were just created ... what entries were just created ...what was just upvoted?
 * credit font awesome in about
 * easily change default tip amounts when forking
 * show "3 votes" under money or add divider to make it more clear
@@ -91,6 +93,10 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * when showing a deleted category ...should show it's actually deleted
 * easily see how much a category owner has earned...should be able to see how much everybody in every tipchain has earned
 * add name to 1dir protocol so that it shows up on trends
+* investigate how you would do *merge*
+* what about a memcache for mongodb? why can't we say cache this query for 5 minutes?
+* on homepage let users sort categories by hot/new/money as well
+* bitpaste, literatus, and http://bico.media  included?
 
 
 
