@@ -37,7 +37,7 @@ function toBase64(str) {
     return btoa(str);
 }
 
-function get_bmedia_bitdb_query(txids, cursor=0, limit=1000) {
+function get_bmedia_bitdb_query(txids, cursor=0, limit=100) {
     const query = {
         "v": 3,
         "q": {
@@ -387,7 +387,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[]) 
     });
 }
 
-function fetch_bmedia_from_network(txids, cursor=0, limit=1000, results=[]) {
+function fetch_bmedia_from_network(txids, cursor=0, limit=20, results=[]) {
 
     const query = get_bmedia_bitdb_query(txids, cursor, limit);
     var b64 = btoa(JSON.stringify(query));

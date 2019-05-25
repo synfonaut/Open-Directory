@@ -482,45 +482,26 @@ class OpenDirectoryApp extends React.Component {
 
                 const txpool = processOpenDirectoryTransactions(rows);
 
-                // Hacky..
-                // At the 11th hour I found a bug where my bitomation.com genesis BitDB is missing some media transactions
-                // Rather than defer launch, this hack grabs the media txds from another genesis server...this should only matter for the first few days until it can be officially reindexed and fixed
+                const results = processResults(rows, txpool);
+                const success = this.checkForUpdatedActiveCategory(results);
 
-                const media_txids = txpool.filter(r => {
-                    return r.type == "entry";
-                }).map(r => {
-                    if (r.change && r.change.link) {
-                        const url = r.change.link;
-                        return parseTransactionAddressFromURL(url);
-                    }
-                }).filter(r => { return r });
+                const raw = this.state.raw;
+                raw[category_id] = rows;
 
-                fetch_bmedia_from_network(media_txids).then(media => {
+                const cache = this.state.cache;
+                cache[category_id] = results;
 
-                    const processed_media = processOpenDirectoryTransactions(media);
-                    const merged_txs = txpool.concat(processed_media);
-
-                    const results = processResults(rows, merged_txs);
-                    const success = this.checkForUpdatedActiveCategory(results);
-
-                    const raw = this.state.raw;
-                    raw[category_id] = rows;
-
-                    const cache = this.state.cache;
-                    cache[category_id] = results;
-
-                    this.setState({
-                        "networkActive": false,
-                        "isLoading": false,
-                        "isError": !success,
-                        "txpool": merged_txs,
-                        "items": results,
-                        "raw": raw,
-                        "cache": cache,
-                    });
-
-                    this.setupNetworkSocket();
+                this.setState({
+                    "networkActive": false,
+                    "isLoading": false,
+                    "isError": !success,
+                    "txpool": txpool,
+                    "items": results,
+                    "raw": raw,
+                    "cache": cache,
                 });
+
+                this.setupNetworkSocket();
 
             }).catch((e) => {
                 console.log("error", e);
