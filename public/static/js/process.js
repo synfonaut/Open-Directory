@@ -323,8 +323,8 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[]) 
             console.log("ROW", row);
         }
 
-        console.log("ROWS", rows.length);
         throw "E";
+        console.log("ROWS", rows.length);
         console.log("ROW JSON", JSON.stringify(rows, null, 4));
         */
 
