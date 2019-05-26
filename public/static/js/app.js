@@ -238,34 +238,59 @@ class OpenDirectoryApp extends React.Component {
 
                 const changelog = this.buildChangeLog(null);
 
+                var category = <a href="/">Open Directory</a>;
+                if (this.state.category.txid) {
+                    category = <a href={"/#" + this.state.category.txid}>{this.state.category.name}</a>;
+                }
+
                 var numCategories = 0;
                 var numEntries = 0;
                 var numSatoshis = 0;
                 var numVotes = 0;
+                var biggestTip = 0;
+                var biggestTipAddress = null;
 
                 for (const log of changelog) {
                     if (log.data.s2.indexOf("entry") == 0) {
                         numEntries += 1;
-                        if (log.satoshis > 0) { numSatoshis += log.satoshis }
+                        if (log.satoshis > 0) {
+                            numSatoshis += log.satoshis
+                            if (log.satoshis > biggestTip) {
+                                biggestTip = log.satoshis;
+                                biggestTipAddress = log.address;
+                            }
+                        }
                     } else if (log.data.s2.indexOf("category") == 0) {
                         numCategories += 1;
-                        if (log.satoshis > 0) { numSatoshis += log.satoshis }
+                        if (log.satoshis > 0) {
+                            numSatoshis += log.satoshis
+                            if (log.satoshis > biggestTip) {
+                                biggestTip = log.satoshis;
+                                biggestTipAddress = log.address;
+                            }
+                        }
                     } else if (log.data.s2 == "vote") {
                         numVotes += 1;
-                        if (log.satoshis > 0) { numSatoshis += log.satoshis }
+                        if (log.satoshis > 0) {
+                            numSatoshis += log.satoshis
+                            if (log.satoshis > biggestTip) {
+                                biggestTip = log.satoshis;
+                                biggestTipAddress = log.address;
+                            }
+                        }
                     }
                 }
 
 
                 body = (<div className="stats">
-                    <h2>Statistics</h2>
+                    <h2>Statistics for {category}</h2>
                     <ul>
                         <li>Actions: {changelog.length}</li>
                         <li>Categories: {numCategories}</li>
                         <li>Links: {numEntries}</li>
                         <li>Upvotes: {numVotes}</li>
-                        <li>Satoshis Spent: {numSatoshis}</li>
-                        <li>USD Spent: {satoshisToDollars(numSatoshis, BSV_PRICE)}</li>
+                        {biggestTip && <li>Biggest tip: {satoshisToDollars(biggestTip)} by {biggestTipAddress}</li>}
+                        <li>{numberFormat(numSatoshis / 100000000)} BSV / {satoshisToDollars(numSatoshis, BSV_PRICE)} spent</li>
                     </ul>
                     </div>);
             }

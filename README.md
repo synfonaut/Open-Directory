@@ -125,6 +125,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * FAQ: What is a bitcoin link?
 * navigation on mobile: https://codepen.io/chuckreynolds/pen/ROaeXv
 * way to move link so you keep address in tact
+* go through klimenos feedback
 
 ## 0.0.2
 * change link color after clicking
@@ -136,6 +137,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * capture emails and send newsletter
 * when searching on home page, no results doesn't have right margin
 * fix navigation on megans phone
+* highest tip on stats
 
 
 
