@@ -253,11 +253,15 @@ class OpenDirectoryApp extends React.Component {
                     list = <SubcategoryList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
                     list_class_name = "subcategories";
                 } else {
-                    list = <HomepageList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
+                    list = <div>
+                        <HomepageEntries items={filtered_items} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} limit={4} />
+                        <div className="clearfix"></div>
+                        <HomepageList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
+                    </div>;
                     list_class_name = "homepage";
                 }
 
-                body = <div className={list_class_name + " list-wrapper"}>{list}</div>;
+                body = <div className={list_class_name + " list-wrapper"}><div id="top"></div>{list}</div>;
             }
 
             loading = <div className="loading">
@@ -282,13 +286,13 @@ class OpenDirectoryApp extends React.Component {
             intro = <div className="intro"><ReactMarkdown source={this.state.intro_markdown} /></div>;
         } else {
             intro = intro = <div className="intro">
-                    <h1><i className="fas fa-sitemap"></i> Open Directory</h1>
+                    <h1><i className="fas fa-sitemap"></i> Open Directory <span className="beta">beta</span></h1>
                     <div className="learn-more">
                         <p>Open Directory is an open-source way for anyone to earn money by organizing links on the Bitcoin (SV) blockchain. Find the best content on the blockchain and earn money but submitting great links! {!this.state.isExpandingLearnMore && <span><a href="/#faq">Learn more</a>...</span>}</p>
                         
                     </div>
                     <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} embed={true} />
-                    <p className="launch-note"><strong>Note:</strong> Due to high traffic new content won't appear instantly on the homepage after you submit—please allow up to a minute and refresh. A better fix is coming soon!</p>
+                    <p className="launch-note"><strong>Note:</strong> Due to high traffic new content won't appear instantly on the homepage after you submit—please allow up to a minute and refresh. A fix is coming soon!</p>
                 </div>;
         }
 
@@ -297,7 +301,10 @@ class OpenDirectoryApp extends React.Component {
                 {this.state.isForking && <Fork onCloseFork={this.handleCloseFork.bind(this)} onErrorHandler={this.addErrorMessage} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} faqMarkdown={this.state.faq_markdown} onFAQChange={this.didChangeFAQHandler.bind(this)} items={this.state.items} onChangeCategory={this.handleChangeCategory.bind(this)} template_txid={this.state.template_txid} />}
                 <nav className="navigation">
                   <section className="container">
-                    <a href="/#" className="navigation-title"><i className="fas fa-sitemap"></i>{this.state.title}</a>
+                    <div className="navigation-title">
+                        <a href="/#"><i className="fas fa-sitemap"></i>{this.state.title}</a>
+                        <span className="beta">beta</span>
+                    </div>
                     <div className={this.state.networkActive ? "spinner white active" : "spinner white"}>
                         <div className="bounce1"></div>
                         <div className="bounce2"></div>

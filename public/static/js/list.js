@@ -4,7 +4,7 @@ class BaseList extends React.Component {
         super(props);
         this.state = {
             "sort": "hot",
-            "limit": 10,
+            "limit": props.limit || 10,
             "category_limit": 15,
             "cursor": 0,
             "action": null,
@@ -104,6 +104,11 @@ class BaseList extends React.Component {
         return this.props.items.filter(i => { return !i.deleted && i.type == "category" && i.category == category_id });
     }
 
+    getUnsortedEntries() {
+        return this.props.items.filter(i => { return !i.deleted && i.type == "entry" });
+    }
+
+
     sortCompare(a, b) {
         if (this.state.sort == "time") {
             if (!a.height) { return -1; }
@@ -159,6 +164,7 @@ class BaseList extends React.Component {
 
         return [];
     }
+
 
 }
 
@@ -241,7 +247,6 @@ class SubcategoryList extends BaseList {
         if (this.props.category.address && slice.length > 0) {
             entryListing = (
                 <div>
-                <div id="top"></div>
                 <div className="controls">
                     <div className="sort">
                         <span className="label">sort by</span>
@@ -305,6 +310,120 @@ class SubcategoryList extends BaseList {
             <div className="clearfix"></div>
             </div>
         );
+    }
+
+}
+
+class HomepageEntries extends BaseList {
+
+    handleChangeEntryLimit(num) {
+        this.setState({"limit": num, "cursor": 0});
+    }
+
+    getHomepageEntries() {
+        const entries = this.props.items.filter(i => { return !i.deleted && i.type == "entry" });
+        return entries.sort((a, b) => {
+            return this.sortCompare(a, b);
+        });
+    }
+
+    setCursorWithBoundsCheck(cursor) {
+        const entries = this.getTopHomepageEntries();
+        const numPages = Math.ceil(entries.length / this.state.limit);
+        const max_cursor = ((numPages-1) * this.state.limit);
+        if (cursor < 0) {
+            cursor = 0;
+        } else if (cursor > max_cursor) {
+            cursor = max_cursor;
+        }
+        
+        this.setState({"cursor": cursor});
+    }
+
+    handleNextPageChange() {
+        this.setCursorWithBoundsCheck(this.state.cursor + this.state.limit);
+        this.scrollToTop();
+    }
+
+    handlePreviousPageChange() {
+        this.setCursorWithBoundsCheck(this.state.cursor - this.state.limit);
+        this.scrollToTop();
+    }
+
+    getTopHomepageEntries(max_entries_on_homepage=88) {
+        return this.getHomepageEntries().slice(0, max_entries_on_homepage);
+    }
+
+    render() {
+        const entries = this.getTopHomepageEntries();
+
+        var slice = entries.slice(this.state.cursor, this.state.cursor + this.state.limit);
+
+        var numPages = Math.ceil(entries.length / this.state.limit);
+
+        var pages = [...Array(numPages).keys()].map(idx => {
+            const page = idx + 1;
+            return <a key={"page-" + page} className={this.state.cursor == (idx*this.state.limit) ? "active" : null} onClick={() => { this.handlePageChange(page) }}>{page}</a>;
+        });
+
+        const num_control = (
+            <div className="num_per_page">
+            <span className="label">per page</span>
+            <ul>
+            <li><a onClick={() => { this.handleChangeEntryLimit(4) }} className={this.state.limit == 4 ? "active" : ""}>4</a></li>
+            <li><a onClick={() => { this.handleChangeEntryLimit(25) }} className={this.state.limit == 25 ? "active" : ""}>25</a></li>
+            <li><a onClick={() => { this.handleChangeEntryLimit(50) }} className={this.state.limit == 50 ? "active" : ""}>50</a></li>
+            </ul>
+            <div className="clearfix"></div>
+            </div>);
+
+
+
+        if (this.state.cursor > 0) {
+            pages.unshift(<a key="page-previous" onClick={() => { this.handlePreviousPageChange() }}><i className="fas fa-angle-double-left"></i></a>);
+        } else {
+            pages.unshift(<a className="disabled" key="page-previous"><i className="fas fa-angle-double-left"></i></a>);
+        }
+
+        const max_cursor = ((numPages-1) * this.state.limit);
+        if (this.state.cursor < max_cursor) {
+            pages.push(<a key="page-next" onClick={() => { this.handleNextPageChange() }}><i className="fas fa-angle-double-right"></i></a>);
+        } else {
+            pages.push(<a className="disabled" key="page-next"><i className="fas fa-angle-double-right"></i></a>);
+        }
+
+        if (entries.length > 0) {
+            return (
+                <div className="homepage entries">
+                <h3>Trending Links</h3>
+                <div className="controls">
+                    <div className="sort">
+                        <span className="sort-wrapper">
+                        <span className="label">sort by</span>
+                        <ul>
+                        <li><i class="fab fa-hotjar"></i> <a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.state.sort == "hot" ? "active" : ""}>hot</a></li>
+                        <li><i class="fas fa-dollar-sign"></i> <a onClick={() => { this.handleChangeSortOrder("money") }} className={this.state.sort == "money" ? "active" : ""}>money</a></li>
+                        <li><i class="fas fa-poll"></i> <a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.state.sort == "votes" ? "active" : ""}>votes</a></li>
+                        <li><i class="fas fa-plus"></i> <a onClick={() => { this.handleChangeSortOrder("time") }} className={this.state.sort == "time" ? "active" : ""}>new</a></li>
+                        </ul>
+                        </span>
+                    </div>
+                    {num_control}
+                    <div className="clearfix"></div>
+                </div>
+
+                <ul className="entry list">
+                {slice.map(entry => (
+                    <EntryItem key={"entry-" + entry.txid} item={entry} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} showCategory={true} />
+                ))}
+                </ul>
+                {pages.length > 1 && <div className="pages">{pages}</div>}
+                <hr />
+                </div>
+            );
+        } else {
+            return null;
+        }
     }
 
 }
@@ -404,17 +523,18 @@ class HomepageList extends BaseList {
         }
 
         const sort_control = (
-            <div className="sort">
-            <span className="label">sort by</span>
-            <ul>
-            <li><i className="fab fa-hotjar"></i> <a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.state.sort == "hot" ? "active" : ""}>hot</a></li>
-            <li><i className="fas fa-dollar-sign"></i> <a onClick={() => { this.handleChangeSortOrder("money") }} className={this.state.sort == "money" ? "active" : ""}>money</a></li>
-            <li><i class="fas fa-poll"></i> <a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.state.sort == "votes" ? "active" : ""}>votes</a></li>
-            <li><i class="fas fa-link"></i> <a onClick={() => { this.handleChangeSortOrder("submissions") }} className={this.state.sort == "submisions" ? "active" : ""}>links</a></li>
-            <li><i class="fas fa-plus"></i> <a onClick={() => { this.handleChangeSortOrder("time") }} className={this.state.sort == "time" ? "active" : ""}>new</a></li>
-            </ul>
-            <div className="clearfix"></div>
-            </div>);
+            <div className="sort-control">
+                <div className="sort">
+                <span className="label">sort by</span>
+                <ul>
+                <li><i className="fab fa-hotjar"></i> <a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.state.sort == "hot" ? "active" : ""}>hot</a></li>
+                <li><i className="fas fa-dollar-sign"></i> <a onClick={() => { this.handleChangeSortOrder("money") }} className={this.state.sort == "money" ? "active" : ""}>money</a></li>
+                <li><i class="fas fa-poll"></i> <a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.state.sort == "votes" ? "active" : ""}>votes</a></li>
+                <li><i class="fas fa-link"></i> <a onClick={() => { this.handleChangeSortOrder("submissions") }} className={this.state.sort == "submisions" ? "active" : ""}>links</a></li>
+                <li><i class="fas fa-plus"></i> <a onClick={() => { this.handleChangeSortOrder("time") }} className={this.state.sort == "time" ? "active" : ""}>new</a></li>
+                </ul>
+                <div className="clearfix"></div>
+                </div></div>);
 
         const num_control = (
             <div className="num_per_page">
@@ -432,8 +552,7 @@ class HomepageList extends BaseList {
             <div>
             {categories && categories.length > 0 && 
                     <div>
-                    <h2>Directories</h2>
-                    <div id="top"></div>
+                    <h3>Open Directories</h3>
                     <div className="controls">
                         {sort_control}
                         {num_control}

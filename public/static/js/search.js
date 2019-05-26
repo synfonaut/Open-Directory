@@ -116,7 +116,7 @@ class SearchResults extends React.Component {
         return <div>
                     <ul className="search-results">
                     {slice.map(result => {
-                        return <SearchResult key={result.txid} item={result} />
+                        return <SearchResult key={result.txid} item={result} items={this.props.items} />
                     })}
                     </ul>
                     <p className="num-results">Found {pluralize(results.length, "result", "results")}</p>
@@ -128,22 +128,36 @@ class SearchResults extends React.Component {
 class SearchResult extends React.Component {
     render() {
 
-        var url;
         if (this.props.item.type == "category") {
+            var url;
             if (this.props.item.txid) {
                 url = "#" + this.props.item.txid;
             } else {
                 url = "#";
             }
+
+            return (<div className="search-result">
+                <h4><a href={url}>{this.props.item.name}</a> <span className={"badge badge-type-" + this.props.item.type}>{this.props.item.type}</span></h4>
+
+            {(this.props.item.type == "entry") && <a className="url" href={this.props.item.link}>{this.props.item.link}</a>}
+            <div className="satoshis">{satoshisToDollars(this.props.item.satoshis)}</div>
+            <ReactMarkdown source={this.props.item.description} />
+            </div>);
+
         } else if (this.props.item.type == "entry") {
-            url = this.props.item.link;
+
+            const url = this.props.item.link;
+            var category = findObjectByTX(this.props.item.category, this.props.items);
+
+            return (<div className="search-result">
+                <h4><a href={url}>{this.props.item.name}</a> <span className={"badge badge-type-" + this.props.item.type}>{this.props.item.type}</span> <span className="from-category-prefix">in</span> <a className="from-category" href={"/#" + category.txid}>{category.name}</a></h4>
+
+            {(this.props.item.type == "entry") && <a className="url" href={this.props.item.link}>{this.props.item.link}</a>}
+            <div className="satoshis">{satoshisToDollars(this.props.item.satoshis)}</div>
+            <ReactMarkdown source={this.props.item.description} />
+            </div>);
         }
 
-        return (<div className="search-result">
-                    <h4><a href={url}>{this.props.item.name}</a> <span className={"badge badge-type-" + this.props.item.type}>{this.props.item.type}</span></h4>
-                    {(this.props.item.type == "entry") && <a className="url" href={this.props.item.link}>{this.props.item.link}</a>}
-                    <div className="satoshis">{satoshisToDollars(this.props.item.satoshis)}</div>
-                    <ReactMarkdown source={this.props.item.description} />
-                </div>);
+
     }
 }

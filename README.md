@@ -120,17 +120,17 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 
 * subcategories with long names don't look great https://dir.sv/#a737ace37e85ca701f1845a977fe2e80c243be0662e0933aa2b126a06dabe35e
 * changelog needs link to useful item to view the change
+* save sort by and per page preferences
+
+* FAQ: What is a bitcoin link?
+* navigation on mobile
+* way to move link so you keep address in tact
 
 ## 0.0.2
-* move search to home page, fade out when typing
-* search entries should also have link to categories
-* hottest entries on home page
-* statistics, with a graph
+* statistics
+
 * entry page
 
-* fix sort by on mobile
-* links open in new tab by default? optimize for mobile
-* command clicking directories don't really work
 
 
 ## 0.0.3

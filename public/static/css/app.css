@@ -45,6 +45,11 @@ h1 {
     font-size: 40px;
 }
 
+h1 .beta {
+    font-size: 21px;
+    vertical-align: super;
+}
+
 
 h1 .fas {
     font-size: 50px;
@@ -186,6 +191,16 @@ a {
     margin: 0 0 0 2px;
 }
 
+.from-category-prefix {
+    color: #888;
+    font-size: 12px;
+}
+
+.from-category {
+    font-size: 12px;
+}
+
+
 form {
     margin: 10px 0;
 }
@@ -279,6 +294,19 @@ form {
 
 .navigation-title {
     font-weight: 500;
+    display: inline-block;
+}
+
+.navigation-title .beta {
+    font-size: 12px;
+    vertical-align: super;
+    margin-left: 4px;
+    font-weight: 300;
+    text-decoration: none;
+}
+
+.navigation-title .beta {
+    text-decoration: none;
 }
 
 .navigation-list {
@@ -458,6 +486,10 @@ form {
     padding: 1px 5px;
 }
 
+.controls  {
+    margin: 11px 0 16px 0;
+}
+
 .controls i {
     color: #bbb;
     font-size: 12px;
@@ -468,22 +500,25 @@ form {
     float: left;
     font-weight: 500;
     color: #777;
+    display: inline-block;
 }
 
 .sort {
     font-size: 15px;
-    margin: 11px 0 6px 0;
+    white-space: nowrap;
+    overflow: scroll;
 }
 
 .sort ul {
-    float: left;
+    display: inline-block;
     margin: 0;
     padding: 0;
+    white-space: nowrap;
 }
 
 .sort ul li {
     list-style: none;
-    float: left;
+    display: inline-block;
     margin: 0;
     padding: 0;
     margin-left: 17px;
@@ -498,6 +533,10 @@ form {
     font-weight: 400;
 }
 
+.sort-wrapper {
+    display: inline-block;
+}
+
 .num_per_page .label {
     float: left;
     font-weight: 500;
@@ -506,7 +545,6 @@ form {
 
 .num_per_page {
     font-size: 14px;
-    margin: 11px 0 16px 0;
 }
 
 .num_per_page ul {
@@ -1882,6 +1920,10 @@ form {
 
     p.launch-note {
         padding: 0 175px;
+    }
+
+    .sort-wrapper {
+        float: left;
     }
 }
 
