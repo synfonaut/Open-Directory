@@ -122,9 +122,8 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 
 ## 0.0.2
 * move search to home page, fade out when typing
-* hot entries on home page
+* hottest entries on home page
 * statistics, with a graph
-
 * entry page
 
 
