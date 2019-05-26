@@ -127,9 +127,15 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * way to move link so you keep address in tact
 
 ## 0.0.2
+* change link color after clicking
 * statistics
 
 * entry page
+* scroll to top of current container, not page
+* resizing looks goofy on homepage
+* capture emails and send newsletter
+* when searching on home page, no results doesn't have right margin
+* fix navigation on megans phone
 
 
 
