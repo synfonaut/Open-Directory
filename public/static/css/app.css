@@ -1420,6 +1420,10 @@ form {
     font-weight: 400;
 }
 
+.nav-stats {
+    display: none;
+}
+
 /** Orange Theme **/
 .orange-theme a {
     color: #FF6384;
@@ -1925,6 +1929,10 @@ form {
     .sort-wrapper {
         float: left;
     }
+
+    .nav-stats {
+        display: inline-block;
+    }
 }
 
 /* Larger than tablet screen */
@@ -1959,6 +1967,7 @@ form {
     p.launch-note {
         padding: 0 240px;
     }
+
 }
 
 /* Larger than desktop screen */

@@ -228,6 +228,47 @@ class OpenDirectoryApp extends React.Component {
             body = <div className="faq">
                     <ReactMarkdown source={this.state.faq_markdown} />
                 </div>
+        } else if (hash == "stats") {
+            if (this.state.items.length == 0) {
+                body = (<div className="stats">
+                    <h2>Statistics</h2>
+                    <p>Please visit the homepage first, let it load then return. This will be fixed soon!</p>
+                    </div>);
+            } else {
+
+                const changelog = this.buildChangeLog(null);
+
+                var numCategories = 0;
+                var numEntries = 0;
+                var numSatoshis = 0;
+                var numVotes = 0;
+
+                for (const log of changelog) {
+                    if (log.data.s2.indexOf("entry") == 0) {
+                        numEntries += 1;
+                        if (log.satoshis > 0) { numSatoshis += log.satoshis }
+                    } else if (log.data.s2.indexOf("category") == 0) {
+                        numCategories += 1;
+                        if (log.satoshis > 0) { numSatoshis += log.satoshis }
+                    } else if (log.data.s2 == "vote") {
+                        numVotes += 1;
+                        if (log.satoshis > 0) { numSatoshis += log.satoshis }
+                    }
+                }
+
+
+                body = (<div className="stats">
+                    <h2>Statistics</h2>
+                    <ul>
+                        <li>Actions: {changelog.length}</li>
+                        <li>Categories: {numCategories}</li>
+                        <li>Links: {numEntries}</li>
+                        <li>Upvotes: {numVotes}</li>
+                        <li>Satoshis Spent: {numSatoshis}</li>
+                        <li>USD Spent: {satoshisToDollars(numSatoshis, BSV_PRICE)}</li>
+                    </ul>
+                    </div>);
+            }
         } else if (hash == "search") {
             body = <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} />
         } else if (hash == "add-directory") {
@@ -292,7 +333,7 @@ class OpenDirectoryApp extends React.Component {
                         
                     </div>
                     <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} embed={true} />
-                    <p className="launch-note"><strong>Note:</strong> Due to high traffic new content won't appear instantly on the homepage after you submit—please allow up to a minute and refresh. A fix is coming soon!</p>
+                    <p className="launch-note"><strong>Note:</strong> Due to high traffic from launch, new content won't appear instantly on the homepage after you submit—please allow up to a minute and refresh. A fix is coming soon!</p>
                 </div>;
         }
 
@@ -313,6 +354,7 @@ class OpenDirectoryApp extends React.Component {
                     <ul className="navigation-list float-right">
                       <li className="navigation-item">
                         <a className="navigation-link nav-search" href="#search"><i className="fas fa-search"> </i>Search</a>
+                        <a className="navigation-link nav-stats" href="#stats">Stats</a>
                         <a className="navigation-link nav-faq" href="#faq">FAQ</a>
                         <a className="navigation-link nav-fork" onClick={this.handleToggleFork.bind(this)}>Fork</a>
                       </li>
@@ -444,6 +486,12 @@ class OpenDirectoryApp extends React.Component {
 
         if (hash == "faq") {
             title = "FAQ " + this.state.title;
+        } else if (hash == "stats") {
+            title = "Statistics for " + this.state.title;
+            const cached = this.state.cache[null];
+            if (cached) {
+                items = cached;
+            }
         } else if (hash == "search") {
             title = "Search " + this.state.title;
             needsupdate = true;
