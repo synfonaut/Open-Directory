@@ -77,6 +77,7 @@ h1 {
     padding: 10px 25px;
     margin-bottom: 20px;
     border-bottom: 1px solid #efefef;
+    text-align: center;
 }
 
 .intro code {
@@ -296,6 +297,16 @@ form {
 
 .intro li {
     list-style: none;
+}
+
+.intro .learn-more {
+    margin: 0;
+    padding: 0;
+}
+
+.intro .learn-more p {
+    margin: 0;
+    padding: 0;
 }
 
 .subcategories {
@@ -1265,8 +1276,15 @@ form {
 
 .search {
     text-align: center;
-    margin-top: 50px;
     padding-bottom: 10px;
+}
+
+.search.embed {
+    margin-top: 20px;
+}
+
+.search.page {
+    margin-top: 50px;
 }
 
 .search .search-results {
@@ -1850,6 +1868,10 @@ form {
         margin-top: 10px;
         margin-bottom: 10px;
     }
+
+    .intro .learn-more p {
+        padding: 0 100px;
+    }
 }
 
 /* Larger than tablet screen */
@@ -1880,7 +1902,6 @@ form {
         padding-left: 180px;
         padding-right: 180px;
     }
-
 }
 
 /* Larger than desktop screen */

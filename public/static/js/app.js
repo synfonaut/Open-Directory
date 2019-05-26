@@ -279,7 +279,16 @@ class OpenDirectoryApp extends React.Component {
 
         var intro;
         if (this.state.intro_markdown) {
-            intro = <div className="intro"><h1><i className="fas fa-sitemap"></i> Open Directory</h1><ReactMarkdown source={this.state.intro_markdown} /></div>;
+            intro = <div className="intro"><ReactMarkdown source={this.state.intro_markdown} /></div>;
+        } else {
+            intro = intro = <div className="intro">
+                    <h1><i className="fas fa-sitemap"></i> Open Directory</h1>
+                    <div className="learn-more">
+                        <p>Open Directory is an open-source way for anyone to earn money by organizing links on the Bitcoin (SV) blockchain. Find the best content on the blockchain and earn money but submitting great links! {!this.state.isExpandingLearnMore && <span><a href="/#faq">Learn more</a>...</span>}</p>
+                        
+                    </div>
+                    <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} embed={true} />
+                </div>;
         }
 
         return (

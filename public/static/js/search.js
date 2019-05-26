@@ -14,7 +14,7 @@ class SearchPage extends React.Component {
 
     render() {
         return (<div className="search">
-                    <SearchForm search={this.state.search} title={this.props.title} onSearch={this.handleSearch.bind(this)} category={this.props.category} />
+                    <SearchForm search={this.state.search} title={this.props.title} onSearch={this.handleSearch.bind(this)} category={this.props.category} embed={this.props.embed} />
                     {this.state.search && <SearchResults search={this.state.search} items={this.props.items} />}
                 </div>);
     }
@@ -35,14 +35,24 @@ class SearchForm extends React.Component {
         } else if (this.props.category && !this.props.category.txid) {
             searching = <span>Search <a href="#">Open Directory</a></span>;
         }
-        return (<div className="search">
-                    <h2>{searching}</h2>
-                    <p className="blurb">Search by name, description, link, txid, address...</p>
-                    <form onSubmit={this.handleSubmit.bind(this)}>
-                        <input type="search" value={this.props.search} onChange={this.props.onSearch.bind(this)} />
-                        <input type="submit" className="button-outline" value="Search" />
-                    </form>
-                </div>);
+
+        if (this.props.embed) {
+            return (<div className="search embed">
+                        <form onSubmit={this.handleSubmit.bind(this)}>
+                            <input type="search" value={this.props.search} onChange={this.props.onSearch.bind(this)} placeholder="Search the Open Directory.." />
+                            <input type="submit" className="button-outline" value="Search" />
+                        </form>
+                    </div>);
+        } else {
+            return (<div className="search page">
+                        <h2>{searching}</h2>
+                        <p className="blurb">Search by name, description, link, txid, address...</p>
+                        <form onSubmit={this.handleSubmit.bind(this)}>
+                            <input type="search" value={this.props.search} onChange={this.props.onSearch.bind(this)} />
+                            <input type="submit" className="button-outline" value="Search" />
+                        </form>
+                    </div>);
+        }
     }
 }
 

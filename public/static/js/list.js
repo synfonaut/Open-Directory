@@ -432,6 +432,7 @@ class HomepageList extends BaseList {
             <div>
             {categories && categories.length > 0 && 
                     <div>
+                    <h2>Directories</h2>
                     <div id="top"></div>
                     <div className="controls">
                         {sort_control}

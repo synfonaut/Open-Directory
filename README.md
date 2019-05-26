@@ -119,9 +119,11 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * Bitcoin Sticker Protocol that could be used in markdown or twitter, so you get credit for content on other platforms where you can't inject an HTTP or HTML sticker
 
 * subcategories with long names don't look great https://dir.sv/#a737ace37e85ca701f1845a977fe2e80c243be0662e0933aa2b126a06dabe35e
+* changelog needs link to useful item to view the change
 
 ## 0.0.2
 * move search to home page, fade out when typing
+* search entries should also have link to categories
 * hottest entries on home page
 * statistics, with a graph
 * entry page
