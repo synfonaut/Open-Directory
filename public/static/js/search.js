@@ -39,7 +39,7 @@ class SearchForm extends React.Component {
         if (this.props.embed) {
             return (<div className="search embed">
                         <form onSubmit={this.handleSubmit.bind(this)}>
-                            <input type="search" value={this.props.search} onChange={this.props.onSearch.bind(this)} placeholder="Search the Open Directory.." />
+                            <input type="search" value={this.props.search} onChange={this.props.onSearch.bind(this)} placeholder="Search the Open Directory..." />
                             <input type="submit" className="button-outline" value="Search" />
                         </form>
                     </div>);

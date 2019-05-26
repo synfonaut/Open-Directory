@@ -128,7 +128,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * statistics, with a graph
 * entry page
 
-
+* fix sort by on mobile
 * links open in new tab by default? optimize for mobile
 * command clicking directories don't really work
 

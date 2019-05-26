@@ -288,6 +288,7 @@ class OpenDirectoryApp extends React.Component {
                         
                     </div>
                     <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} embed={true} />
+                    <p className="launch-note"><strong>Note:</strong> Due to high traffic new content won't appear instantly on the homepage after you submit—please allow up to a minute and refresh. A better fix is coming soon!</p>
                 </div>;
         }
 
