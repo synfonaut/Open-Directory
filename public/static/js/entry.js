@@ -30,7 +30,7 @@ class EntryItem extends Item {
                 <div className="upvoteContainer">
                     <div className="upvote"><a onClick={this.handleUpvote.bind(this)}><i className="fas fa-chevron-up"></i></a> <span className="number satoshis" title={this.props.item.satoshis + " sats"}>{price}</span><span className="number votes" title={this.props.item.hottness.toFixed(2) + " hot score"}>{pluralize(this.props.item.votes, "vote", "votes")}</span></div>
                     <div className="entry">
-                        <h5><a target="_blank" href={this.get_link()}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>}  <span className="from-category-prefix">in</span> <a className="from-category" href={"/#" + category.txid}>{category.name}</a> <span className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</span> {actions}</h5>
+                        <h5><a target="_blank" href={this.get_link()}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>}  {this.props.showCategory && <span><span className="from-category-prefix">in</span> <a className="from-category" href={"/#" + category.txid}>{category.name}</a></span>} <span className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</span> {actions}</h5>
 
                         <p className="description">{this.props.item.description}</p>
                         <p className="url"><a target="_blank" href={this.get_link()}>{this.props.item.link}</a></p>

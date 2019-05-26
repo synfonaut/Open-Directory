@@ -295,7 +295,7 @@ class OpenDirectoryApp extends React.Component {
                     list_class_name = "subcategories";
                 } else {
                     list = <div>
-                        <HomepageEntries items={filtered_items} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} limit={4} />
+                        <HomepageEntries items={filtered_items} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} limit={4} show_category={true} />
                         <div className="clearfix"></div>
                         <HomepageList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
                     </div>;
