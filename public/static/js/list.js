@@ -5,7 +5,7 @@ class BaseList extends React.Component {
         this.state = {
             "sort": "hot",
             "limit": props.limit || 10,
-            "category_limit": 15,
+            "category_limit": 10,
             "cursor": 0,
             "action": null,
             "isExpanded": false,
