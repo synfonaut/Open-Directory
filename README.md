@@ -71,8 +71,25 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * Followup with klimenos, some descriptions of books uploaded don't appear (https://dir.sv/#ae634d86622c4a287dcf40ac3c133f366ec49ec9e5561f711233b3f5fa64f4ae), did you add a description becaus eit doesn't show up
 
 ## 0.0.2
-* fix twitter banner, make it nice and large, add icon on home page
+* fix twitter banner, make it nice and large, add icon on home page, add icon
 * fix smaller twitter banner, add nice icon
+
+* dedicated entry page
+
+* bitpaste, literatus, and http://bico.media and dir.sv included?
+* convert bitstagram link to bit link?
+
+* fix bitsocket issue
+
+* reinder server with missing b:// media (create duplicate server)
+
+* implement metalens comments (https://www.yours.org/content/metalens-app-update---map-protocol-2a7f47367bb2)
+
+* create uptime check
+
+* clear out old server logs... increase disk size
+
+* safari isn't clearing homepage cache? way to force this? generate random key at end of url?
 
 * subcategories with long names don't look great https://dir.sv/#a737ace37e85ca701f1845a977fe2e80c243be0662e0933aa2b126a06dabe35e
 * save users prefs during session (sort order, num pages)
@@ -84,14 +101,9 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * when searching on home page, no results doesn't have right margin
 * fix navigation on megans phone
 * if network is down, say that rather than generic error
-* dedicated entry page
 * much better stats page...actually show graphs
-* bitpaste, literatus, and http://bico.media and dir.sv included?
-* convert bitstagram link to bit link?
 * changelog should link directly to where you can see the actino
 * google analytics and basic stats tracking? easier to do product development if you know what features people are and aren't using....
-* fix bitsocket issue
-* implement metalens comments (https://www.yours.org/content/metalens-app-update---map-protocol-2a7f47367bb2)
 
 * FAQ: What is a bitcoin link?
 * add to faq, how to get BSV and signup for money button

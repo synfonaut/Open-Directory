@@ -65,7 +65,12 @@
     </head>
 <body>
   <div id="app"></div>
-  <script src="/static/js/cached_homepage.js"></script>
-  <script src="/static/js/bundle.min.js?cb=47"></script>
+  {{#cache_bust}}
+    <script src="/static/js/cached_homepage.js?cb={{cache_bust}}"></script>
+  {{/cache_bust}}
+  {{^cache_bust}}
+    <script src="/static/js/cached_homepage.js"></script>
+  {{/cache_bust}}
+  <script src="/static/js/bundle.min.js?cb=50"></script>
 </body>
 </html>

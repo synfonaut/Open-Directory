@@ -15,13 +15,14 @@ app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
 app.get('/', function (req, res) {
-    res.render('index');
+    var cache_bust = Math.floor(Math.random() * 10000000000);
+    res.render('index', {"cache_bust": cache_bust});
 });
 
 app.get('/category/:category_id', function (req, res) {
-
     const category_id = req.params.category_id;
     const cache = req.params.category
+    var cache_bust = Math.floor(Math.random() * 10000000000);
 
     try {
         let cached_items = fs.readFileSync(cached_items_file);
@@ -33,7 +34,8 @@ app.get('/category/:category_id', function (req, res) {
             const description = removeMd(category.description).replace(/\n/g, " ");
             res.render('index', {
                 "description": description,
-                "title": title
+                "title": title,
+                "cache_bust": cache_bust
             });
             return;
         }
@@ -43,11 +45,13 @@ app.get('/category/:category_id', function (req, res) {
         console.log("Error", e);
     }
 
-    res.render('index');
+    var cache_bust = Math.floor(Math.random() * 10000000000);
+    res.render('index', {"cache_bust": cache_bust});
 });
 
 app.get('*', function(req, res) {
-    res.render('index');
+    var cache_bust = Math.floor(Math.random() * 10000000000);
+    res.render('index', {"cache_bust": cache_bust});
 });
 
 app.listen(3000, () => {
