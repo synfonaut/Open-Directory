@@ -299,6 +299,7 @@ class OpenDirectoryApp extends React.Component {
                         <li>Upvotes: {numVotes}</li>
                         {biggestTip && <li>Biggest tip: {satoshisToDollars(biggestTip)} by {biggestTipAddress}</li>}
                         <li>{numberFormat(numSatoshis / 100000000)} BSV / {satoshisToDollars(numSatoshis, BSV_PRICE)} spent</li>
+                        <li>BSV Price: ${BSV_PRICE}</li>
                     </ul>
                     </div>);
             }
@@ -328,14 +329,14 @@ class OpenDirectoryApp extends React.Component {
                     list_class_name = "subcategories";
                 } else {
                     list = <div>
-                        <HomepageEntries items={filtered_items} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} limit={4} show_category={true} changeURL={this.changeURL} />
+                        <HomepageEntries items={filtered_items} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} limit={15} show_category={true} changeURL={this.changeURL} />
                         <div className="clearfix"></div>
                         <HomepageList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} changeURL={this.changeURL} />
                     </div>;
                     list_class_name = "homepage";
                 }
 
-                body = <div className={list_class_name + " list-wrapper"}><div id="top"></div>{list}</div>;
+                body = <div className={list_class_name + " list-wrapper"}>{list}</div>;
             }
 
             loading = <div className="loading">

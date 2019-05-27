@@ -1193,7 +1193,9 @@ if (typeof window == "undefined") {
         "fetch_from_network": fetch_from_network,
         "processResults": processResults,
         "processRawResults": processRawResults,
+        "processOpenDirectoryTransactions": processOpenDirectoryTransactions,
         "calculateTipchainSplits": calculateTipchainSplits,
         "calculateTipPayment": calculateTipPayment,
+        "findObjectByTX": findObjectByTX,
     };
 }

@@ -34,13 +34,6 @@ class BaseList extends React.Component {
         }
     }
 
-    scrollToTop() {
-        const top = document.getElementById("top");
-        if (top) {
-            top.scrollIntoView(true);
-        }
-    }
-
     findCategoryByTXID(txid) {
         return this.props.items.filter(i => { return i.type == "category" && i.txid == txid }).shift();
     }
@@ -340,6 +333,14 @@ class HomepageEntries extends BaseList {
         this.setState({"cursor": cursor});
     }
 
+    scrollToTop() {
+        const top = document.querySelector(".homepage.entries .top")
+        if (top) {
+            top.scrollIntoView(true);
+        }
+    }
+
+
     handleNextPageChange() {
         this.setCursorWithBoundsCheck(this.state.cursor + this.state.limit);
         this.scrollToTop();
@@ -370,7 +371,7 @@ class HomepageEntries extends BaseList {
             <div className="num_per_page">
             <span className="label">per page</span>
             <ul>
-            <li><a onClick={() => { this.handleChangeEntryLimit(4) }} className={this.state.limit == 4 ? "active" : ""}>4</a></li>
+            <li><a onClick={() => { this.handleChangeEntryLimit(15) }} className={this.state.limit == 15 ? "active" : ""}>15</a></li>
             <li><a onClick={() => { this.handleChangeEntryLimit(25) }} className={this.state.limit == 25 ? "active" : ""}>25</a></li>
             <li><a onClick={() => { this.handleChangeEntryLimit(50) }} className={this.state.limit == 50 ? "active" : ""}>50</a></li>
             </ul>
@@ -395,6 +396,7 @@ class HomepageEntries extends BaseList {
         if (entries.length > 0) {
             return (
                 <div className="homepage entries">
+                <div className="top"></div>
                 <h3>Trending Links</h3>
                 <div className="controls">
                     <div className="sort">
@@ -429,6 +431,14 @@ class HomepageEntries extends BaseList {
 }
 
 class HomepageList extends BaseList {
+
+    scrollToTop() {
+        const top = document.querySelector(".homepage-categories .top")
+        if (top) {
+            top.scrollIntoView(true);
+        }
+    }
+
 
     handlePageChange(page) {
         const idx = (page - 1);
@@ -551,7 +561,8 @@ class HomepageList extends BaseList {
         return (
             <div>
             {categories && categories.length > 0 && 
-                    <div>
+                    <div className="homepage-categories">
+                    <div className="top"></div>
                     <h3>Open Directories</h3>
                     <div className="controls">
                         {sort_control}

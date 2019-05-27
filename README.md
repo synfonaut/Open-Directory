@@ -206,6 +206,8 @@ Some Ideas:
 
 * search page should update query string and automatically search when linked
 
+* fix bitsocket issue
+
 Think about strategies to build user base
 
 Weekly stats threads, chained together to show growth
@@ -214,6 +216,8 @@ Weekly changelog show and tell
 
 Mailchimp newsletter
 Click to expand like old reddit
+
+* update meta description and title on location update
 
 * 404 page
 * fix twitter banner, make it nice and large, add icon

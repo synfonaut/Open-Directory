@@ -3,7 +3,12 @@
   "version": "0.0.1",
   "description": "OpenDirectory App",
   "main": "scripts/debug.js",
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.17.1",
+    "mustache": "^3.0.1",
+    "mustache-express": "^1.2.8",
+    "remove-markdown": "^0.3.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
@@ -14,7 +19,6 @@
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "babelify": "^10.0.0",
-    "express": "^4.17.1",
     "gulp": "^4.0.2",
     "gulp-all": "^1.1.0",
     "gulp-babel": "^8.0.0-beta.2",
