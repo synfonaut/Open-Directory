@@ -71,25 +71,24 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * Followup with klimenos, some descriptions of books uploaded don't appear (https://dir.sv/#ae634d86622c4a287dcf40ac3c133f366ec49ec9e5561f711233b3f5fa64f4ae), did you add a description becaus eit doesn't show up
 
 ## 0.0.2
-* fix twitter banner, make it nice and large, add icon on home page, add icon
-* fix smaller twitter banner, add nice icon
-
-* dedicated entry page
+* test how this looks on other platforms (facebook, messenger, telegram)
 
 * bitpaste, literatus, and http://bico.media and dir.sv included?
 * convert bitstagram link to bit link?
 
+* dedicated entry page
+
+
 * fix bitsocket issue
 
-* reinder server with missing b:// media (create duplicate server)
+* reindex server with missing b:// media (create duplicate server)
 
 * implement metalens comments (https://www.yours.org/content/metalens-app-update---map-protocol-2a7f47367bb2)
 
 * create uptime check
 
-* clear out old server logs... increase disk size
+* clear out old server docker logs... increase disk size
 
-* safari isn't clearing homepage cache? way to force this? generate random key at end of url?
 
 * subcategories with long names don't look great https://dir.sv/#a737ace37e85ca701f1845a977fe2e80c243be0662e0933aa2b126a06dabe35e
 * save users prefs during session (sort order, num pages)
@@ -114,6 +113,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * reinder server with missing b:// media (create duplicate server)
 * credit font awesome in about
 * when showing a deleted category ...should show it's actually deleted
+* under upload link, let users know they can use add.bico.media, but they shouldn't be uploading content that isn't theirs or in the public domain
 
 ## Nice to have
 * MoneyButton usernames
@@ -140,15 +140,20 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * easy way to host directory with a domain name
 * should be able to detach monetary incentives as well, so you're not earning anything
 * easily change default tip amounts when forking
+* stats show history of each action in graph
+* show which content is trending really hard with a badge
 
 
 ## Minor Bugs
+* can't control+click directories to open them in a new window
+* top sub categories cuts off and doesn't show all https://dir.sv/category/f1b0ff16ce275c196113c584670f2d198912705d4570adba1d9f03a34ec0ca03
 * if your default tip amount is .10 it will only show .1 until you click
 * search page should update query string and automatically search when linked
 * windows browser showing scroll bar on sort
 * forks should link to bico.media if in chrome
 * bottle native content isn't working
 * bg isn't uploaded to blockchain
+* clean up cache script updater so only showing info and errors, not debugging info
 
 
 ## 0.0.3
@@ -159,6 +164,8 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * bitcoin website sticker crawling
 * categories "pull up" sub-category links (up to max depth)
 * downvotes
+* report button
+* nsfw tag
 
 ## About
 

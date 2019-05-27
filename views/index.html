@@ -5,27 +5,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <meta name="twitter:site" content="@synfonaut" />
+
     {{#twitter_card}}
-    <meta name="twitter:card" content="{{description}}" />
+    <meta name="twitter:card" content="{{twitter_card}}" />
     {{/twitter_card}}
     {{^twitter_card}}
       <meta name="twitter:card" content="summary" />
     {{/twitter_card}}
 
-    <meta property="og:image" content="https://dir.sv/static/img/opendirectory.png" />
+    {{#twitter_image}}
+      <meta property="og:image" content="{{& twitter_image}}" />
+      <meta name="twitter:image" content="{{& twitter_image}}" />
+    {{/twitter_image}}
+    {{^twitter_image}}
+      <meta property="og:image" content="https://dir.sv/img/twitter_small_card.png" />
+      <meta name="twitter:image" content="https://dir.sv/static/img/twitter_small_card.png" />
+    {{/twitter_image}}
 
     {{#title}}
       <meta property="og:title" content="{{title}}" />
+      <meta name="twitter:title" content="{{title}}" />
       {{/title}}
     {{^title}}
       <meta property="og:title" content="Open Directory" />
+      <meta name="twitter:title" content="Open Directory" />
     {{/title}}
 
     {{#description}}
       <meta property="og:description" content="{{description}}" />
+      <meta name="twitter:description" content="{{description}}" />
     {{/description}}
     {{^description}}
       <meta property="og:description" content="Open Directory is an open source way to organize links on the Bitcoin (SV) blockchain while earning money." />
+      <meta name="twitter:description" content="Open Directory is an open source way to organize links on the Bitcoin (SV) blockchain while earning money." />
     {{/description}}
 
 

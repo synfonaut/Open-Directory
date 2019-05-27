@@ -16,7 +16,11 @@ app.set('views', __dirname + '/views');
 
 app.get('/', function (req, res) {
     var cache_bust = Math.floor(Math.random() * 10000000000);
-    res.render('index', {"cache_bust": cache_bust});
+    res.render('index', {
+        "cache_bust": cache_bust,
+        "twitter_card": "summary_large_image",
+        "twitter_image": "https://dir.sv/static/img/twitter_large_card.png"
+    });
 });
 
 app.get('/category/:category_id', function (req, res) {
