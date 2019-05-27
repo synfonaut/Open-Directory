@@ -204,6 +204,8 @@ Some Ideas:
 * some tipping boxes don't push over on events...margin-bottom problem?
 * add to faq, how to get BSV and signup for money button
 
+* search page should update query string and automatically search when linked
+
 Think about strategies to build user base
 
 Weekly stats threads, chained together to show growth

@@ -246,9 +246,9 @@ class OpenDirectoryApp extends React.Component {
 
                 const changelog = this.buildChangeLog(null);
 
-                var category = <a href="/">Open Directory</a>;
+                var category = <a onClick={() => { this.changeURL("/") }}>Open Directory</a>;
                 if (this.state.category.txid) {
-                    category = <a href={"/#" + this.state.category.txid}>{this.state.category.name}</a>;
+                    category = <a onClick={() => { this.changeURL(this.state.category.txid) }}>{this.state.category.name}</a>;
                 }
 
                 var numCategories = 0;
@@ -365,7 +365,7 @@ class OpenDirectoryApp extends React.Component {
                         <p>Open Directory is an open-source way for anyone to earn money by organizing links on the Bitcoin (SV) blockchain. Find the best content and earn money by submitting great links! {!this.state.isExpandingLearnMore && <span><a href="/faq">Learn more</a>...</span>}</p>
                         
                     </div>
-                    <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} embed={true} />
+                    <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} embed={true} changeURL={this.changeURL} />
                     <p className="launch-note"><strong>Note:</strong> Due to high traffic from launch, new content won't appear instantly on the homepage after you submit—please allow up to a minute and refresh. A fix is coming soon!</p>
                 </div>;
         }

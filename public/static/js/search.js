@@ -14,8 +14,8 @@ class SearchPage extends React.Component {
 
     render() {
         return (<div className="search">
-                    <SearchForm search={this.state.search} title={this.props.title} onSearch={this.handleSearch.bind(this)} category={this.props.category} embed={this.props.embed} />
-                    {this.state.search && <SearchResults search={this.state.search} items={this.props.items} />}
+                    <SearchForm search={this.state.search} title={this.props.title} onSearch={this.handleSearch.bind(this)} category={this.props.category} embed={this.props.embed} changeURL={this.props.changeURL} />
+                    {this.state.search && <SearchResults search={this.state.search} items={this.props.items} changeURL={this.props.changeURL} />}
                 </div>);
     }
 }
@@ -29,11 +29,11 @@ class SearchForm extends React.Component {
     render() {
         var searching;
         if (this.props.category && this.props.category.name) {
-            searching = <span>Search <a href={"#" + this.props.category.txid}>{this.props.category.name}</a></span>;
+            searching = <span>Search <a onClick={() => { this.props.changeURL(this.props.category.txid) }}>{this.props.category.name}</a></span>;
         } else if (this.props.category && this.props.category.txid) {
             searching = <span>Search category {this.props.category.txid.slice(0, 5)}...</span>;
         } else if (this.props.category && !this.props.category.txid) {
-            searching = <span>Search <a href="#">Open Directory</a></span>;
+            searching = <span>Search <a onClick={() => { this.props.changeURL("/") }}>Open Directory</a></span>;
         }
 
         if (this.props.embed) {
@@ -116,7 +116,7 @@ class SearchResults extends React.Component {
         return <div>
                     <ul className="search-results">
                     {slice.map(result => {
-                        return <SearchResult key={result.txid} item={result} items={this.props.items} />
+                        return <SearchResult key={result.txid} item={result} items={this.props.items} changeURL={this.props.changeURL} />
                     })}
                     </ul>
                     <p className="num-results">Found {pluralize(results.length, "result", "results")}</p>
