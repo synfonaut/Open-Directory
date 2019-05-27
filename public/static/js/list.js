@@ -212,7 +212,7 @@ class SubcategoryList extends BaseList {
             if (parent) {
                 const root_category_txid = get_root_category_txid();
                 if (root_category_txid == null || this.props.category.txid !== root_category_txid) {
-                    var parent_url = "/" + parent.txid;
+                    var parent_url = "/category/" + parent.txid;
                     if (parent.txid == root_category_txid) {
                         parent_url = "/";
                     }

@@ -10,7 +10,7 @@ class CategoryItem extends Item {
                     <div className="upvote"><a onClick={this.handleUpvote.bind(this)}><i className="fas fa-chevron-up"></i>&nbsp;</a> <span className="number satoshis" title={this.props.item.satoshis + " sats"}>{price}</span><span className="number votes" title={this.props.item.hottness + " hottness"}>{pluralize(this.props.item.votes, "vote", "votes")}</span></div>
                     <div className="category">
                         <h3>
-                            <a onClick={() => { this.props.changeURL(this.props.item.txid) }}>{this.props.item.name}</a>
+                            <a onClick={() => { this.props.changeURL("/category/" + this.props.item.txid) }}>{this.props.item.name}</a>
                             {!this.props.item.height && <span className="pending">pending</span>}
                             <span className="category-count">({this.props.item.entries})</span>
                         </h3>

@@ -224,7 +224,7 @@ class OpenDirectoryApp extends React.Component {
     }
 
     render() {
-        const path = window.location.pathname;
+        const path = this.getLocation();
 
         var body, loading, error;
         var shouldShowAddNewCategoryForm = false,
@@ -248,7 +248,7 @@ class OpenDirectoryApp extends React.Component {
 
                 var category = <a onClick={() => { this.changeURL("/") }}>Open Directory</a>;
                 if (this.state.category.txid) {
-                    category = <a onClick={() => { this.changeURL(this.state.category.txid) }}>{this.state.category.name}</a>;
+                    category = <a onClick={() => { this.changeURL("/category/" + this.state.category.txid) }}>{this.state.category.name}</a>;
                 }
 
                 var numCategories = 0;
@@ -480,6 +480,10 @@ class OpenDirectoryApp extends React.Component {
         });
     }
 
+    getOldLocation() {
+        return window.location.hash.replace(/^#\/?|\/$/g, '').split('/');
+    }
+
     filterOutDetaches(results) {
 
         const taches = processAdminResults(this.state.admin_actions)
@@ -502,8 +506,22 @@ class OpenDirectoryApp extends React.Component {
         return results.filter(r => { return !r.detached });
     }
 
+    getLocation() {
+        var path = window.location.pathname;
+
+        if (path == "/") {
+            const hash = this.getOldLocation();
+            if (hash.length == 1 && hash[0] !== "") {
+                path = "/category/" + hash[0]; // support the old hash url system
+            }
+        }
+
+
+        return path;
+    }
+
     didUpdateLocation() {
-        const path = window.location.pathname;
+        const path = this.getLocation();
 
         console.log("location updated", path);
 
@@ -533,7 +551,9 @@ class OpenDirectoryApp extends React.Component {
             } else {
                 const parts = path.split("/");
                 if (parts.length > 0) {
-                    category_id = parts[1];
+                    if (parts[1] == "category") {
+                        category_id = parts[2];
+                    }
                 } else {
                     // TODO: throw 404
                     category_id = get_root_category_txid();

@@ -29,7 +29,7 @@ class SearchForm extends React.Component {
     render() {
         var searching;
         if (this.props.category && this.props.category.name) {
-            searching = <span>Search <a onClick={() => { this.props.changeURL(this.props.category.txid) }}>{this.props.category.name}</a></span>;
+            searching = <span>Search <a onClick={() => { this.props.changeURL("/category/" + this.props.category.txid) }}>{this.props.category.name}</a></span>;
         } else if (this.props.category && this.props.category.txid) {
             searching = <span>Search category {this.props.category.txid.slice(0, 5)}...</span>;
         } else if (this.props.category && !this.props.category.txid) {
@@ -150,7 +150,7 @@ class SearchResult extends React.Component {
             var category = findObjectByTX(this.props.item.category, this.props.items);
 
             return (<div className="search-result">
-                <h4><a href={url}>{this.props.item.name}</a> <span className={"badge badge-type-" + this.props.item.type}>{this.props.item.type}</span> <span className="from-category-prefix">in</span> <a className="from-category" onClick={() => { this.props.changeURL(category.txid) }}>{category.name}</a></h4>
+                <h4><a href={url}>{this.props.item.name}</a> <span className={"badge badge-type-" + this.props.item.type}>{this.props.item.type}</span> <span className="from-category-prefix">in</span> <a className="from-category" onClick={() => { this.props.changeURL("/category/" + category.txid) }}>{category.name}</a></h4>
 
             {(this.props.item.type == "entry") && <a className="url" href={this.props.item.link}>{this.props.item.link}</a>}
             <div className="satoshis">{satoshisToDollars(this.props.item.satoshis)}</div>
