@@ -240,6 +240,7 @@ class SubcategoryList extends BaseList {
         if (this.props.category.address && slice.length > 0) {
             entryListing = (
                 <div>
+                <div id="valid-links-exist"></div>
                 <div className="controls">
                     <div className="sort">
                         <span className="label">sort by</span>

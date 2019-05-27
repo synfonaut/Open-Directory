@@ -71,10 +71,9 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * Followup with klimenos, some descriptions of books uploaded don't appear (https://dir.sv/#ae634d86622c4a287dcf40ac3c133f366ec49ec9e5561f711233b3f5fa64f4ae), did you add a description becaus eit doesn't show up
 
 ## 0.0.2
-* test how this looks on other platforms (facebook, messenger, telegram)
-
 * bitpaste, literatus, and http://bico.media and dir.sv included?
 * convert bitstagram link to bit link?
+
 
 * dedicated entry page
 
@@ -88,6 +87,10 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * create uptime check
 
 * clear out old server docker logs... increase disk size
+
+## tuesday
+- stats update
+- changelog
 
 
 * subcategories with long names don't look great https://dir.sv/#a737ace37e85ca701f1845a977fe2e80c243be0662e0933aa2b126a06dabe35e
