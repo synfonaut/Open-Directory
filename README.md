@@ -71,6 +71,9 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * Followup with klimenos, some descriptions of books uploaded don't appear (https://dir.sv/#ae634d86622c4a287dcf40ac3c133f366ec49ec9e5561f711233b3f5fa64f4ae), did you add a description becaus eit doesn't show up
 
 ## 0.0.2
+* fix twitter banner, make it nice and large, add icon on home page
+* fix smaller twitter banner, add nice icon
+
 * subcategories with long names don't look great https://dir.sv/#a737ace37e85ca701f1845a977fe2e80c243be0662e0933aa2b126a06dabe35e
 * save users prefs during session (sort order, num pages)
 * Optimize fully for mobile on small devices (homepage logo too big)
@@ -85,13 +88,12 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * much better stats page...actually show graphs
 * bitpaste, literatus, and http://bico.media and dir.sv included?
 * convert bitstagram link to bit link?
-* implement metalens comments (https://www.yours.org/content/metalens-app-update---map-protocol-2a7f47367bb2)
 * changelog should link directly to where you can see the actino
 * google analytics and basic stats tracking? easier to do product development if you know what features people are and aren't using....
 * fix bitsocket issue
+* implement metalens comments (https://www.yours.org/content/metalens-app-update---map-protocol-2a7f47367bb2)
+
 * FAQ: What is a bitcoin link?
-* fix twitter banner, make it nice and large, add icon on home page
-* fix smaller twitter banner, add nice icon
 * add to faq, how to get BSV and signup for money button
 * add to faq, can easily upload on add.bico.media (maybe add under submit link too)
 * twitter bot that posts new open directory links and content
