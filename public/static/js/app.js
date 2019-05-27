@@ -35,6 +35,8 @@ class OpenDirectoryApp extends React.Component {
         this._isMounted = false;
         this.addSuccessMessage = this.addSuccessMessage.bind(this);
         this.addErrorMessage = this.addErrorMessage.bind(this);
+        this.didUpdateLocation = this.didUpdateLocation.bind(this);
+        this.changeURL = this.changeURL.bind(this);
     }
 
     componentDidCatch(error, info) {
@@ -49,7 +51,7 @@ class OpenDirectoryApp extends React.Component {
 
         updateBitcoinSVPrice();
 
-        window.addEventListener('hashchange', this.didUpdateLocation.bind(this), false);
+        window.addEventListener('popstate', this.didUpdateLocation.bind(this), false);
     }
 
     componentWillUnmount() {
@@ -215,8 +217,14 @@ class OpenDirectoryApp extends React.Component {
         this.setState({"isExpandingAddEntryForm": true});
     }
 
+    changeURL(path) {
+        history.pushState(null, null, path);
+        window.scrollTo(0, 0);
+        this.didUpdateLocation();
+    }
+
     render() {
-        const hash = this.state.location[0];
+        const path = window.location.pathname;
 
         var body, loading, error;
         var shouldShowAddNewCategoryForm = false,
@@ -224,11 +232,11 @@ class OpenDirectoryApp extends React.Component {
         var changelog;
         var forks;
 
-        if (hash == "faq") {
+        if (path == "/faq") {
             body = <div className="faq">
                     <ReactMarkdown source={this.state.faq_markdown} />
                 </div>
-        } else if (hash == "stats") {
+        } else if (path == "/stats") {
             if (this.state.items.length == 0) {
                 body = (<div className="stats">
                     <h2>Statistics</h2>
@@ -294,9 +302,9 @@ class OpenDirectoryApp extends React.Component {
                     </ul>
                     </div>);
             }
-        } else if (hash == "search") {
-            body = <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} />
-        } else if (hash == "add-directory") {
+        } else if (path == "/search") {
+            body = <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} changeURL={this.changeURL} />
+        } else if (path == "/add-directory") {
             body = <AddDirectoryPage category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
         } else {
 
@@ -316,13 +324,13 @@ class OpenDirectoryApp extends React.Component {
                 const filtered_items = this.filterOutDetaches(this.state.items);
                 var list, list_class_name;
                 if (this.state.category.txid) {
-                    list = <SubcategoryList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />;
+                    list = <SubcategoryList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} changeURL={this.changeURL} />;
                     list_class_name = "subcategories";
                 } else {
                     list = <div>
-                        <HomepageEntries items={filtered_items} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} limit={4} show_category={true} />
+                        <HomepageEntries items={filtered_items} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} limit={4} show_category={true} changeURL={this.changeURL} />
                         <div className="clearfix"></div>
-                        <HomepageList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
+                        <HomepageList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} changeURL={this.changeURL} />
                     </div>;
                     list_class_name = "homepage";
                 }
@@ -354,7 +362,7 @@ class OpenDirectoryApp extends React.Component {
             intro = intro = <div className="intro">
                     <h1><i className="fas fa-sitemap"></i> Open Directory <span className="beta">beta</span></h1>
                     <div className="learn-more">
-                        <p>Open Directory is an open-source way for anyone to earn money by organizing links on the Bitcoin (SV) blockchain. Find the best content and earn money by submitting great links! {!this.state.isExpandingLearnMore && <span><a href="/#faq">Learn more</a>...</span>}</p>
+                        <p>Open Directory is an open-source way for anyone to earn money by organizing links on the Bitcoin (SV) blockchain. Find the best content and earn money by submitting great links! {!this.state.isExpandingLearnMore && <span><a href="/faq">Learn more</a>...</span>}</p>
                         
                     </div>
                     <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} embed={true} />
@@ -368,7 +376,7 @@ class OpenDirectoryApp extends React.Component {
                 <nav className="navigation">
                   <section className="container">
                     <div className="navigation-title">
-                        <a href="/#"><i className="fas fa-sitemap"></i>{this.state.title}</a>
+                        <a onClick={() => { this.changeURL("/") }}><i className="fas fa-sitemap"></i>{this.state.title}</a>
                         <span className="beta">beta</span>
                     </div>
                     <div className={this.state.networkActive ? "spinner white active" : "spinner white"}>
@@ -378,9 +386,9 @@ class OpenDirectoryApp extends React.Component {
                     </div>
                     <ul className="navigation-list float-right">
                       <li className="navigation-item">
-                        <a className="navigation-link nav-search" href="#search"><i className="fas fa-search"> </i>Search</a>
-                        <a className="navigation-link nav-stats" href="#stats">Stats</a>
-                        <a className="navigation-link nav-faq" href="#faq">FAQ</a>
+                        <a className="navigation-link nav-search" onClick={() => { this.changeURL("/search") }}><i className="fas fa-search"> </i>Search</a>
+                        <a className="navigation-link nav-stats" onClick={() => { this.changeURL("/stats") }}>Stats</a>
+                        <a className="navigation-link nav-faq" onClick={() => { this.changeURL("/faq") }}>FAQ</a>
                         <a className="navigation-link nav-fork" onClick={this.handleToggleFork.bind(this)}>Fork</a>
                       </li>
                     </ul>
@@ -395,7 +403,7 @@ class OpenDirectoryApp extends React.Component {
                                 })}
                               </MessageGroup>}
                           </PoseGroup>
-                          {hash == "" && intro}
+                          {path == "/" && intro}
                           {body}
                           {(this.state.isLoading && this.state.items.length == 0) && loading}
                           {this.state.isError && error}
@@ -494,37 +502,44 @@ class OpenDirectoryApp extends React.Component {
         return results.filter(r => { return !r.detached });
     }
 
-    getLocation() {
-        return window.location.hash.replace(/^#\/?|\/$/g, '').split('/');
-    }
-
     didUpdateLocation() {
-        const location = this.getLocation();
-        const hash = location[0];
+        const path = window.location.pathname;
 
-        console.log("location updated", hash);
+        console.log("location updated", path);
 
         var category = this.state.category;
         var items = [];
         var title = this.state.title;
         var needsupdate = false;
 
-        if (hash == "faq") {
+        if (path == "/faq") {
             title = "FAQ " + this.state.title;
-        } else if (hash == "stats") {
+        } else if (path == "/stats") {
             title = "Statistics for " + this.state.title;
             const cached = this.state.cache[null];
             if (cached) {
                 items = cached;
             }
-        } else if (hash == "search") {
+        } else if (path == "/search") {
             title = "Search " + this.state.title;
             needsupdate = true;
-        } else if (hash == "add-directory") {
+        } else if (path == "/add-directory") {
             title = "Add directory to " + this.state.title;
             needsupdate = true;
         } else {
-            const category_id = (hash == "" ? get_root_category_txid() : hash);
+            var category_id;
+            if (path == "/") {
+                category_id = get_root_category_txid();
+            } else {
+                const parts = path.split("/");
+                if (parts.length > 0) {
+                    category_id = parts[1];
+                } else {
+                    // TODO: throw 404
+                    category_id = get_root_category_txid();
+                }
+            }
+
             const cached = this.state.cache[category_id];
 
             category = {"txid": category_id, "needsdata": true};

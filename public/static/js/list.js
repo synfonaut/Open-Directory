@@ -212,12 +212,12 @@ class SubcategoryList extends BaseList {
             if (parent) {
                 const root_category_txid = get_root_category_txid();
                 if (root_category_txid == null || this.props.category.txid !== root_category_txid) {
-                    var parent_url = "/#" + parent.txid;
+                    var parent_url = "/" + parent.txid;
                     if (parent.txid == root_category_txid) {
-                        parent_url = "/#";
+                        parent_url = "/";
                     }
 
-                    back = <div className="back"><a href={parent_url}><i className="fas fa-long-arrow-alt-left"></i> {parent.name}</a><hr /></div>;
+                    back = <div className="back"><a onClick={() => { this.props.changeURL(parent_url) }}><i className="fas fa-long-arrow-alt-left"></i> {parent.name}</a><hr /></div>;
                 }
 
             }
@@ -262,7 +262,7 @@ class SubcategoryList extends BaseList {
 
                 <ul className="entry list">
                 {slice.map(entry => (
-                    <EntryItem key={"entry-" + entry.txid} item={entry} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />
+                    <EntryItem key={"entry-" + entry.txid} item={entry} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} changeURL={this.changeURL} />
                 ))}
                 </ul>
                 {pages.length > 1 && <div className="pages">{pages}</div>}
@@ -286,7 +286,7 @@ class SubcategoryList extends BaseList {
                     <div>
                     <ul className="category list">
                     {top_categories.map((category, i) => {
-                        const output = <CategoryItem key={"category-" + category.txid} item={category} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />;
+                        const output = <CategoryItem key={"category-" + category.txid} item={category} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} changeURL={this.props.changeURL} />;
 
                         if (((i+1) % 3) == 0) {
                             return [
@@ -414,7 +414,7 @@ class HomepageEntries extends BaseList {
 
                 <ul className="entry list">
                 {slice.map(entry => (
-                    <EntryItem key={"entry-" + entry.txid} item={entry} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} showCategory={true} />
+                    <EntryItem key={"entry-" + entry.txid} item={entry} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} showCategory={true} changeURL={this.props.changeURL} />
                 ))}
                 </ul>
                 {pages.length > 1 && <div className="pages">{pages}</div>}
@@ -560,7 +560,7 @@ class HomepageList extends BaseList {
                     </div>
                     <ul className="category list">
                     {slice.map((category, i) => {
-                        const output = <CategoryItem key={"category-" + category.txid} item={category} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} />;
+                        const output = <CategoryItem key={"category-" + category.txid} item={category} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} changeURL={this.props.changeURL} />;
                         return output;
                     })}
                     <div className="clearfix"></div>

@@ -195,6 +195,9 @@ Some Ideas:
 
 * more links on home page, less directories
 
+* translate old /#lk1j3kl124 hash links if you can get it working
+
+
 * image embeds? check b:// media type
 * video embeds? youtube, vimeo, etc....
 * windows browser showing scroll bar on sort
@@ -210,8 +213,10 @@ Weekly changelog show and tell
 Mailchimp newsletter
 Click to expand like old reddit
 
+* 404 page
 * fix twitter banner, make it nice and large, add icon
 * do server side seo rendering
+* minor: if your default tip amount is .10 it will only show .1 until you click
 
 
 
