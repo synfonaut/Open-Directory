@@ -131,13 +131,13 @@ class SearchResult extends React.Component {
         if (this.props.item.type == "category") {
             var url;
             if (this.props.item.txid) {
-                url = "#" + this.props.item.txid;
+                url = "/category/" + this.props.item.txid;
             } else {
-                url = "#";
+                url = "/";
             }
 
             return (<div className="search-result">
-                <h4><a href={url}>{this.props.item.name}</a> <span className={"badge badge-type-" + this.props.item.type}>{this.props.item.type}</span></h4>
+                <h4><a onClick={() => { this.props.changeURL(url) }}>{this.props.item.name}</a> <span className={"badge badge-type-" + this.props.item.type}>{this.props.item.type}</span></h4>
 
             {(this.props.item.type == "entry") && <a className="url" href={this.props.item.link}>{this.props.item.link}</a>}
             <div className="satoshis">{satoshisToDollars(this.props.item.satoshis)}</div>
