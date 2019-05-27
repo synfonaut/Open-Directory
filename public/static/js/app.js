@@ -554,10 +554,14 @@ class OpenDirectoryApp extends React.Component {
                 if (parts.length > 0) {
                     if (parts[1] == "category") {
                         category_id = parts[2];
+                    } else {
+                        this.setState({"isError": true, "isLoading": false});
+                        return;
                     }
+
                 } else {
-                    // TODO: throw 404
-                    category_id = get_root_category_txid();
+                    this.setState({"isError": true, "isLoading": false});
+                    return;
                 }
             }
 
