@@ -127,26 +127,105 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * way to move link so you keep address in tact
 * go through klimenos feedback
 
+
+Some Ideas:
+1- Button to move content to a different section
+2- Ability to report content --> Several reports would automatically result in user's MoneyButton banned from posting content and receiving tips for 24h or so
+3- List number of MoneyButton users in Stats
+4- Clickable http://dir.sv link in Changelog (to jump to affected section where the change occurred)
+5- "Per page" and "sort by" choises should be remembered for the active session
+6- Have some directions for new users who don't have a MoneyButton yet and instruct them they need to setup MoneyButton (FAQ or home page)
+7- Have a Trash Bin category for deleting content (so users can recover it, rather than looking into the Changelog), and mark deleted posts with a special icon (easily identifiable)
+8- Modified posts should have a little icon (counter) to specify how many time they've been altered. Clicking on the icon would display the logs.
+9- Search should include MoneyButton username (author of posts): i.e. I want to search if any of my content was deleted or modified: I type my username and it displays all my posts. Add a filter functionnality to filter deleted/modified content, so I can monitor if someone has been changing my content.
+10- Changelog could instegrate a search functionnality
+11- Along with the bit:// field, mention to users they can upload content via https://add.bico.media/. And have the uploaded content automatically fill the bit:// field for them.
+12- BugFix: some descriptions of books uploaded don't appear (https://dir.sv/#ae634d86622c4a287dcf40ac3c133f366ec49ec9e5561f711233b3f5fa64f4ae), may be due to size limitation. If that's the case, the description field must have limitation in place before posting.
+13- BugFix: UI bug on Chrome (c.f. picture). https://twitter.com/messages/media/1132604930164973572
+14- Warn users before posting the same content in the same category (could just be a JavaScript check based on existing entries, you can also store the pending entries that dont appear yet in the user’s’ browser session). So we can avoid duplicates/spam.
+
+
+* homepage logo wraps around because it's too big
+* reinder server with missing b:// media
+* bitcoin content sticker on yours.org to add to tipchain
+
+* save users prefs during session (sort order, num pages)
+
+* should be easily able to publish static sites with custom designs using open directory data
+* Description in entry needs css line break
+
+* Run tipchain stress test by asking for lots of user addresses
+* Optimize fully for mobile on small devices
+* Run charity campaigns where part of tip goes to somewhere great
+* Hook up a faucet?
+
+
+
 ## 0.0.2
 * change link color after clicking
+* navigation is breaking on mobile, too many things
+* too many pages on homepage
+* limit description, it can get really long on mobile
 * statistics
 
 * entry page
 * scroll to top of current container, not page
 * resizing looks goofy on homepage
-* capture emails and send newsletter
 * when searching on home page, no results doesn't have right margin
 * fix navigation on megans phone
 * highest tip on stats
+* if network is down, say that rather than generic error
+* With biggest tip statistic, show which category or entry it was for
+* show more links on home page....should be mostly about that and directories secondary
 
 
-
-## 0.0.3
+* capture emails and send newsletter
+* twitter bot that posts new open directory links and content
+* dedicated entry page
+* much better stats page...actually show graphs
 * bitpaste, literatus, and http://bico.media and dir.sv included?
 * convert bitstagram link to bit link?
+* temporary metalens comments
+* changelog should link directly to where you can see the actino
+
+* fix github vulnerability
+
+* google analytics and basic stats tracking? easier to do product development if you know what features people are and aren't using....
+* better twitter descriptions
+
+* more links on home page, less directories
+
+* image embeds? check b:// media type
+* video embeds? youtube, vimeo, etc....
+* windows browser showing scroll bar on sort
+* some tipping boxes don't push over on events...margin-bottom problem?
+* add to faq, how to get BSV and signup for money button
+
+Think about strategies to build user base
+
+Weekly stats threads, chained together to show growth
+
+Weekly changelog show and tell
+
+Mailchimp newsletter
+Click to expand like old reddit
+
+* fix twitter banner, make it nice and large, add icon
+* do server side seo rendering
+
+
+
+
+* PLANARIA
+- scale
+- sub categories pull up main categories
+- threaded comments
+
+## 0.0.3
 * custom planaria for performance
 * comments
 * bitcoin sticker crawling
+downvotes -> provide option? enable or disable, let market decide
 
 ## About
 
