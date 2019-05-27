@@ -146,12 +146,12 @@ class AddEntryForm extends React.Component {
     }
 
     componentDidMount() {
-        window.addEventListener('hashchange', this.clearForm.bind(this), false);
+        window.addEventListener('popstate', this.clearForm.bind(this), false);
         this._isMounted = true;
     }
 
     componentWillUnmount() {
-        window.removeEventListener('hashchange', this.clearForm.bind(this));
+        window.removeEventListener('popstate', this.clearForm.bind(this));
         this._isMounted = false;
     }
 
@@ -240,12 +240,12 @@ class EditEntryForm extends React.Component {
     }
 
     componentDidMount() {
-        window.addEventListener('hashchange', this.clearForm.bind(this), false);
+        window.addEventListener('popstate', this.clearForm.bind(this), false);
         this._isMounted = true;
     }
 
     componentWillUnmount() {
-        window.removeEventListener('hashchange', this.clearForm.bind(this));
+        window.removeEventListener('popstate', this.clearForm.bind(this));
         this._isMounted = false;
     }
 

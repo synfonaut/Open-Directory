@@ -15,13 +15,13 @@ class TipchainItem extends React.Component {
     }
 
     componentDidMount() {
-        window.addEventListener('hashchange', this.clearMoneyButton.bind(this), false);
+        window.addEventListener('popstate', this.clearMoneyButton.bind(this), false);
 
         this.handleTipSubmit();
     }
 
     componentWillUnmount() {
-        window.removeEventListener('hashchange', this.clearMoneyButton.bind(this));
+        window.removeEventListener('popstate', this.clearMoneyButton.bind(this));
     }
 
     clearMoneyButton() {

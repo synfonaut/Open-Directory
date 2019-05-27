@@ -10,12 +10,12 @@ class DeleteItem extends React.Component {
 
     componentDidMount() {
         this._isMounted = true;
-        window.addEventListener('hashchange', this.clearMoneyButton.bind(this), false);
+        window.addEventListener('popstate', this.clearMoneyButton.bind(this), false);
     }
 
     componentWillUnmount() {
         this._isMounted = false;
-        window.removeEventListener('hashchange', this.clearMoneyButton.bind(this));
+        window.removeEventListener('popstate', this.clearMoneyButton.bind(this));
     }
 
     clearMoneyButton() {

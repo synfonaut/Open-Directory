@@ -16,12 +16,12 @@ class BaseList extends React.Component {
 
     componentDidMount() {
         this._isMounted = true;
-        window.addEventListener('hashchange', this.clearForm.bind(this), false);
+        window.addEventListener('popstate', this.clearForm.bind(this), false);
     }
 
     componentWillUnmount() {
         this._isMounted = false;
-        window.removeEventListener('hashchange', this.clearForm.bind(this));
+        window.removeEventListener('popstate', this.clearForm.bind(this));
     }
 
     clearForm() {
