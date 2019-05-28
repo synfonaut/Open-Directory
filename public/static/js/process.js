@@ -565,6 +565,7 @@ function processResults(rows, txpool) {
     for (const result of txpool.filter(r => { return r.type == "vote" })) { processing = process(result) }
     for (const result of txpool.filter(r => { return r.type == "fork" })) { processing = process(result) }
 
+
     // update final counts
     const process_pipeline = [updateCategoryEntryCounts, updateCategoryMoneyCounts, updateHottness];
     for (const fn of process_pipeline) {
@@ -642,6 +643,7 @@ function processTipchain(processing, txpool) {
 
 
 function processCategoryResult(result, existing, undo, rows) {
+
     if (undo.indexOf(result.txid) !== -1) {
         return existing;
     }
