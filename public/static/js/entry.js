@@ -19,6 +19,8 @@ class EntryItem extends Item {
 
         const category = findObjectByTX(this.props.item.category, this.props.items);
 
+        console.log("CATEGORY", this.props.item);
+
         var actions = (
             <span className="actions">
                 <a onClick={this.handleToggleExpand.bind(this)} className="arrow" title={"txid " + this.props.item.txid}>{this.state.isExpanded ? <i className="fas fa-caret-right"></i> : <i className="fas fa-caret-down"></i>}</a>
