@@ -57,7 +57,6 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 
 ## Ideas
 * AIP to sign data by author
-* Categories "pull up" and aggregate their sub-categories
 * Attach comments to votes?
 * on-chain planaria... end up doing similar "state processing" code to bring "objects" up to date, eventually will need full Planaria, but for lighter apps, planarium.js?
 * protocol processor that's a planaria state machine transformer, but embedded in a bitcoin tx, so everything is still onchain (schema)
@@ -74,17 +73,13 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * bitpaste, literatus, and http://bico.media and dir.sv included?
 * convert bitstagram link to bit link?
 
-
 * dedicated entry page
-
 
 * fix bitsocket issue
 
 * reindex server with missing b:// media (create duplicate server)
 
 * implement metalens comments (https://www.yours.org/content/metalens-app-update---map-protocol-2a7f47367bb2)
-
-* create uptime check
 
 * clear out old server docker logs... increase disk size
 
@@ -166,7 +161,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * threaded and upvoted comments
 * bitcoin website sticker crawling
 * categories "pull up" sub-category links (up to max depth)
-* downvotes
+* downvotes (who gets the tip? if content creator..incentivizes wrong behavior)
 * report button
 * nsfw tag
 

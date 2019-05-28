@@ -163,6 +163,12 @@ class BaseList extends React.Component {
 
 class SubcategoryList extends BaseList {
 
+    handleClickShowAllSubcategories() {
+        this.setState({"category_limit": -1});
+    }
+
+
+
     render() {
         const categories = this.getCategories();
 
@@ -277,7 +283,7 @@ class SubcategoryList extends BaseList {
             <div>
             {heading}
             {categories && categories.length > 0 && 
-                    <div>
+                    <div className="category-wrapper">
                     <ul className="category list">
                     {top_categories.map((category, i) => {
                         const output = <CategoryItem key={"category-" + category.txid} item={category} items={this.props.items} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} changeURL={this.props.changeURL} />;
@@ -299,6 +305,7 @@ class SubcategoryList extends BaseList {
                     <div className="clearfix"></div>
                     </ul>
                     <div className="clearfix"></div>
+                    {(categories.length > top_categories.length) && <div className="show-all-subcategories"><i class="fas fa-chevron-circle-down"></i> <a onClick={this.handleShowAllCategories.bind(this)}>Show all {categories.length} subcategories</a></div>}
                     </div>}
             {entryListing}
             <div className="clearfix"></div>

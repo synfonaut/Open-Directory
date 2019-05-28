@@ -348,9 +348,25 @@ form {
     margin: 15px 0 25px 0;
 }
 
-.subcategories ul.category {
-    padding: 7px 14px;
+.subcategories .category-wrapper {
     background: rgba(239,239,239,0.2);
+    padding: 7px 14px;
+    margin-bottom: 10px;
+}
+
+.subcategories .show-all-subcategories {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.subcategories .show-all-subcategories a {
+    color: #777;
+}
+
+.subcategories .show-all-subcategories .fas {
+    color: #777;
 }
 
 .subcategories ul.category li {
@@ -636,6 +652,7 @@ form {
 .empty-entry-listing {
     background: rgba(255, 255, 255, 0.50);
     padding: 40px 50px;
+    margin-top: 20px;
     margin-bottom: 40px;
     border-radius: 5px;
     border: 1px dashed rgba(232,226,214,0.6);
@@ -1818,7 +1835,7 @@ form {
         font-size: 60px;
     }
 
-    .subcategories ul.category.list {
+    .subcategories .category-wrapper {
         margin-left: 60px;
     }
 
