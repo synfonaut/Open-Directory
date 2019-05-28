@@ -665,7 +665,7 @@ function processCategoryResult(result, existing, undo, rows) {
                 obj[key] = result.change[key];
             }
         } else {
-            console.log("couldn't find category for update", obj, result, existing);
+            console.log("couldn't find category for update", obj, result);
         }
     } else if (result.action == "delete") {
         const obj = findObjectByTX(result.action_id, existing);
