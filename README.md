@@ -70,6 +70,12 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * Followup with klimenos, some descriptions of books uploaded don't appear (https://dir.sv/#ae634d86622c4a287dcf40ac3c133f366ec49ec9e5561f711233b3f5fa64f4ae), did you add a description becaus eit doesn't show up
 
 ## 0.0.2
+
+* items and changelog switched over. now should be in position to ditch slice-cache and switch to global-cache. verify changelog and items are correct, especially on complex pages
+* verify all places that use this.state.cache[category_id] work as expected (didUpdateLocation)
+
+* instead of /link/ should it be /comments/ — that way you can talk about a category in general too? doesn't have to be attached to 
+
 * dedicated entry page
 
 * fix bitsocket issue
@@ -79,10 +85,21 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * implement metalens comments (https://www.yours.org/content/metalens-app-update---map-protocol-2a7f47367bb2)
 
 * clear out old server docker logs... increase disk size
+add https://www.audiob.app/tx/5ff0f7eaaa9c2771259bf410713efe0c5ac915f42fc008716b35f0882cd40286 to tipchain services
+
+* clear warning about uploading copywritten material. could get sued!?
+* figure out why some dir.sv tipchains aren't being included, https://twitter.com/Nadrojiskool/status/1133496717712580608 https://dir.sv/category/7e6c63be29af1eca8ddf2d4acfd5f43dd711d085b2101504284eb9b7056aa247
+
+* fix stats page, otherwise people won't link to it directly
 
 ## tuesday
-- stats update
 - changelog
+* change original content owner to original content uploader
+* if desc is too long it doesn't show
+* wrong money count: https://dir.sv/category/e57c995fa8d582c8dbed7714071ce31d50bc7aed2c1dfa7c11bcd69b2f489d1e
+* showing two tips in changelog but only one on page? https://dir.sv/category/31523dd547047024bed31c3cb2f3ef8f6e71d1fc976a628d97872e53a7583925
+
+* mongodb scaling. setup new server optimized. look into a cluster. look into mongodb query caching
 
 
 * subcategories with long names don't look great https://dir.sv/#a737ace37e85ca701f1845a977fe2e80c243be0662e0933aa2b126a06dabe35e
@@ -109,6 +126,11 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * credit font awesome in about
 * when showing a deleted category ...should show it's actually deleted
 * under upload link, let users know they can use add.bico.media, but they shouldn't be uploading content that isn't theirs or in the public domain
+
+## After Conference
+- Real scaling plan
+- Real testing plan, automation
+- Real refactoring plan
 
 ## Nice to have
 * MoneyButton usernames
@@ -142,6 +164,8 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 
 
 ## Minor Bugs
+* deleted content shouldn't show up in search anymore
+* search doesn't translate bit:// links to bico.media
 * can't control+click directories to open them in a new window
 * top sub categories cuts off and doesn't show all https://dir.sv/category/f1b0ff16ce275c196113c584670f2d198912705d4570adba1d9f03a34ec0ca03
 * if your default tip amount is .10 it will only show .1 until you click
@@ -155,6 +179,9 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * messages should float over content, so if you're scrolled down you still see it
 * unconfirmed media not in tipchain
 
+## Problems to think through
+* reposting dir.sv links should act as symlink, and not "steal" tipchain. should find balance between users. could/should tip count on the original post? should we merge tipchains? how to balance this?
+* downvotes (who gets the tip? if content creator..incentivizes wrong behavior)
 
 ## 0.0.3
 
@@ -164,7 +191,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * bitcoin website sticker crawling
 * categories "pull up" sub-category links (up to max depth)
 * downvotes (who gets the tip? if content creator..incentivizes wrong behavior)
-* report button
+* report button / content violations / tip 
 * nsfw tag
 
 ## About

@@ -384,10 +384,10 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
 
         if (cache) {
             // Hack to keep the site up...homepage is bringing us down
-            if (category_id == null) {
+            //if (category_id == null) {
                 resolve(CACHED_HOMEPAGE);
                 return;
-            }
+            //}
         }
 
 
@@ -1159,6 +1159,43 @@ function processOpenDirectoryTransaction(result) {
     return obj;
 }
 
+function connect_to_bitdb_socket(category_id, callback) {
+
+    const EventSource = require("eventsource");
+
+    const query = get_bitdb_query(category_id);
+    const encoded_query = toBase64(JSON.stringify(query));
+    const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "s");;
+    const url = api_url.replace("{query}", encoded_query);
+
+    const socket = new EventSource(url);
+    socket.onmessage = (e) => {
+        try {
+            const resp = JSON.parse(e.data);
+            if ((resp.type == "c" || resp.type == "u") && (resp.data.length > 0)) {
+
+                const rows = [];
+                for (var i = 0; i < resp.data.length; i++) {
+                    if (resp.data[i] && resp.data[i].data && resp.data[i].data.s1 == OPENDIR_PROTOCOL) {
+                        rows.push(resp.data[i]);
+                    }
+                }
+
+                if (rows.length > 0) {
+                    console.log("handled new message", resp);
+                    callback(rows);
+                }
+            }
+
+
+        } catch (e) {
+            console.log("error handling network socket data", e.data);
+        }
+    }
+
+    return socket;
+}
+
 function convertOutputs(outputs, address_space=[]) {
     var satoshis = 0;
     for (const output of outputs) {
@@ -1197,6 +1234,25 @@ function findRootActionID(result, results=[]) {
     return result.action_id;
 }
 
+function findParentCategoryChain(parent_txid, results=[]) {
+    for (const result of results) {
+        if (result.txid == parent_txid) {
+            return findParentCategoryChain(result.category, results).concat([parent_txid]);
+        }
+    }
+
+    return [];
+}
+
+function findChildrenOfParentCategory(parent_txid, results=[]) {
+    if (parent_txid) {
+        return results.filter(r => {
+            return (r.category == parent_txid) || (r.action_id == parent_txid) || (r.reference_id == parent_txid);
+        });
+    } else {
+        return []
+    }
+}
 
 
 if (typeof window == "undefined") {
@@ -1210,5 +1266,6 @@ if (typeof window == "undefined") {
         "calculateTipchainSplits": calculateTipchainSplits,
         "calculateTipPayment": calculateTipPayment,
         "findObjectByTX": findObjectByTX,
+        "connect_to_bitdb_socket": connect_to_bitdb_socket,
     };
 }

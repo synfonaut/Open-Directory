@@ -12,7 +12,7 @@ class OpenDirectoryApp extends React.Component {
             location: [""],
             messages: [],
 
-            raw: {},    // response from network
+            changelog: [],    // response from network
             txpool: [], // semi-processed results from network
             items: [],  // current items
             cache: {},  // previous items
@@ -23,6 +23,7 @@ class OpenDirectoryApp extends React.Component {
             taches: [], // attach and detaches
 
             category: {"txid": get_root_category_txid(), "needsupdate": true},
+            link: null,
 
             title: SETTINGS.title,
             intro_markdown: SETTINGS.intro_markdown,
@@ -170,7 +171,8 @@ class OpenDirectoryApp extends React.Component {
             return false;
         });
 
-        var changelog = this.state.raw[this.state.category.txid];
+        var changelog = this.buildRawSliceRepresentationFromCache(this.state.category.txid);
+
         if (!changelog) {
             changelog = [];
         }
@@ -237,7 +239,10 @@ class OpenDirectoryApp extends React.Component {
                     <ReactMarkdown source={this.state.faq_markdown} />
                 </div>
         } else if (path == "/stats") {
-            if (this.state.items.length == 0) {
+
+            const stats = this.buildItemSliceRepresentationFromCache(this.state.category.txid);
+
+            if (stats.length == 0) {
                 body = (<div className="stats">
                     <h2>Statistics</h2>
                     <p>Please visit the homepage first, let it load then return. This will be fixed soon!</p>
@@ -307,6 +312,34 @@ class OpenDirectoryApp extends React.Component {
             body = <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} changeURL={this.changeURL} />
         } else if (path == "/add-directory") {
             body = <AddDirectoryPage category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
+        } else if (this.state.link) {
+
+            // TODO: Move all this to an LinkPage
+            var back;
+            if (this.state.category) {
+                const root_category_txid = get_root_category_txid();
+                if (root_category_txid == null || this.props.category.txid !== root_category_txid) {
+                    var parent_url = "/category/" + this.state.category.txid;
+                    if (this.state.category.txid == root_category_txid) {
+                        parent_url = "/";
+                    }
+
+                    back = <div className="back"><a onClick={() => { this.props.changeURL(parent_url) }}><i className="fas fa-long-arrow-alt-left"></i> {parent.name}</a><hr /></div>;
+                }
+
+            }
+
+            body = (<div className="link-meta" id={this.state.link.txid}>
+                    {back}
+                    <div className="upvoteContainer">
+                        <div className="upvote"><a><i className="fas fa-chevron-up"></i></a> <span className="number satoshis" title={this.state.link.satoshis + " sats"}>{this.state.link.satoshis}</span><span className="number votes" title={this.state.link.hottness + " hottness"}>{pluralize(this.state.link.votes, "vote", "votes")}</span></div>
+                            <div>
+                                <h1>{this.state.link.name}
+                                </h1>
+                                <div className="markdown"><ReactMarkdown source={this.state.link.description} /></div>
+                                <div className="clearfix"></div>
+                            </div>
+                        </div></div>);
         } else {
 
             if (!this.state.isLoading && !this.state.isError) {
@@ -319,7 +352,6 @@ class OpenDirectoryApp extends React.Component {
 
             changelog = this.buildChangeLog(this.state.category.txid);
             forks = this.getForks();
-
 
             if (!this.state.isError) {
                 const filtered_items = this.filterOutDetaches(this.state.items);
@@ -521,12 +553,130 @@ class OpenDirectoryApp extends React.Component {
         return path;
     }
 
+    buildItemSliceRepresentationFromCache(category_id) {
+
+        if (!category_id) {
+            return this.state.items;
+        }
+
+        const parent_categories = findParentCategoryChain(category_id, this.state.items);
+
+        const items = new Map();
+
+        for (const txid of parent_categories) {
+            const parent = findObjectByTX(txid, this.state.items);
+            items.set(txid, parent);
+        }
+
+        var txids = new Set();
+        var subcategory_txids = [category_id];
+        while (subcategory_txids.length > 0) {
+            const txid = subcategory_txids.pop();
+            txids.add(txid);
+
+            const found_children = findChildrenOfParentCategory(txid, this.state.items);
+
+            for (const child of found_children) {
+                if (child.type == "category") {
+                    subcategory_txids.push(child.txid);
+                }
+                txids.add(child.txid);
+            }
+        }
+
+        const children = this.state.items.filter(i => {
+            if (txids.has(i.txid)) {
+                return true;
+            }
+
+            if (txids.has(i.action_id)) {
+                return true;
+            }
+
+            if (txids.has(i.reference_id)) {
+                return true;
+            }
+        });
+
+        for (const child of children) {
+            items.set(child.txid, child);
+        }
+
+        return Array.from(items.values());
+    }
+
+    buildRawSliceRepresentationFromCache(category_id) {
+
+        // So hacky..trying to hang on and scale... All of this needs to be rewritten 
+
+        const changelog = this.state.changelog;
+
+        if (!changelog || changelog.length == 0) {
+            return [];
+        }
+
+        if (!category_id) {
+            return changelog;
+        }
+
+        const filtered_changelog = [];
+
+        var items = this.buildItemSliceRepresentationFromCache(category_id);
+
+        // Grab parents first, since we don't want their children (undos, votes) we do them separate
+        while (items) {
+            const item = items.shift();
+            if (item.txid == category_id) {
+                items.push(item);
+                break;
+            } else {
+                filtered_changelog.push(findObjectByTX(item.txid, changelog));
+            }
+        }
+
+        const txids = items.map(i => { return i.txid }).filter(i => { return i });
+        for (const log of changelog) {
+            if (txids.indexOf(log.txid) !== -1) {
+                filtered_changelog.push(log);
+            } else if (txids.indexOf(log.data.s3) !== -1) {
+                filtered_changelog.push(log);
+            }
+        }
+
+
+        /*
+        const all = [];
+        const items = this.buildItemSliceRepresentationFromCache(category_id);
+        for (const item of items) {
+            all.push(item);
+        }
+
+        const filtered_changelog = [];
+        //const txids = this.buildItemSliceRepresentationFromCache(category_id).map(i => { return i.txid }).filter(i => { return i });
+
+        console.log("TXIDS", txids);
+
+        for (const row of changelog) {
+            if (txids.indexOf(row.txid) !== -1) {
+                filtered_changelog.push(row);
+            } else if (txids.indexOf(row.action_id) !== -1) {
+                filtered_changelog.push(row);
+            }
+        }
+
+        return filtered_changelog;
+        */
+        return filtered_changelog;
+    }
+
+
     didUpdateLocation() {
         const path = this.getLocation();
 
         console.log("location updated", path);
 
         var category = this.state.category;
+        var link = this.state.link;
         var items = [];
         var title = this.state.title;
         var needsupdate = false;
@@ -535,16 +685,45 @@ class OpenDirectoryApp extends React.Component {
             title = "FAQ " + this.state.title;
         } else if (path == "/stats") {
             title = "Statistics for " + this.state.title;
-            const cached = this.state.cache[null];
-            if (cached) {
-                items = cached;
-            }
+            items = this.state.items;
         } else if (path == "/search") {
             title = "Search " + this.state.title;
             needsupdate = true;
         } else if (path == "/add-directory") {
             title = "Add directory to " + this.state.title;
             needsupdate = true;
+        } else if (path.indexOf("/link/") == 0) {
+
+            const parts = path.split("/");
+            if (parts.length > 0) {
+                const entry_id = parts[2];
+
+                // Hacky...but will rip this all out when planaria is built
+                if (CACHED_HOMEPAGE) {
+                    const txpool = processOpenDirectoryTransactions(CACHED_HOMEPAGE);
+                    const results = processResults(CACHED_HOMEPAGE, txpool);
+
+                    const entry = findObjectByTX(entry_id, results);
+                    if (entry) {
+                        category = findObjectByTX(entry.category, results);
+                        if (category) {
+                            category = category;
+                            link = entry;
+                        } else {
+                            this.setState({"isError": true, "isLoading": false});
+                            return;
+                        }
+                    } else {
+                        this.setState({"isError": true, "isLoading": false});
+                        return;
+                    }
+                }
+
+
+            } else {
+                this.setState({"isError": true, "isLoading": false});
+                return;
+            }
         } else {
             var category_id;
             if (path == "/") {
@@ -565,6 +744,7 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
+            // TODO: Need to grab new cache here
             const cached = this.state.cache[category_id];
 
             category = {"txid": category_id, "needsdata": true};
@@ -591,6 +771,7 @@ class OpenDirectoryApp extends React.Component {
         this.setState({
             "location": location,
             "category": category,
+            "link": link,
             "items": items,
             "isExpandingAddCategoryForm": false,
             "isExpandingAddEntryForm": false,
@@ -621,9 +802,6 @@ class OpenDirectoryApp extends React.Component {
                 const results = processResults(rows, txpool);
                 const success = this.checkForUpdatedActiveCategory(results);
 
-                const raw = this.state.raw;
-                raw[category_id] = rows;
-
                 const cache = this.state.cache;
                 cache[category_id] = results;
 
@@ -633,7 +811,7 @@ class OpenDirectoryApp extends React.Component {
                     "isError": !success,
                     "txpool": txpool,
                     "items": results,
-                    "raw": raw,
+                    "changelog": rows,
                     "cache": cache,
                 });
 
@@ -669,9 +847,7 @@ class OpenDirectoryApp extends React.Component {
 
     setupNetworkSocket() {
         if (this.socket) {
-            console.log("refreshing network socket");
-            this.socket.close();
-            delete this.socket;
+            return;
         } else {
             console.log("setting up new network socket");
         }
@@ -687,18 +863,16 @@ class OpenDirectoryApp extends React.Component {
                 const resp = JSON.parse(e.data);
                 if ((resp.type == "c" || resp.type == "u") && (resp.data.length > 0)) {
 
-                    var needsUpdate = false;
+                    const rows = [];
                     for (var i = 0; i < resp.data.length; i++) {
                         if (resp.data[i] && resp.data[i].data && resp.data[i].data.s1 == OPENDIR_PROTOCOL) {
-                            needsUpdate = true;
+                            rows.push(resp.data[i]);
                         }
                     }
 
-                    if (needsUpdate) {
+                    if (rows.length > 0) {
                         console.log("handled new message", resp);
-                        this.networkAPIFetch();
-                    } else {
-                        console.log("unhandled message", resp);
+                        //this.insertNewRowsFromNetwork(rows);
                     }
                 }
 
@@ -708,6 +882,38 @@ class OpenDirectoryApp extends React.Component {
             }
         }
     }
+
+/*
+    insertNewRowsFromNetwork(rows) {
+        console.log("INSERTING NEW ROWS", rows);
+
+        const category_id = (this.state.category ? this.state.category.txid : get_root_category_txid());
+        const old_rows = this.state.raw[category_id];
+
+        const new_rows = old_rows.concat(rows);
+
+        const txpool = processOpenDirectoryTransactions(new_rows);
+
+        const results = processResults(new_rows, txpool);
+        const success = this.checkForUpdatedActiveCategory(results);
+
+        const raw = this.state.raw;
+        raw[category_id] = new_rows;
+
+        const cache = this.state.cache;
+        cache[category_id] = results;
+
+        this.setState({
+            "networkActive": false,
+            "isLoading": false,
+            "isError": !success,
+            "txpool": txpool,
+            "items": results,
+            "raw": raw,
+            "cache": cache,
+        });
+    }
+    */
 
 }
 

@@ -96,6 +96,3 @@ function getBMediaURLForTXID(url) {
     }
 }
 
-function getTXIDFromURL(url) {
-    
-}
