@@ -333,12 +333,12 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
 
         /*
         for (const row of rows) {
-            console.log("ROW", row);
+            console.log("ROW", JSON.stringify(row.b_txid, null, 4));
         }
 
-        throw "E";
         console.log("ROWS", rows.length);
         console.log("ROW JSON", JSON.stringify(rows, null, 4));
+        throw "E";
         */
 
         results = results.concat(rows);

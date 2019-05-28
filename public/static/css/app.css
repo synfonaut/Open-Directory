@@ -163,15 +163,17 @@ a {
     margin-bottom: 11px;
 }
 
+.entry-wrapper {
+    margin-left: 60px;
+}
+
 .entry .description {
     margin: 0;
-    margin-left: 60px;
 }
 
 .entry .url {
     font-size: 14px;
     margin: 0;
-    margin-left: 60px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1321,6 +1323,10 @@ form {
     margin-left: 60px;
 }
 
+.subcategories .tipping {
+    margin-left: 0px;
+}
+
 .category-meta .tipping {
     margin-left: 0px;
 }
@@ -1946,11 +1952,6 @@ form {
     .nav-stats {
         display: inline-block;
     }
-
-    .subcategories .tipping {
-        margin-left: 60px;
-    }
-
 }
 
 /* Larger than tablet screen */
