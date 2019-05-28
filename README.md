@@ -140,6 +140,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * easily change default tip amounts when forking
 * stats show history of each action in graph
 * show which content is trending really hard with a badge
+* Upcoming links: trending links that are less than 24 hours old. helps them go viral
 
 
 ## Minor Bugs

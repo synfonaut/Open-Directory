@@ -1321,10 +1321,6 @@ form {
     margin-left: 60px;
 }
 
-.subcategories .tipping {
-    margin-left: 0px;
-}
-
 .category-meta .tipping {
     margin-left: 0px;
 }
@@ -1950,6 +1946,11 @@ form {
     .nav-stats {
         display: inline-block;
     }
+
+    .subcategories .tipping {
+        margin-left: 60px;
+    }
+
 }
 
 /* Larger than tablet screen */
