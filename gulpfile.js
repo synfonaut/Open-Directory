@@ -42,7 +42,7 @@ gulp.task("default", function () {
             presets: ['@babel/env','@babel/react'],
             plugins: ['transform-react-jsx']
         }))
-        //.pipe(uglify())
+        .pipe(uglify())
         .pipe(concat('bundle.min.js'))
         .pipe(gulp.dest("public/static/js/"))
     )
