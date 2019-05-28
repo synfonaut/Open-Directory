@@ -13,6 +13,10 @@ const SUPPORTED_TIPCHAIN_PROTOCOLS = [
     "b://",
     "bit://" + BCAT_MEDIA_PROTOCOL + "/",
     "https://bico.media/",
+    "https://www.bitpaste.app/tx/",
+    "https://memo.sv/post/",
+    "https://dir.sv/category/",
+    "https://dir.sv/link/",
 ];
 
 // Open Directory Bitcom Protocol
@@ -187,7 +191,10 @@ function get_bitdb_query(category_id=null, cursor=0, limit=1000, maxDepth=5) {
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "bcat://" ]}, 1 ] } },
 
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://bico.media/" ]}, 1 ] } },
-                            {"txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://www.bitpaste.app/tx/" ]}, 1 ] } },
+                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://www.bitpaste.app/tx/" ]}, 1 ] } },
+                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://memo.sv/post/" ]}, 1 ] } },
+                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://dir.sv/category/" ]}, 1 ] } },
+                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://dir.sv/link/" ]}, 1 ] } },
                         ]
                     }
                 },
@@ -332,11 +339,11 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
         const rows = r.c.concat(r.u).reverse();
 
         /*
-        for (const row of rows) {
-            console.log("ROW", JSON.stringify(row.b_txid, null, 4));
-        }
 
         console.log("ROW JSON", JSON.stringify(rows, null, 4));
+        for (const row of rows) {
+            console.log("ROW", JSON.stringify(row, null, 4));
+        }
         console.log("ROWS", rows.length);
         throw "E";
         */
@@ -795,19 +802,6 @@ function processResult(result, existing, undo, rows) {
 }
 
 
-function parseTransactionAddressFromURL(url) {
-    for (const protocol of SUPPORTED_TIPCHAIN_PROTOCOLS) {
-        const bmedia_parts = url.split(protocol);
-        if (bmedia_parts.length == 2) {
-            const bmedia_txid = bmedia_parts[1];
-            if (bmedia_txid.length == 64) {
-                return bmedia_txid;
-            }
-        }
-    }
-    return null;
-}
-
 function parseTipFromEntryMedia(item, media) {
     for (const protocol of SUPPORTED_TIPCHAIN_PROTOCOLS) {
         const bmedia_parts = item.link.split(protocol);
@@ -822,7 +816,7 @@ function parseTipFromEntryMedia(item, media) {
                     };
 
                 } else {
-                    console.log("unable to find associated b media for item", item.txid);
+                    console.log("unable to find associated b media for item", item.txid, "media idea", bmedia_txid);
                 }
             }
         }
@@ -1037,7 +1031,13 @@ function processOpenDirectoryTransaction(result) {
 
     if (OPENDIR_ACTIONS.indexOf(opendir_action) == -1) {
         console.log("Error while processing open directory transaction: invalid action", result);
-        return null;
+        return {
+            txid: result.txid,
+            address: result.address,
+            height: height,
+            time: time,
+            type: "other",
+        };
     }
 
     if (opendir_action == "vote" || opendir_action == "undo") {
