@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+require('console.mute');
+
 const process = require("../public/static/js/process.js");
 const fs = require("fs");
 
@@ -28,14 +30,17 @@ process.fetch_from_network(null, 0, num_to_fetch, [], false).then(rows => {
         }
 
         if (!fs.existsSync(cached_items_file)) {
-            //throw "expected cache items file to already exist...what's going on?";
+            throw "expected cache items file to already exist...what's going on?";
         }
 
+        console.mute();
         const txpool = process.processOpenDirectoryTransactions(rows);
         const results = process.processResults(rows, txpool);
         if (results.length < 100) {
             throw "expected processed results to be more";
         }
+
+        var data = console.resume();;
 
         const raw_output = "const CACHED_HOMEPAGE = " + JSON.stringify(rows) + ";";
         try {

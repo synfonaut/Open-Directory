@@ -17,6 +17,7 @@ const SUPPORTED_TIPCHAIN_PROTOCOLS = [
     "https://memo.sv/post/",
     "https://dir.sv/category/",
     "https://dir.sv/link/",
+    "https://bitstagram.bitdb.network/m/raw/",
 ];
 
 // Open Directory Bitcom Protocol
@@ -195,6 +196,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=1000, maxDepth=5) {
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://memo.sv/post/" ]}, 1 ] } },
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://dir.sv/category/" ]}, 1 ] } },
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://dir.sv/link/" ]}, 1 ] } },
+                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://bitstagram.bitdb.network/m/raw/" ]}, 1 ] } },
                         ]
                     }
                 },
@@ -816,7 +818,7 @@ function parseTipFromEntryMedia(item, media) {
                     };
 
                 } else {
-                    console.log("unable to find associated b media for item", item.txid, "media idea", bmedia_txid);
+                    console.log("unable to find associated b media for item", item.txid, "media txid", bmedia_txid);
                 }
             }
         }
