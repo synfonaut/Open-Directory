@@ -70,14 +70,11 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * Followup with klimenos, some descriptions of books uploaded don't appear (https://dir.sv/#ae634d86622c4a287dcf40ac3c133f366ec49ec9e5561f711233b3f5fa64f4ae), did you add a description becaus eit doesn't show up
 
 ## 0.0.2
-* convert bitstagram link to bit link?
-* etched
-
 * dedicated entry page
 
 * fix bitsocket issue
 
-* reindex server with missing b:// media (create duplicate server)
+* reindex server with missing b:// media (create duplicate server) (use satchmo guide)
 
 * implement metalens comments (https://www.yours.org/content/metalens-app-update---map-protocol-2a7f47367bb2)
 
@@ -141,6 +138,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * stats show history of each action in graph
 * show which content is trending really hard with a badge
 * Upcoming links: trending links that are less than 24 hours old. helps them go viral
+* Server side rendering so first pageload doesn't require ajax
 
 
 ## Minor Bugs
@@ -155,6 +153,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * clean up cache script updater so only showing info and errors, not debugging info
 * descriptions need trimming or url is too long (http://localhost:3000/category/76ef4c9419e9de528009ea8ee7c43c669e3837db8edc7df0f961c6d0c490a2bd)
 * messages should float over content, so if you're scrolled down you still see it
+* unconfirmed media not in tipchain
 
 
 ## 0.0.3

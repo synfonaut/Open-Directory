@@ -19,8 +19,10 @@ class EntryItem extends Item {
 
         const category = findObjectByTX(this.props.item.category, this.props.items);
 
-        if (!category.name) {
-            category.name = "Unknown";
+        if (!category) {
+            console.log("ITEMS", this.props.items);
+            console.log(this.props.item);
+            throw "NO CATEGORY";
         }
 
         var actions = (

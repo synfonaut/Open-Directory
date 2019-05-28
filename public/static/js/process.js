@@ -179,8 +179,40 @@ function get_bitdb_query(category_id=null, cursor=0, limit=1000, maxDepth=5) {
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
+
+
+                // crawl confirmed dir.sv media separately since we want to include the output data
+                {
+                    "$addFields": {
+                       "dirsv_txid": [
+                           { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://dir.sv/category/" ]}, 1 ] } },
+                           { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://dir.sv/link/" ]}, 1 ] } },
+                        ]
+                    }
+                },
+
                 //
-                // Crawl associated b:// and bcat:// media so we can include author in the tipchain
+                // Crawl confirmed dir.sv media
+                { "$lookup": { "from": "c", "localField": "dirsv_txid.txid", "foreignField": "tx.h", "as": "confirmed_dirmediatx" } },
+                { "$project": { "confirmed_dirmediatx": "$confirmed_dirmediatx", "object": ["$$ROOT"], } },
+                { "$project": { "object.confirmed_dirmediatx": 0, "object.dirsv_txid": 0} },
+                // including b:// files could make queries very large, so filter out data—we only need metadata
+                {
+                    "$project": {
+                        "confirmed_dirmediatx.tx": 1,
+                        "confirmed_dirmediatx.blk": 1,
+                        "confirmed_dirmediatx.in": 1,
+                        "confirmed_dirmediatx.out": 1,
+                        "object": 1,
+                    }
+                },
+                { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_dirmediatx", ] } } },
+                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
+                { "$replaceRoot": { "newRoot": "$items" } },
+
+
+                //
+                // Crawl associated media so we can include author in the tipchain
                 {
                     "$addFields": {
                        "b_txid": [
@@ -194,8 +226,6 @@ function get_bitdb_query(category_id=null, cursor=0, limit=1000, maxDepth=5) {
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://bico.media/" ]}, 1 ] } },
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://www.bitpaste.app/tx/" ]}, 1 ] } },
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://memo.sv/post/" ]}, 1 ] } },
-                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://dir.sv/category/" ]}, 1 ] } },
-                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://dir.sv/link/" ]}, 1 ] } },
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://bitstagram.bitdb.network/m/raw/" ]}, 1 ] } },
                         ]
                     }
@@ -221,31 +251,6 @@ function get_bitdb_query(category_id=null, cursor=0, limit=1000, maxDepth=5) {
                 { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
                 { "$replaceRoot": { "newRoot": "$items" } },
 
-
-
-                //
-                // Crawl unconfirmed media
-                { "$lookup": { "from": "u", "localField": "b_txid.txid", "foreignField": "tx.h", "as": "unconfirmed_bmediatx" } },
-                {
-                    "$project": {
-                        "unconfirmed_bmediatx": "$unconfirmed_bmediatx",
-                        "object": ["$$ROOT"],
-                    }
-                },
-                { "$project": { "object.unconfirmed_bmediatx": 0, "object.b_txid": 0} },
-                {
-                    "$project": {
-                        "unconfirmed_bmediatx.tx": 1,
-                        "unconfirmed_bmediatx.blk": 1,
-                        "unconfirmed_bmediatx.in": 1,
-                        "unconfirmed_bmediatx.out.s1": 1,
-                        "unconfirmed_bmediatx.out.e": 1,
-                        "object": 1,
-                    }
-                },
-                { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_bmediatx", ] } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
 
 
                 //
@@ -342,11 +347,11 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
 
         /*
 
-        console.log("ROW JSON", JSON.stringify(rows, null, 4));
         for (const row of rows) {
             console.log("ROW", JSON.stringify(row, null, 4));
         }
         console.log("ROWS", rows.length);
+        console.log("ROW JSON", JSON.stringify(rows, null, 4));
         throw "E";
         */
 
@@ -623,7 +628,7 @@ function processTipchainResult(result, processing, txpool, media) {
 
 function processTipchain(processing, txpool) {
     const media = {};
-    for (const tx of txpool.filter(tx => { return tx.type == "other" })) {
+    for (const tx of txpool.filter(tx => { return tx.type == "other" || tx.type == "category" || tx.type == "entry" })) {
         media[tx.txid] = tx;
     }
 

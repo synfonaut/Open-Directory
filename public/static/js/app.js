@@ -616,7 +616,6 @@ class OpenDirectoryApp extends React.Component {
 
             const category_id = (this.state.category ? this.state.category.txid : get_root_category_txid());
             fetch_from_network(category_id).then((rows) => {
-
                 const txpool = processOpenDirectoryTransactions(rows);
 
                 const results = processResults(rows, txpool);
