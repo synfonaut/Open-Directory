@@ -12,6 +12,7 @@ const SUPPORTED_TIPCHAIN_PROTOCOLS = [
     "bit://" + B_MEDIA_PROTOCOL + "/",
     "b://",
     "bit://" + BCAT_MEDIA_PROTOCOL + "/",
+    "https://bico.media/",
 ];
 
 // Open Directory Bitcom Protocol
@@ -185,9 +186,8 @@ function get_bitdb_query(category_id=null, cursor=0, limit=1000, maxDepth=5) {
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "bit://" + BCAT_MEDIA_PROTOCOL + "/" ]}, 1 ] } },
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "bcat://" ]}, 1 ] } },
 
-                           // TODO: sometimes works?
-                            //{ "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://bico.media/" ]}, 1 ] } },
-                            //{ "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://www.bitpaste.app/tx/" ]}, 1 ] } },
+                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://bico.media/" ]}, 1 ] } },
+                            {"txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://www.bitpaste.app/tx/" ]}, 1 ] } },
                         ]
                     }
                 },
@@ -336,8 +336,8 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
             console.log("ROW", JSON.stringify(row.b_txid, null, 4));
         }
 
-        console.log("ROWS", rows.length);
         console.log("ROW JSON", JSON.stringify(rows, null, 4));
+        console.log("ROWS", rows.length);
         throw "E";
         */
 

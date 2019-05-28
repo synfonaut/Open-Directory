@@ -153,6 +153,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 * bottle native content isn't working
 * bg isn't uploaded to blockchain
 * clean up cache script updater so only showing info and errors, not debugging info
+* descriptions need trimming or url is too long (http://localhost:3000/category/76ef4c9419e9de528009ea8ee7c43c669e3837db8edc7df0f961c6d0c490a2bd)
 
 
 ## 0.0.3
