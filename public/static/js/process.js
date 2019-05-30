@@ -18,6 +18,7 @@ const SUPPORTED_TIPCHAIN_PROTOCOLS = [
     "https://dir.sv/category/",
     "https://dir.sv/link/",
     "https://bitstagram.bitdb.network/m/raw/",
+    "https://www.audiob.app/tx/",
 ];
 
 // Open Directory Bitcom Protocol
@@ -227,6 +228,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=1000, maxDepth=5) {
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://www.bitpaste.app/tx/" ]}, 1 ] } },
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://memo.sv/post/" ]}, 1 ] } },
                             { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://bitstagram.bitdb.network/m/raw/" ]}, 1 ] } },
+                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://www.audiob.app/tx/" ]}, 1 ] } },
                         ]
                     }
                 },
