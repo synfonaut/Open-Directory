@@ -668,7 +668,7 @@ class OpenDirectoryApp extends React.Component {
             title = "FAQ " + this.state.title;
         } else if (path == "/stats") {
             title = "Statistics for " + this.state.title;
-            items = buildItemSliceRepresentationFromCache(category.txid);
+            items = this.buildItemSliceRepresentationFromCache(category.txid);
         } else if (path == "/search") {
             title = "Search " + this.state.title;
             needsupdate = true;
