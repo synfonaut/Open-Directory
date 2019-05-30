@@ -76,11 +76,15 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 
 * instead of /link/ should it be /comments/ — that way you can talk about a category in general too? doesn't have to be attached to 
 
+* warning about uploading copyrighted content
+
 * dedicated entry page
 
 * fix bitsocket issue
 
 * reindex server with missing b:// media (create duplicate server) (use satchmo guide)
+
+* change intro blurb to include content creators
 
 * implement metalens comments (https://www.yours.org/content/metalens-app-update---map-protocol-2a7f47367bb2)
 
@@ -161,9 +165,13 @@ add https://www.audiob.app/tx/5ff0f7eaaa9c2771259bf410713efe0c5ac915f42fc008716b
 * show which content is trending really hard with a badge
 * Upcoming links: trending links that are less than 24 hours old. helps them go viral
 * Server side rendering so first pageload doesn't require ajax
+* search on category page
+* add easy way to tip directory creator
+* Open Directory for dummies — onboarding videos
 
 
 ## Minor Bugs
+* whatsonchain links should open in new tab
 * deleted content shouldn't show up in search anymore
 * search doesn't translate bit:// links to bico.media
 * can't control+click directories to open them in a new window
@@ -178,10 +186,13 @@ add https://www.audiob.app/tx/5ff0f7eaaa9c2771259bf410713efe0c5ac915f42fc008716b
 * descriptions need trimming or url is too long (http://localhost:3000/category/76ef4c9419e9de528009ea8ee7c43c669e3837db8edc7df0f961c6d0c490a2bd)
 * messages should float over content, so if you're scrolled down you still see it
 * unconfirmed media not in tipchain
+* search is pulling up duplciates for open directory guide
 
 ## Problems to think through
 * reposting dir.sv links should act as symlink, and not "steal" tipchain. should find balance between users. could/should tip count on the original post? should we merge tipchains? how to balance this?
 * downvotes (who gets the tip? if content creator..incentivizes wrong behavior)
+* content scanners..what's best way to turn content stealing negative into a positive. tools for creators to monitor for their content and automatically claim tipchain
+* reputation. incentive not to turn your account
 
 ## 0.0.3
 
@@ -193,6 +204,9 @@ add https://www.audiob.app/tx/5ff0f7eaaa9c2771259bf410713efe0c5ac915f42fc008716b
 * downvotes (who gets the tip? if content creator..incentivizes wrong behavior)
 * report button / content violations / tip 
 * nsfw tag
+
+## Future
+* wordpress plugin to automatically Bitcoin sticker your content
 
 ## About
 

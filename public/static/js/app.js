@@ -15,7 +15,6 @@ class OpenDirectoryApp extends React.Component {
             changelog: [],    // response from network
             txpool: [], // semi-processed results from network
             items: [],  // current items
-            cache: {},  // previous items
 
             admin_actions: [],
 
@@ -197,6 +196,8 @@ class OpenDirectoryApp extends React.Component {
 
     getForks() {
         const txid = this.state.category.txid;
+
+        // TODO: Need to update forks too
 
         const forks = this.state.txpool.filter(i => {
             return i.type == "fork";
@@ -624,7 +625,7 @@ class OpenDirectoryApp extends React.Component {
         var items = this.buildItemSliceRepresentationFromCache(category_id);
 
         // Grab parents first, since we don't want their children (undos, votes) we do them separate
-        while (items) {
+        while (items && items.length > 0) {
             const item = items.shift();
             if (item.txid == category_id) {
                 items.push(item);
@@ -644,28 +645,6 @@ class OpenDirectoryApp extends React.Component {
         }
 
 
-        /*
-        const all = [];
-        const items = this.buildItemSliceRepresentationFromCache(category_id);
-        for (const item of items) {
-            all.push(item);
-        }
-
-        const filtered_changelog = [];
-        //const txids = this.buildItemSliceRepresentationFromCache(category_id).map(i => { return i.txid }).filter(i => { return i });
-
-        console.log("TXIDS", txids);
-
-        for (const row of changelog) {
-            if (txids.indexOf(row.txid) !== -1) {
-                filtered_changelog.push(row);
-            } else if (txids.indexOf(row.action_id) !== -1) {
-                filtered_changelog.push(row);
-            }
-        }
-
-        return filtered_changelog;
-        */
         return filtered_changelog;
     }
 
@@ -744,16 +723,15 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
-            // TODO: Need to grab new cache here
-            const cached = this.state.cache[category_id];
+            const cached = this.buildItemSliceRepresentationFromCache(category_id);
 
             category = {"txid": category_id, "needsdata": true};
             needsupdate = true;
 
-            if (cached) {
+            if (cached && cached.length > 0) {
                 items = cached;
 
-                const cachedCategory = findObjectByTX(category_id, cached);
+                const cachedCategory = findObjectByTX(category_id, this.state.items);
                 if (cachedCategory) {
                     cachedCategory.needsdata = true; // don't know for sure the server hasn't updated since we last cached
                     title = category.name + " — " + this.state.title;
@@ -802,17 +780,13 @@ class OpenDirectoryApp extends React.Component {
                 const results = processResults(rows, txpool);
                 const success = this.checkForUpdatedActiveCategory(results);
 
-                const cache = this.state.cache;
-                cache[category_id] = results;
-
                 this.setState({
                     "networkActive": false,
                     "isLoading": false,
                     "isError": !success,
                     "txpool": txpool,
                     "items": results,
-                    "changelog": rows,
-                    "cache": cache,
+                    "changelog": rows
                 });
 
                 this.setupNetworkSocket();
@@ -848,9 +822,9 @@ class OpenDirectoryApp extends React.Component {
     setupNetworkSocket() {
         if (this.socket) {
             return;
-        } else {
-            console.log("setting up new network socket");
         }
+
+        console.log("setting up new network socket");
 
         const query = get_bitdb_query(this.state.category ? this.state.category.txid : get_root_category_txid());
         const encoded_query = toBase64(JSON.stringify(query));
@@ -872,7 +846,7 @@ class OpenDirectoryApp extends React.Component {
 
                     if (rows.length > 0) {
                         console.log("handled new message", resp);
-                        //this.insertNewRowsFromNetwork(rows);
+                        this.insertNewRowsFromNetwork(rows);
                     }
                 }
 
@@ -883,38 +857,23 @@ class OpenDirectoryApp extends React.Component {
         }
     }
 
-/*
-    insertNewRowsFromNetwork(rows) {
-        console.log("INSERTING NEW ROWS", rows);
+    insertNewRowsFromNetwork(new_rows) {
+        console.log("INSERTING NEW ROWS", new_rows);
 
         const category_id = (this.state.category ? this.state.category.txid : get_root_category_txid());
-        const old_rows = this.state.raw[category_id];
 
-        const new_rows = old_rows.concat(rows);
-
-        const txpool = processOpenDirectoryTransactions(new_rows);
-
-        const results = processResults(new_rows, txpool);
+        const rows = this.state.changelog.concat(new_rows);
+        const txpool = processOpenDirectoryTransactions(rows);
+        const results = processResults(rows, txpool);
         const success = this.checkForUpdatedActiveCategory(results);
 
-        const raw = this.state.raw;
-        raw[category_id] = new_rows;
-
-        const cache = this.state.cache;
-        cache[category_id] = results;
-
         this.setState({
-            "networkActive": false,
-            "isLoading": false,
             "isError": !success,
             "txpool": txpool,
             "items": results,
-            "raw": raw,
-            "cache": cache,
+            "changelog": rows
         });
     }
-    */
-
 }
 
 const MessageGroup = posed.div({

@@ -383,11 +383,8 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
     return new Promise((resolve, reject) => {
 
         if (cache) {
-            // Hack to keep the site up...homepage is bringing us down
-            //if (category_id == null) {
-                resolve(CACHED_HOMEPAGE);
-                return;
-            //}
+            resolve(CACHED_HOMEPAGE);
+            return;
         }
 
 
@@ -1009,7 +1006,13 @@ function calculateTipPayment(tipchain, amount, currency) {
 
 function processOpenDirectoryTransaction(result) {
 
+
     if (!result.txid || !result.data || !result.address) {
+        console.log("MISSING DATA");
+        console.log("txid", result.txid);
+        console.log("data", result.data);
+        console.log("address", result.address);
+        console.log("RESULT", JSON.stringify(result, null, 4));
         return null;
     }
 
@@ -1168,8 +1171,11 @@ function connect_to_bitdb_socket(category_id, callback) {
     const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "s");;
     const url = api_url.replace("{query}", encoded_query);
 
+    console.log(url);
     const socket = new EventSource(url);
     socket.onmessage = (e) => {
+        //console.log("on message", e);
+
         try {
             const resp = JSON.parse(e.data);
             if ((resp.type == "c" || resp.type == "u") && (resp.data.length > 0)) {
@@ -1182,14 +1188,15 @@ function connect_to_bitdb_socket(category_id, callback) {
                 }
 
                 if (rows.length > 0) {
-                    console.log("handled new message", resp);
+                    console.log("handled new message", rows);
                     callback(rows);
                 }
             }
 
 
         } catch (e) {
-            console.log("error handling network socket data", e.data);
+            console.log("error handling network socket data", e);
+            throw e;
         }
     }
 
