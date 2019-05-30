@@ -822,7 +822,7 @@ function parseTipFromEntryMedia(item, media) {
                     };
 
                 } else {
-                    console.log("unable to find associated b media for item", item.txid, "media txid", bmedia_txid);
+                    //console.log("unable to find associated b media for item", item.txid, "media txid", bmedia_txid);
                 }
             }
         }
@@ -1171,36 +1171,52 @@ function connect_to_bitdb_socket(category_id, callback) {
     const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "s");;
     const url = api_url.replace("{query}", encoded_query);
 
-    console.log(url);
-    const socket = new EventSource(url);
-    socket.onmessage = (e) => {
-        //console.log("on message", e);
+    function reconnect() {
 
-        try {
-            const resp = JSON.parse(e.data);
-            if ((resp.type == "c" || resp.type == "u") && (resp.data.length > 0)) {
+        console.log("connecting to bitdb socket");
 
-                const rows = [];
-                for (var i = 0; i < resp.data.length; i++) {
-                    if (resp.data[i] && resp.data[i].data && resp.data[i].data.s1 == OPENDIR_PROTOCOL) {
-                        rows.push(resp.data[i]);
+        var socket = null;
+
+        socket = new EventSource(url);
+        socket.onmessage = (e) => {
+            try {
+                const resp = JSON.parse(e.data);
+                if ((resp.type == "c" || resp.type == "u") && (resp.data.length > 0)) {
+
+                    const rows = [];
+                    for (var i = 0; i < resp.data.length; i++) {
+                        if (resp.data[i] && resp.data[i].data && resp.data[i].data.s1 == OPENDIR_PROTOCOL) {
+                            rows.push(resp.data[i]);
+                        }
+                    }
+
+                    if (rows.length > 0) {
+                        console.log("handled new message", rows);
+                        callback(rows);
                     }
                 }
 
-                if (rows.length > 0) {
-                    console.log("handled new message", rows);
-                    callback(rows);
-                }
+
+            } catch (e) {
+                console.log("error handling network socket data", e);
+                throw e;
+            }
+        }
+
+        socket.onerror = (e) => {
+            console.log("socket error", e);
+            if (socket) {
+                socket.close();
+                socket = null;
             }
 
-
-        } catch (e) {
-            console.log("error handling network socket data", e);
-            throw e;
+            reconnect();
         }
+
+        return socket;
     }
 
-    return socket;
+    reconnect();
 }
 
 function convertOutputs(outputs, address_space=[]) {
@@ -1261,6 +1277,19 @@ function findChildrenOfParentCategory(parent_txid, results=[]) {
     }
 }
 
+function addNewRowsToExistingRows(new_rows, existing_rows) {
+    const rows = new Map();
+    for (const row of existing_rows) {
+        rows.set(row.txid, row);
+    }
+
+    for (const row of new_rows) {
+        rows.set(row.txid, row);
+    }
+
+    return Array.from(rows.values());
+}
+
 
 if (typeof window == "undefined") {
     module.exports = {
@@ -1274,5 +1303,6 @@ if (typeof window == "undefined") {
         "calculateTipPayment": calculateTipPayment,
         "findObjectByTX": findObjectByTX,
         "connect_to_bitdb_socket": connect_to_bitdb_socket,
+        "addNewRowsToExistingRows": addNewRowsToExistingRows
     };
 }

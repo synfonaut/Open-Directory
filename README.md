@@ -71,8 +71,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 
 ## 0.0.2
 
-* items and changelog switched over. now should be in position to ditch slice-cache and switch to global-cache. verify changelog and items are correct, especially on complex pages
-* verify all places that use this.state.cache[category_id] work as expected (didUpdateLocation)
+* updating from pending -> block is broken..ain't working. double check
 
 * instead of /link/ should it be /comments/ — that way you can talk about a category in general too? doesn't have to be attached to 
 
@@ -90,6 +89,7 @@ Check out the [Open Directory Protocol](https://github.com/synfonaut/Open-Direct
 
 * clear out old server docker logs... increase disk size
 add https://www.audiob.app/tx/5ff0f7eaaa9c2771259bf410713efe0c5ac915f42fc008716b35f0882cd40286 to tipchain services
+add whatsonchain
 
 * clear warning about uploading copywritten material. could get sued!?
 * figure out why some dir.sv tipchains aren't being included, https://twitter.com/Nadrojiskool/status/1133496717712580608 https://dir.sv/category/7e6c63be29af1eca8ddf2d4acfd5f43dd711d085b2101504284eb9b7056aa247
@@ -121,6 +121,7 @@ add https://www.audiob.app/tx/5ff0f7eaaa9c2771259bf410713efe0c5ac915f42fc008716b
 * google analytics and basic stats tracking? easier to do product development if you know what features people are and aren't using....
 
 * FAQ: What is a bitcoin link?
+* FAQ: Which tipchain providers we support
 * add to faq, how to get BSV and signup for money button
 * add to faq, can easily upload on add.bico.media (maybe add under submit link too)
 * twitter bot that posts new open directory links and content
@@ -130,6 +131,8 @@ add https://www.audiob.app/tx/5ff0f7eaaa9c2771259bf410713efe0c5ac915f42fc008716b
 * credit font awesome in about
 * when showing a deleted category ...should show it's actually deleted
 * under upload link, let users know they can use add.bico.media, but they shouldn't be uploading content that isn't theirs or in the public domain
+* search is showing deleted links
+* category should show number of links in search
 
 ## After Conference
 - Real scaling plan
@@ -137,10 +140,13 @@ add https://www.audiob.app/tx/5ff0f7eaaa9c2771259bf410713efe0c5ac915f42fc008716b
 - Real refactoring plan
 
 ## Nice to have
+* Setup server optimized for mongodb
 * MoneyButton usernames
+* On Search page, if no results show link to create it
 * Click to expand like old reddit
  * image embeds? check b:// media type
  * video embeds? youtube, vimeo, etc....
+* Save sort/perpage params in url
 * Endless/infinite scroll
 * With biggest tip statistic, show which category or entry it was for
 * Hook up a faucet?
@@ -187,12 +193,15 @@ add https://www.audiob.app/tx/5ff0f7eaaa9c2771259bf410713efe0c5ac915f42fc008716b
 * messages should float over content, so if you're scrolled down you still see it
 * unconfirmed media not in tipchain
 * search is pulling up duplciates for open directory guide
+* let directory owners know they can set their own rules and guidelines
 
 ## Problems to think through
 * reposting dir.sv links should act as symlink, and not "steal" tipchain. should find balance between users. could/should tip count on the original post? should we merge tipchains? how to balance this?
 * downvotes (who gets the tip? if content creator..incentivizes wrong behavior)
 * content scanners..what's best way to turn content stealing negative into a positive. tools for creators to monitor for their content and automatically claim tipchain
+* moderator governance...3 strikes and out? ...not very robust...
 * reputation. incentive not to turn your account
+* tip moderation. incentivize good moderators?
 
 ## 0.0.3
 
@@ -207,6 +216,7 @@ add https://www.audiob.app/tx/5ff0f7eaaa9c2771259bf410713efe0c5ac915f42fc008716b
 
 ## Future
 * wordpress plugin to automatically Bitcoin sticker your content
+* community guidlines. tip original content creators. teach people how to use open directory.
 
 ## About
 

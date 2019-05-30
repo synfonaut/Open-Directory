@@ -31,6 +31,8 @@ class OpenDirectoryApp extends React.Component {
             template_txid: SETTINGS.template_txid,
         };
 
+        this.tag = "alpha";
+
         this.NETWORK_DELAY = 0;
         this._isMounted = false;
         this.addSuccessMessage = this.addSuccessMessage.bind(this);
@@ -229,6 +231,8 @@ class OpenDirectoryApp extends React.Component {
     render() {
         const path = this.getLocation();
 
+        const items = this.buildItemSliceRepresentationFromCache(this.state.category.txid);
+
         var body, loading, error;
         var shouldShowAddNewCategoryForm = false,
             shouldShowAddNewEntryForm = false;
@@ -241,6 +245,7 @@ class OpenDirectoryApp extends React.Component {
                 </div>
         } else if (path == "/stats") {
 
+            // TODO: Refactor into StatsPage
             const stats = this.buildItemSliceRepresentationFromCache(this.state.category.txid);
 
             if (stats.length == 0) {
@@ -310,7 +315,7 @@ class OpenDirectoryApp extends React.Component {
                     </div>);
             }
         } else if (path == "/search") {
-            body = <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} changeURL={this.changeURL} />
+            body = <SearchPage title={this.state.title} items={items} category={this.state.category} changeURL={this.changeURL} />
         } else if (path == "/add-directory") {
             body = <AddDirectoryPage category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
         } else if (this.state.link) {
@@ -355,7 +360,7 @@ class OpenDirectoryApp extends React.Component {
             forks = this.getForks();
 
             if (!this.state.isError) {
-                const filtered_items = this.filterOutDetaches(this.state.items);
+                const filtered_items = this.filterOutDetaches(items);
                 var list, list_class_name;
                 if (this.state.category.txid) {
                     list = <SubcategoryList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} changeURL={this.changeURL} />;
@@ -394,24 +399,23 @@ class OpenDirectoryApp extends React.Component {
             intro = <div className="intro"><ReactMarkdown source={this.state.intro_markdown} /></div>;
         } else {
             intro = intro = <div className="intro">
-                    <h1><i className="fas fa-sitemap"></i> Open Directory <span className="beta">beta</span></h1>
+                    <h1><i className="fas fa-sitemap"></i> Open Directory <span className="beta">{this.tag}</span></h1>
                     <div className="learn-more">
                         <p>Open Directory is an open-source way for anyone to earn money by organizing links on the Bitcoin (SV) blockchain. Find the best content and earn money by submitting great links! {!this.state.isExpandingLearnMore && <span><a href="/faq">Learn more</a>...</span>}</p>
                         
                     </div>
-                    <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} embed={true} changeURL={this.changeURL} />
-                    <p className="launch-note"><strong>Note:</strong> Due to high traffic from launch, new content won't appear instantly on the homepage after you submit—please allow up to a minute and refresh. A fix is coming soon!</p>
+                    <SearchPage title={this.state.title} items={items} category={this.state.category} embed={true} changeURL={this.changeURL} />
                 </div>;
         }
 
         return (
             <div className={this.state.theme + " wrapper"}>
-                {this.state.isForking && <Fork onCloseFork={this.handleCloseFork.bind(this)} onErrorHandler={this.addErrorMessage} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} faqMarkdown={this.state.faq_markdown} onFAQChange={this.didChangeFAQHandler.bind(this)} items={this.state.items} onChangeCategory={this.handleChangeCategory.bind(this)} template_txid={this.state.template_txid} />}
+                {this.state.isForking && <Fork onCloseFork={this.handleCloseFork.bind(this)} onErrorHandler={this.addErrorMessage} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} faqMarkdown={this.state.faq_markdown} onFAQChange={this.didChangeFAQHandler.bind(this)} items={items} onChangeCategory={this.handleChangeCategory.bind(this)} template_txid={this.state.template_txid} />}
                 <nav className="navigation">
                   <section className="container">
                     <div className="navigation-title">
                         <a onClick={() => { this.changeURL("/") }}><i className="fas fa-sitemap"></i>{this.state.title}</a>
-                        <span className="beta">beta</span>
+                        <span className="beta">{this.tag}</span>
                     </div>
                     <div className={this.state.networkActive ? "spinner white active" : "spinner white"}>
                         <div className="bounce1"></div>
@@ -439,7 +443,7 @@ class OpenDirectoryApp extends React.Component {
                           </PoseGroup>
                           {path == "/" && intro}
                           {body}
-                          {(this.state.isLoading && this.state.items.length == 0) && loading}
+                          {(this.state.isLoading && items.length == 0) && loading}
                           {this.state.isError && error}
                           <hr />
                           <div className="row">
@@ -664,7 +668,7 @@ class OpenDirectoryApp extends React.Component {
             title = "FAQ " + this.state.title;
         } else if (path == "/stats") {
             title = "Statistics for " + this.state.title;
-            items = this.state.items;
+            items = buildItemSliceRepresentationFromCache(category.txid);
         } else if (path == "/search") {
             title = "Search " + this.state.title;
             needsupdate = true;
@@ -853,25 +857,41 @@ class OpenDirectoryApp extends React.Component {
 
             } catch (e) {
                 console.log("error handling network socket data", e.data);
+                throw e;
             }
+        }
+
+        this.socket.onerror = (e) => {
+            console.log("socket error", e);
+            if (this.socket) {
+                this.socket.close();
+                this.socket = null;
+            }
+
+            this.setupNetworkSocket();
         }
     }
 
     insertNewRowsFromNetwork(new_rows) {
-        console.log("INSERTING NEW ROWS", new_rows);
-        // TODO: Have to check if existing pending row has been overwritten
+        console.log("Inserting new rows from network", new_rows.length);
 
         const category_id = (this.state.category ? this.state.category.txid : get_root_category_txid());
 
-        const rows = this.state.changelog.concat(new_rows);
+        const rows = addNewRowsToExistingRows(new_rows, this.state.changelog);
         const txpool = processOpenDirectoryTransactions(rows);
         const results = processResults(rows, txpool);
         const success = this.checkForUpdatedActiveCategory(results);
+
+        var category = this.state.category;
+        if (category.txid) {
+            category = findObjectByTX(this.state.category.txid, results);
+        }
 
         this.setState({
             "isError": !success,
             "txpool": txpool,
             "items": results,
+            "category": category,
             "changelog": rows
         });
     }
