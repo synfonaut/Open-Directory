@@ -119,11 +119,7 @@ class AddCategoryForm extends React.Component {
                     setTimeout(() => { this.clearForm() }, 5000);
                     setTimeout(() => {
                         this.setState({ title: "", description: "" });
-                        if (this.props.category.txid) {
-                            this.props.onSuccessHandler("Successfully added new category, it will appear automatically—please refresh the page if it doesn't.");
-                        } else {
-                            this.props.onSuccessHandler("Successfully added new category. Due to heavy demand we're caching the front page longer, so please wait up to a minute and refresh. We're working on resolving this ASAP!");
-                        }
+                        this.props.onSuccessHandler("Successfully added new category, it will appear automatically—please refresh the page if it doesn't.");
                     }, 3000);
                 }
             }

@@ -1006,13 +1006,8 @@ function calculateTipPayment(tipchain, amount, currency) {
 
 function processOpenDirectoryTransaction(result) {
 
-
     if (!result.txid || !result.data || !result.address) {
-        console.log("MISSING DATA");
-        console.log("txid", result.txid);
-        console.log("data", result.data);
-        console.log("address", result.address);
-        console.log("RESULT", JSON.stringify(result, null, 4));
+        console.log("MISSING DATA", result);
         return null;
     }
 
