@@ -859,6 +859,7 @@ class OpenDirectoryApp extends React.Component {
 
     insertNewRowsFromNetwork(new_rows) {
         console.log("INSERTING NEW ROWS", new_rows);
+        // TODO: Have to check if existing pending row has been overwritten
 
         const category_id = (this.state.category ? this.state.category.txid : get_root_category_txid());
 
