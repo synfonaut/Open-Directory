@@ -94,7 +94,7 @@ function get_bmedia_bitdb_query(txids, cursor=0, limit=100) {
     return query;
 }
 
-function get_bitdb_query(category_id=null, cursor=0, limit=1000, maxDepth=5) {
+function get_bitdb_query(category_id=null, cursor=0, limit=1000) {
 
     if (category_id == null) {
         category_id = get_root_category_txid();
@@ -138,7 +138,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=1000, maxDepth=5) {
                 // Crawl confirmed children (entries, votes, undos)
 
                 // perform recursive join, connecting s3 to txid
-                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children", "maxDepth": maxDepth } },
+                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children" } },
 
                 // mongo doesn't have an easy way to bring sub-documents up to the parent, so it requires a few steps
                 // copy both to surrounding container so they're siblings
@@ -154,7 +154,7 @@ function get_bitdb_query(category_id=null, cursor=0, limit=1000, maxDepth=5) {
 
                 //
                 // Crawl confirmed children (entries, votes, undos)
-                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children", "maxDepth": maxDepth } },
+                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children" } },
                 { "$project": { "unconfirmed_children": "$unconfirmed_children", "object": ["$$ROOT"], } },
                 { "$project": { "object.unconfirmed_children": 0, } },
                 { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_children", ] } } },

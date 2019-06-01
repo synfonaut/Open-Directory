@@ -246,6 +246,7 @@ class OpenDirectoryApp extends React.Component {
         } else if (path == "/stats") {
 
             // TODO: Refactor into StatsPage
+            // TODO: This looks like duplicate
             const stats = this.buildItemSliceRepresentationFromCache(this.state.category.txid);
 
             if (stats.length == 0) {
