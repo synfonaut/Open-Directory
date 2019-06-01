@@ -833,13 +833,16 @@ function parseTipFromEntryMedia(item, media) {
 }
 
 function updateCategoryMoneyCounts(items) {
-    return items.map(item => {
+
+    const reversed = items.reverse();
+
+    return reversed.map(item => {
         if (item.type == "category") {
-            item.satoshis = countMoneyUnderObject(item, items);
-            item.votes = countVotesUnderObject(item, items);
+            item.satoshis = countMoneyUnderObject(item, reversed);
+            item.votes = countVotesUnderObject(item, reversed);
         }
         return item;
-    });
+    }).reverse();
 }
 
 function countMoneyUnderObject(obj, items) {
