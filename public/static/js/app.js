@@ -247,9 +247,7 @@ class OpenDirectoryApp extends React.Component {
 
             // TODO: Refactor into StatsPage
             // TODO: This looks like duplicate
-            const stats = this.buildItemSliceRepresentationFromCache(this.state.category.txid);
-
-            if (stats.length == 0) {
+            if (items.length == 0) {
                 body = (<div className="stats">
                     <h2>Statistics</h2>
                     <p>Please visit the homepage first, let it load then return. This will be fixed soon!</p>
