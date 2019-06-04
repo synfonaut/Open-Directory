@@ -172,7 +172,7 @@ class OpenDirectoryApp extends React.Component {
             return false;
         });
 
-        var changelog = this.buildRawSliceRepresentationFromCache(this.state.category.txid);
+        var changelog = buildRawSliceRepresentationFromCache(this.state.category.txid, this.state.changelog, this.state.items);
 
         if (!changelog) {
             changelog = [];
@@ -231,7 +231,7 @@ class OpenDirectoryApp extends React.Component {
     render() {
         const path = this.getLocation();
 
-        const items = this.buildItemSliceRepresentationFromCache(this.state.category.txid);
+        const items = buildItemSliceRepresentationFromCache(this.state.category.txid, this.state.items);
 
         var body, loading, error;
         var shouldShowAddNewCategoryForm = false,
@@ -559,99 +559,7 @@ class OpenDirectoryApp extends React.Component {
         return path;
     }
 
-    buildItemSliceRepresentationFromCache(category_id) {
 
-        if (!category_id) {
-            return this.state.items;
-        }
-
-        const parent_categories = findParentCategoryChain(category_id, this.state.items);
-
-        const items = new Map();
-
-        for (const txid of parent_categories) {
-            const parent = findObjectByTX(txid, this.state.items);
-            items.set(txid, parent);
-        }
-
-        var txids = new Set();
-        var subcategory_txids = [category_id];
-        while (subcategory_txids.length > 0) {
-            const txid = subcategory_txids.pop();
-            txids.add(txid);
-
-            const found_children = findChildrenOfParentCategory(txid, this.state.items);
-
-            for (const child of found_children) {
-                if (child.type == "category") {
-                    subcategory_txids.push(child.txid);
-                }
-                txids.add(child.txid);
-            }
-        }
-
-        const children = this.state.items.filter(i => {
-            if (txids.has(i.txid)) {
-                return true;
-            }
-
-            if (txids.has(i.action_id)) {
-                return true;
-            }
-
-            if (txids.has(i.reference_id)) {
-                return true;
-            }
-        });
-
-        for (const child of children) {
-            items.set(child.txid, child);
-        }
-
-        return Array.from(items.values());
-    }
-
-    buildRawSliceRepresentationFromCache(category_id) {
-
-        // So hacky..trying to hang on and scale... All of this needs to be rewritten 
-
-        const changelog = this.state.changelog;
-
-        if (!changelog || changelog.length == 0) {
-            return [];
-        }
-
-        if (!category_id) {
-            return changelog;
-        }
-
-        const filtered_changelog = [];
-
-        var items = this.buildItemSliceRepresentationFromCache(category_id);
-
-        // Grab parents first, since we don't want their children (undos, votes) we do them separate
-        while (items && items.length > 0) {
-            const item = items.shift();
-            if (item.txid == category_id) {
-                items.push(item);
-                break;
-            } else {
-                filtered_changelog.push(findObjectByTX(item.txid, changelog));
-            }
-        }
-
-        const txids = items.map(i => { return i.txid }).filter(i => { return i });
-        for (const log of changelog) {
-            if (txids.indexOf(log.txid) !== -1) {
-                filtered_changelog.push(log);
-            } else if (txids.indexOf(log.data.s3) !== -1) {
-                filtered_changelog.push(log);
-            }
-        }
-
-
-        return filtered_changelog;
-    }
 
 
     didUpdateLocation() {
@@ -669,7 +577,7 @@ class OpenDirectoryApp extends React.Component {
             title = "FAQ " + this.state.title;
         } else if (path == "/stats") {
             title = "Statistics for " + this.state.title;
-            items = this.buildItemSliceRepresentationFromCache(category.txid);
+            items = buildItemSliceRepresentationFromCache(category.txid, this.state.items);
         } else if (path == "/search") {
             title = "Search " + this.state.title;
             needsupdate = true;
@@ -728,7 +636,7 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
-            const cached = this.buildItemSliceRepresentationFromCache(category_id);
+            const cached = buildItemSliceRepresentationFromCache(category_id, this.state.items);
 
             category = {"txid": category_id, "needsdata": true};
             needsupdate = true;

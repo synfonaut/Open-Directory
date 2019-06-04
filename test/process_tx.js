@@ -369,3 +369,76 @@ describe("tipchain split", function() {
     });
 
 });
+
+describe("process money and votes", function() {
+
+    const txs = readFileTXs("cached_raw_data.json");
+    const results = process.processRawResults(txs);
+
+    it("process simple category money and votes", function() {
+        const obj = process.findObjectByTX("a287751a4b5c950ddf66bbb8de6ac6f01c12b56a27ef463039a8364e9555344a", results);
+        assert(obj);
+        assert.equal(obj.name, "[HQ music only] ⭐⭐.::Top 100 Progressive House Tracks::. ⭐⭐ [100k+ Plays]");
+        assert.equal(obj.satoshis, 125097949);
+        assert.equal(obj.votes, 8);
+    });
+
+    it("process shallow category upvote", function() {
+        const obj = process.findObjectByTX("c342864a807eaade6a4d061720989a7791f361280be24bef99442296178d5541", results);
+        assert(obj);
+        assert.equal(obj.name, "BSV");
+        assert.equal(obj.satoshis, 50979);
+        assert.equal(obj.votes, 1);
+    });
+
+    it("process deep category with single upvote", function() {
+        const obj = process.findObjectByTX("7e528249355a92cdac365c29a43c9adf4bbcd067cdf4a33c2cce2ace40677a72", results);
+        assert(obj);
+        assert.equal(obj.name, "Metal");
+        assert.equal(obj.satoshis, 8648);
+        assert.equal(obj.votes, 1);
+    });
+
+    it("process deep subcategory with single upvote", function() {
+        const obj = process.findObjectByTX("f1b0ff16ce275c196113c584670f2d198912705d4570adba1d9f03a34ec0ca03", results);
+        assert(obj);
+        assert.equal(obj.name, "Record Store");
+        assert.equal(obj.votes, 1);
+        assert.equal(obj.satoshis, 8648);
+    });
+
+    it("process deeply nested simple money and votes", function() {
+        const obj = process.findObjectByTX("6fe5b2fa474bfa726e0c11571d3dae3aac5dcb6f85aff178e1fa137332837ee2", results);
+        assert(obj);
+        assert.equal(obj.name, "Sub-Directory 00011");
+        assert.equal(obj.satoshis, 41868);
+        assert.equal(obj.votes, 1);
+    });
+
+    it("process deeply nested sub-category money and votes", function() {
+        const obj = process.findObjectByTX("6fe5b2fa474bfa726e0c11571d3dae3aac5dcb6f85aff178e1fa137332837ee2", results);
+        const slice = process.buildRawSliceRepresentationFromCache("6fe5b2fa474bfa726e0c11571d3dae3aac5dcb6f85aff178e1fa137332837ee2", txs, results);
+        assert(obj);
+        assert.equal(obj.name, "Sub-Directory 00011");
+        assert.equal(obj.satoshis, 41868);
+        assert.equal(obj.votes, 1);
+    });
+
+    it("process deeply nested sub-category money and votes", function() {
+        const obj = process.findObjectByTX("9012dd77615876188a30d892c1666e41299899e697722cafbbffb380c7c14c84", results);
+        const slice = process.buildRawSliceRepresentationFromCache("9012dd77615876188a30d892c1666e41299899e697722cafbbffb380c7c14c84", txs, results);
+        assert(obj);
+        assert.equal(obj.name, "Sub-Directory 00010");
+        assert.equal(obj.satoshis, 41868);
+        assert.equal(obj.votes, 1);
+    });
+
+    it("process extremely deeply nested sub-category money and votes", function() {
+        const obj = process.findObjectByTX("2f1f311e6ac9481a81c586aba3f314c401eb10443280e390cdea468d03c11223", results);
+        const slice = process.buildRawSliceRepresentationFromCache("2f1f311e6ac9481a81c586aba3f314c401eb10443280e390cdea468d03c11223", txs, results);
+        assert(obj);
+        assert.equal(obj.name, "How deep can it go?");
+        assert.equal(obj.satoshis, 41868);
+        assert.equal(obj.votes, 1);
+    });
+});

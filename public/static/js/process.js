@@ -833,40 +833,45 @@ function parseTipFromEntryMedia(item, media) {
 }
 
 function updateCategoryMoneyCounts(items) {
-    return items.map(item => {
-        if (item.type == "category") {
-            item.satoshis = countMoneyUnderObject(item, items);
-            item.votes = countVotesUnderObject(item, items);
-        }
-        return item;
-    });
+    const root_categories = items.filter(i => { return i.type == "category" && !i.category });
+    for (const category of root_categories) {
+        category.satoshis = updateMoneyCountUnderObject(category, items);
+        category.votes = updateVoteCountUnderObject(category, items);
+    }
+
+    return items;
 }
 
-function countMoneyUnderObject(obj, items) {
+function updateMoneyCountUnderObject(obj, items) {
     var amount = obj.satoshis;
     for (const item of items) {
+        if (obj.txid == item.txid) { continue }
         if (!item.deleted && item.category == obj.txid) {
-            amount += item.satoshis;
-
             if (item.type == "category") {
-                amount += countMoneyUnderObject(item, items);
+                item.satoshis = updateMoneyCountUnderObject(item, items);
             }
+            amount += item.satoshis;
         }
     }
+
+    obj.satoshis = amount;
     return amount;
 }
 
-function countVotesUnderObject(obj, items) {
+function updateVoteCountUnderObject(obj, items) {
     var amount = obj.votes;
     for (const item of items) {
+        if (obj.txid == item.txid) { continue }
         if (!item.deleted && item.category == obj.txid) {
-            amount += item.votes;
-
             if (item.type == "category") {
-                amount += countVotesUnderObject(item, items);
+                item.votes = updateVoteCountUnderObject(item, items);
             }
+
+            amount += item.votes;
         }
     }
+
+    obj.votes = amount;
     return amount;
 }
 
@@ -1123,7 +1128,7 @@ function processOpenDirectoryTransaction(result) {
             obj.fork_url = args.shift();
             obj.action_id = args.shift();
         } else {
-            console.log("unknown number of args", result);
+            //console.log("unknown number of args", result);
             return null;
         }
     } else if (item_type == "undo") {
@@ -1287,6 +1292,98 @@ function addNewRowsToExistingRows(new_rows, existing_rows) {
     return Array.from(rows.values());
 }
 
+function buildItemSliceRepresentationFromCache(category_id, cache=[]) {
+
+    if (!category_id) {
+        return cache;
+    }
+
+    const parent_categories = findParentCategoryChain(category_id, cache);
+
+    const items = new Map();
+
+    for (const txid of parent_categories) {
+        const parent = findObjectByTX(txid, cache);
+        items.set(txid, parent);
+    }
+
+    var txids = new Set();
+    var subcategory_txids = [category_id];
+    while (subcategory_txids.length > 0) {
+        const txid = subcategory_txids.pop();
+        txids.add(txid);
+
+        const found_children = findChildrenOfParentCategory(txid, cache);
+
+        for (const child of found_children) {
+            if (child.type == "category") {
+                subcategory_txids.push(child.txid);
+            }
+            txids.add(child.txid);
+        }
+    }
+
+    const children = cache.filter(i => {
+        if (txids.has(i.txid)) {
+            return true;
+        }
+
+        if (txids.has(i.action_id)) {
+            return true;
+        }
+
+        if (txids.has(i.reference_id)) {
+            return true;
+        }
+    });
+
+    for (const child of children) {
+        items.set(child.txid, child);
+    }
+
+    return Array.from(items.values());
+}
+
+function buildRawSliceRepresentationFromCache(category_id, changelog=[], cache=[]) {
+
+    // So hacky..trying to hang on and scale... All of this needs to be rewritten 
+
+    if (!changelog || changelog.length == 0) {
+        return [];
+    }
+
+    if (!category_id) {
+        return changelog;
+    }
+
+    const filtered_changelog = [];
+
+    var items = buildItemSliceRepresentationFromCache(category_id, cache);
+
+    // Grab parents first, since we don't want their children (undos, votes) we do them separate
+    while (items && items.length > 0) {
+        const item = items.shift();
+        if (item.txid == category_id) {
+            items.push(item);
+            break;
+        } else {
+            filtered_changelog.push(findObjectByTX(item.txid, changelog));
+        }
+    }
+
+    const txids = items.map(i => { return i.txid }).filter(i => { return i });
+    for (const log of changelog) {
+        if (txids.indexOf(log.txid) !== -1) {
+            filtered_changelog.push(log);
+        } else if (txids.indexOf(log.data.s3) !== -1) {
+            filtered_changelog.push(log);
+        }
+    }
+
+
+    return filtered_changelog;
+}
+
 
 if (typeof window == "undefined") {
     module.exports = {
@@ -1300,6 +1397,8 @@ if (typeof window == "undefined") {
         "calculateTipPayment": calculateTipPayment,
         "findObjectByTX": findObjectByTX,
         "connect_to_bitdb_socket": connect_to_bitdb_socket,
-        "addNewRowsToExistingRows": addNewRowsToExistingRows
+        "addNewRowsToExistingRows": addNewRowsToExistingRows,
+        "buildItemSliceRepresentationFromCache": buildItemSliceRepresentationFromCache,
+        "buildRawSliceRepresentationFromCache": buildRawSliceRepresentationFromCache,
     };
 }
