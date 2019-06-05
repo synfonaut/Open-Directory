@@ -2,4 +2,5 @@
 node_modules/
 public/static/js/cached_homepage.js
 public/static/js/cached_items.js
+public/static/js/cached_raw.js
 

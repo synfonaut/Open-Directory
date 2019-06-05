@@ -12,10 +12,9 @@ class OpenDirectoryApp extends React.Component {
             location: [""],
             messages: [],
 
-            raw: {},    // response from network
+            changelog: [],    // response from network
             txpool: [], // semi-processed results from network
             items: [],  // current items
-            cache: {},  // previous items
 
             admin_actions: [],
 
@@ -23,6 +22,7 @@ class OpenDirectoryApp extends React.Component {
             taches: [], // attach and detaches
 
             category: {"txid": get_root_category_txid(), "needsupdate": true},
+            link: null,
 
             title: SETTINGS.title,
             intro_markdown: SETTINGS.intro_markdown,
@@ -30,6 +30,8 @@ class OpenDirectoryApp extends React.Component {
             theme: SETTINGS.theme,
             template_txid: SETTINGS.template_txid,
         };
+
+        this.tag = "alpha";
 
         this.NETWORK_DELAY = 0;
         this._isMounted = false;
@@ -170,7 +172,8 @@ class OpenDirectoryApp extends React.Component {
             return false;
         });
 
-        var changelog = this.state.raw[this.state.category.txid];
+        var changelog = buildRawSliceRepresentationFromCache(this.state.category.txid, this.state.changelog, this.state.items);
+
         if (!changelog) {
             changelog = [];
         }
@@ -195,6 +198,8 @@ class OpenDirectoryApp extends React.Component {
 
     getForks() {
         const txid = this.state.category.txid;
+
+        // TODO: Need to update forks too
 
         const forks = this.state.txpool.filter(i => {
             return i.type == "fork";
@@ -226,6 +231,8 @@ class OpenDirectoryApp extends React.Component {
     render() {
         const path = this.getLocation();
 
+        const items = buildItemSliceRepresentationFromCache(this.state.category.txid, this.state.items);
+
         var body, loading, error;
         var shouldShowAddNewCategoryForm = false,
             shouldShowAddNewEntryForm = false;
@@ -237,7 +244,10 @@ class OpenDirectoryApp extends React.Component {
                     <ReactMarkdown source={this.state.faq_markdown} />
                 </div>
         } else if (path == "/stats") {
-            if (this.state.items.length == 0) {
+
+            // TODO: Refactor into StatsPage
+            // TODO: This looks like duplicate
+            if (items.length == 0) {
                 body = (<div className="stats">
                     <h2>Statistics</h2>
                     <p>Please visit the homepage first, let it load then return. This will be fixed soon!</p>
@@ -304,9 +314,37 @@ class OpenDirectoryApp extends React.Component {
                     </div>);
             }
         } else if (path == "/search") {
-            body = <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} changeURL={this.changeURL} />
+            body = <SearchPage title={this.state.title} items={items} category={this.state.category} changeURL={this.changeURL} />
         } else if (path == "/add-directory") {
             body = <AddDirectoryPage category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
+        } else if (this.state.link) {
+
+            // TODO: Move all this to an LinkPage
+            var back;
+            if (this.state.category) {
+                const root_category_txid = get_root_category_txid();
+                if (root_category_txid == null || this.props.category.txid !== root_category_txid) {
+                    var parent_url = "/category/" + this.state.category.txid;
+                    if (this.state.category.txid == root_category_txid) {
+                        parent_url = "/";
+                    }
+
+                    back = <div className="back"><a onClick={() => { this.props.changeURL(parent_url) }}><i className="fas fa-long-arrow-alt-left"></i> {parent.name}</a><hr /></div>;
+                }
+
+            }
+
+            body = (<div className="link-meta" id={this.state.link.txid}>
+                    {back}
+                    <div className="upvoteContainer">
+                        <div className="upvote"><a><i className="fas fa-chevron-up"></i></a> <span className="number satoshis" title={this.state.link.satoshis + " sats"}>{this.state.link.satoshis}</span><span className="number votes" title={this.state.link.hottness + " hottness"}>{pluralize(this.state.link.votes, "vote", "votes")}</span></div>
+                            <div>
+                                <h1>{this.state.link.name}
+                                </h1>
+                                <div className="markdown"><ReactMarkdown source={this.state.link.description} /></div>
+                                <div className="clearfix"></div>
+                            </div>
+                        </div></div>);
         } else {
 
             if (!this.state.isLoading && !this.state.isError) {
@@ -320,9 +358,8 @@ class OpenDirectoryApp extends React.Component {
             changelog = this.buildChangeLog(this.state.category.txid);
             forks = this.getForks();
 
-
             if (!this.state.isError) {
-                const filtered_items = this.filterOutDetaches(this.state.items);
+                const filtered_items = this.filterOutDetaches(items);
                 var list, list_class_name;
                 if (this.state.category.txid) {
                     list = <SubcategoryList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} changeURL={this.changeURL} />;
@@ -361,24 +398,23 @@ class OpenDirectoryApp extends React.Component {
             intro = <div className="intro"><ReactMarkdown source={this.state.intro_markdown} /></div>;
         } else {
             intro = intro = <div className="intro">
-                    <h1><i className="fas fa-sitemap"></i> Open Directory <span className="beta">beta</span></h1>
+                    <h1><i className="fas fa-sitemap"></i> Open Directory <span className="beta">{this.tag}</span></h1>
                     <div className="learn-more">
                         <p>Open Directory is an open-source way for anyone to earn money by organizing links on the Bitcoin (SV) blockchain. Find the best content and earn money by submitting great links! {!this.state.isExpandingLearnMore && <span><a href="/faq">Learn more</a>...</span>}</p>
                         
                     </div>
-                    <SearchPage title={this.state.title} items={this.state.items} category={this.state.category} embed={true} changeURL={this.changeURL} />
-                    <p className="launch-note"><strong>Note:</strong> Due to high traffic from launch, new content won't appear instantly on the homepage after you submit—please allow up to a minute and refresh. A fix is coming soon!</p>
+                    <SearchPage title={this.state.title} items={items} category={this.state.category} embed={true} changeURL={this.changeURL} />
                 </div>;
         }
 
         return (
             <div className={this.state.theme + " wrapper"}>
-                {this.state.isForking && <Fork onCloseFork={this.handleCloseFork.bind(this)} onErrorHandler={this.addErrorMessage} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} faqMarkdown={this.state.faq_markdown} onFAQChange={this.didChangeFAQHandler.bind(this)} items={this.state.items} onChangeCategory={this.handleChangeCategory.bind(this)} template_txid={this.state.template_txid} />}
+                {this.state.isForking && <Fork onCloseFork={this.handleCloseFork.bind(this)} onErrorHandler={this.addErrorMessage} introMarkdown={this.state.intro_markdown} onIntroChange={this.didChangeIntroHandler.bind(this)} theme={this.state.theme} onChangeTheme={this.handleChangeTheme.bind(this) } title={this.state.title} onChangeTitle={this.handleChangeTitle.bind(this)} faqMarkdown={this.state.faq_markdown} onFAQChange={this.didChangeFAQHandler.bind(this)} items={items} onChangeCategory={this.handleChangeCategory.bind(this)} template_txid={this.state.template_txid} />}
                 <nav className="navigation">
                   <section className="container">
                     <div className="navigation-title">
                         <a onClick={() => { this.changeURL("/") }}><i className="fas fa-sitemap"></i>{this.state.title}</a>
-                        <span className="beta">beta</span>
+                        <span className="beta">{this.tag}</span>
                     </div>
                     <div className={this.state.networkActive ? "spinner white active" : "spinner white"}>
                         <div className="bounce1"></div>
@@ -406,7 +442,7 @@ class OpenDirectoryApp extends React.Component {
                           </PoseGroup>
                           {path == "/" && intro}
                           {body}
-                          {(this.state.isLoading && this.state.items.length == 0) && loading}
+                          {(this.state.isLoading && items.length == 0) && loading}
                           {this.state.isError && error}
                           <hr />
                           <div className="row">
@@ -463,8 +499,8 @@ class OpenDirectoryApp extends React.Component {
         // TODO: Figure out best way to handle this
         // General thought was if deployed to http then don't redirect, but that doesn't work for bico.media and others
         // Need a good way to know when should we redirect?
-        if (document.location.hostname == "dir.sv") {
-            console.log("Skipping app update check since running at http/https");
+        if (document.location.hostname == "dir.sv" || document.location.hostname == "alpha.dir.sv") {
+            console.log("Skipping app update check since running at known http/https site");
             return;
         }
 
@@ -521,12 +557,16 @@ class OpenDirectoryApp extends React.Component {
         return path;
     }
 
+
+
+
     didUpdateLocation() {
         const path = this.getLocation();
 
         console.log("location updated", path);
 
         var category = this.state.category;
+        var link = this.state.link;
         var items = [];
         var title = this.state.title;
         var needsupdate = false;
@@ -535,16 +575,45 @@ class OpenDirectoryApp extends React.Component {
             title = "FAQ " + this.state.title;
         } else if (path == "/stats") {
             title = "Statistics for " + this.state.title;
-            const cached = this.state.cache[null];
-            if (cached) {
-                items = cached;
-            }
+            items = buildItemSliceRepresentationFromCache(category.txid, this.state.items);
         } else if (path == "/search") {
             title = "Search " + this.state.title;
             needsupdate = true;
         } else if (path == "/add-directory") {
             title = "Add directory to " + this.state.title;
             needsupdate = true;
+        } else if (path.indexOf("/link/") == 0) {
+
+            const parts = path.split("/");
+            if (parts.length > 0) {
+                const entry_id = parts[2];
+
+                // Hacky...but will rip this all out when planaria is built
+                if (CACHED_HOMEPAGE) {
+                    const txpool = processOpenDirectoryTransactions(CACHED_HOMEPAGE);
+                    const results = processResults(CACHED_HOMEPAGE, txpool);
+
+                    const entry = findObjectByTX(entry_id, results);
+                    if (entry) {
+                        category = findObjectByTX(entry.category, results);
+                        if (category) {
+                            category = category;
+                            link = entry;
+                        } else {
+                            this.setState({"isError": true, "isLoading": false});
+                            return;
+                        }
+                    } else {
+                        this.setState({"isError": true, "isLoading": false});
+                        return;
+                    }
+                }
+
+
+            } else {
+                this.setState({"isError": true, "isLoading": false});
+                return;
+            }
         } else {
             var category_id;
             if (path == "/") {
@@ -565,15 +634,15 @@ class OpenDirectoryApp extends React.Component {
                 }
             }
 
-            const cached = this.state.cache[category_id];
+            const cached = buildItemSliceRepresentationFromCache(category_id, this.state.items);
 
             category = {"txid": category_id, "needsdata": true};
             needsupdate = true;
 
-            if (cached) {
+            if (cached && cached.length > 0) {
                 items = cached;
 
-                const cachedCategory = findObjectByTX(category_id, cached);
+                const cachedCategory = findObjectByTX(category_id, this.state.items);
                 if (cachedCategory) {
                     cachedCategory.needsdata = true; // don't know for sure the server hasn't updated since we last cached
                     title = category.name + " — " + this.state.title;
@@ -591,6 +660,7 @@ class OpenDirectoryApp extends React.Component {
         this.setState({
             "location": location,
             "category": category,
+            "link": link,
             "items": items,
             "isExpandingAddCategoryForm": false,
             "isExpandingAddEntryForm": false,
@@ -621,20 +691,13 @@ class OpenDirectoryApp extends React.Component {
                 const results = processResults(rows, txpool);
                 const success = this.checkForUpdatedActiveCategory(results);
 
-                const raw = this.state.raw;
-                raw[category_id] = rows;
-
-                const cache = this.state.cache;
-                cache[category_id] = results;
-
                 this.setState({
                     "networkActive": false,
                     "isLoading": false,
                     "isError": !success,
                     "txpool": txpool,
                     "items": results,
-                    "raw": raw,
-                    "cache": cache,
+                    "changelog": rows
                 });
 
                 this.setupNetworkSocket();
@@ -669,12 +732,10 @@ class OpenDirectoryApp extends React.Component {
 
     setupNetworkSocket() {
         if (this.socket) {
-            console.log("refreshing network socket");
-            this.socket.close();
-            delete this.socket;
-        } else {
-            console.log("setting up new network socket");
+            return;
         }
+
+        console.log("setting up new network socket");
 
         const query = get_bitdb_query(this.state.category ? this.state.category.txid : get_root_category_txid());
         const encoded_query = toBase64(JSON.stringify(query));
@@ -687,28 +748,60 @@ class OpenDirectoryApp extends React.Component {
                 const resp = JSON.parse(e.data);
                 if ((resp.type == "c" || resp.type == "u") && (resp.data.length > 0)) {
 
-                    var needsUpdate = false;
+                    const rows = [];
                     for (var i = 0; i < resp.data.length; i++) {
                         if (resp.data[i] && resp.data[i].data && resp.data[i].data.s1 == OPENDIR_PROTOCOL) {
-                            needsUpdate = true;
+                            rows.push(resp.data[i]);
                         }
                     }
 
-                    if (needsUpdate) {
+                    if (rows.length > 0) {
                         console.log("handled new message", resp);
-                        this.networkAPIFetch();
-                    } else {
-                        console.log("unhandled message", resp);
+                        this.insertNewRowsFromNetwork(rows);
                     }
                 }
 
 
             } catch (e) {
                 console.log("error handling network socket data", e.data);
+                throw e;
             }
+        }
+
+        this.socket.onerror = (e) => {
+            console.log("socket error", e);
+            if (this.socket) {
+                this.socket.close();
+                this.socket = null;
+            }
+
+            this.setupNetworkSocket();
         }
     }
 
+    insertNewRowsFromNetwork(new_rows) {
+        console.log("Inserting new rows from network", new_rows.length);
+
+        const category_id = (this.state.category ? this.state.category.txid : get_root_category_txid());
+
+        const rows = addNewRowsToExistingRows(new_rows, this.state.changelog);
+        const txpool = processOpenDirectoryTransactions(rows);
+        const results = processResults(rows, txpool);
+        const success = this.checkForUpdatedActiveCategory(results);
+
+        var category = this.state.category;
+        if (category.txid) {
+            category = findObjectByTX(this.state.category.txid, results);
+        }
+
+        this.setState({
+            "isError": !success,
+            "txpool": txpool,
+            "items": results,
+            "category": category,
+            "changelog": rows
+        });
+    }
 }
 
 const MessageGroup = posed.div({

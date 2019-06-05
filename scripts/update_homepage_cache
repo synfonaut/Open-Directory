@@ -6,14 +6,25 @@ const process = require("../public/static/js/process.js");
 const fs = require("fs");
 
 
-const cache_raw_file = __dirname + "/../public/static/js/cached_homepage.js";
+const cached_raw_file = __dirname + "/../public/static/js/cached_raw.js";
+const cached_homepage_file = __dirname + "/../public/static/js/cached_homepage.js";
 const cached_items_file = __dirname + "/../public/static/js/cached_items.js";
 const num_to_fetch = 10000;
 const num_results_required = 900;
 
 const start_time = (new Date()).getTime();
 
-function writeJSONToFileWithVariableName(variable_name, rows, file_path) {
+
+if (!fs.existsSync(cached_raw_file)) {
+    throw "expected cache file to already exist...what's going on?";
+}
+
+if (!fs.existsSync(cached_items_file)) {
+    throw "expected cache items file to already exist...what's going on?";
+}
+
+if (!fs.existsSync(cached_homepage_file)) {
+    throw "expected cache items file to already exist...what's going on?";
 }
 
 process.fetch_from_network(null, 0, num_to_fetch, [], false).then(rows => {
@@ -25,14 +36,6 @@ process.fetch_from_network(null, 0, num_to_fetch, [], false).then(rows => {
     } else {
         console.log("successfully fetched from the network");
 
-        if (!fs.existsSync(cache_raw_file)) {
-            throw "expected cache file to already exist...what's going on?";
-        }
-
-        if (!fs.existsSync(cached_items_file)) {
-            throw "expected cache items file to already exist...what's going on?";
-        }
-
         console.mute();
         const txpool = process.processOpenDirectoryTransactions(rows);
         const results = process.processResults(rows, txpool);
@@ -40,13 +43,21 @@ process.fetch_from_network(null, 0, num_to_fetch, [], false).then(rows => {
             throw "expected processed results to be more";
         }
 
-        var data = console.resume();;
+        var data = console.resume();
 
-        const raw_output = "const CACHED_HOMEPAGE = " + JSON.stringify(rows) + ";";
+        const raw_output = JSON.stringify(rows);
         try {
-            fs.writeFileSync(cache_raw_file, raw_output, "utf8");
+            fs.writeFileSync(cached_raw_file, raw_output, "utf8");
         } catch (e) {
-            console.log("Error writing cached homepage file", cache_raw_file);
+            console.log("Error writing cached raw file", cached_raw_file);
+            throw e;
+        }
+
+        const homepage_output = "const CACHED_HOMEPAGE = " + JSON.stringify(rows) + ";";
+        try {
+            fs.writeFileSync(cached_homepage_file, homepage_output, "utf8");
+        } catch (e) {
+            console.log("Error writing cached homepage file", cached_homepage_file);
             throw e;
         }
 

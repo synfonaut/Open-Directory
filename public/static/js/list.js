@@ -167,8 +167,6 @@ class SubcategoryList extends BaseList {
         this.setState({"category_limit": -1});
     }
 
-
-
     render() {
         const categories = this.getCategories();
 
