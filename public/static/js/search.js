@@ -77,6 +77,7 @@ class SearchResults extends React.Component {
 
         const search = this.props.search.toLowerCase();
         const results = this.props.items.filter(item => {
+            if (item.deleted) { return false }
             if (item.name && item.name.toLowerCase().indexOf(search) !== -1) { return true }
             if (item.description && item.description.toLowerCase().indexOf(search) !== -1) { return true }
             if (item.txid && item.txid.toLowerCase().indexOf(search) !== -1) { return true }
@@ -111,8 +112,6 @@ class SearchResults extends React.Component {
             return <a key={"page-" + page} className={this.state.cursor == (idx*this.state.limit) ? "active" : null} onClick={() => { this.handlePageChange(page) }}>{page}</a>;
         });
 
-
-
         return <div>
                     <ul className="search-results">
                     {slice.map(result => {
@@ -139,8 +138,8 @@ class SearchResult extends React.Component {
             return (<div className="search-result">
                 <h4><a onClick={() => { this.props.changeURL(url) }}>{this.props.item.name}</a> <span className={"badge badge-type-" + this.props.item.type}>{this.props.item.type}</span></h4>
 
-            {(this.props.item.type == "entry") && <a className="url" href={this.props.item.link}>{this.props.item.link}</a>}
-            <div className="satoshis">{satoshisToDollars(this.props.item.satoshis)}</div>
+            {(this.props.item.type == "entry") && <a className="url" href={getLink(this.props.item.link)}>{this.props.item.link}</a>}
+            <div className="satoshis">{satoshisToDollars(this.props.item.satoshis)} - {pluralize(this.props.item.votes, "vote", "votes")} - {pluralize(this.props.item.entries, "link", "links")} in category</div>
             <ReactMarkdown source={this.props.item.description} />
             </div>);
 
@@ -152,8 +151,8 @@ class SearchResult extends React.Component {
             return (<div className="search-result">
                 <h4><a href={url}>{this.props.item.name}</a> <span className={"badge badge-type-" + this.props.item.type}>{this.props.item.type}</span> <span className="from-category-prefix">in</span> <a className="from-category" onClick={() => { this.props.changeURL("/category/" + category.txid) }}>{category.name}</a></h4>
 
-            {(this.props.item.type == "entry") && <a className="url" href={this.props.item.link}>{this.props.item.link}</a>}
-            <div className="satoshis">{satoshisToDollars(this.props.item.satoshis)}</div>
+            {(this.props.item.type == "entry") && <a className="url" href={getLink(this.props.item.link)}>{this.props.item.link}</a>}
+            <div className="satoshis">{satoshisToDollars(this.props.item.satoshis)} - {pluralize(this.props.item.votes, "vote", "votes")}</div>
             <ReactMarkdown source={this.props.item.description} />
             </div>);
         }

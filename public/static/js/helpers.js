@@ -96,3 +96,17 @@ function getBMediaURLForTXID(url) {
     }
 }
 
+function getLink(url) {
+    if (url.indexOf("http") == 0) {
+        return url;
+    }
+
+    if (isBottle()) {
+        return url;
+    } else {
+        return "https://bico.media/" + url;
+    }
+}
+
+
+

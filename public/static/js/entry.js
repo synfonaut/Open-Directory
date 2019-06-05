@@ -1,18 +1,5 @@
 class EntryItem extends Item {
 
-    get_link() {
-
-        if (this.props.item.link.indexOf("http") == 0) {
-            return this.props.item.link;
-        }
-
-        if (isBottle()) {
-            return this.props.item.link;
-        } else {
-            return "https://bico.media/" + this.props.item.link;
-        }
-    }
-
     render() {
         const timestamp = (new Date()).getTime();
         const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE, true);
@@ -37,10 +24,10 @@ class EntryItem extends Item {
                     <div className="upvote"><a onClick={this.handleUpvote.bind(this)}><i className="fas fa-chevron-up"></i></a> <span className="number satoshis" title={this.props.item.satoshis + " sats"}>{price}</span><span className="number votes" title={this.props.item.hottness.toFixed(2) + " hot score"}>{pluralize(this.props.item.votes, "vote", "votes")}</span></div>
                     <div className="entry">
                         <div className="entry-wrapper">
-                            <h5><a target="_blank" href={this.get_link()}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>}  {this.props.showCategory && <span><span className="from-category-prefix">in</span> <a className="from-category" onClick={() => { this.props.changeURL("/category/" + category.txid) }}>{category.name}</a></span>} <span className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</span> {actions}</h5>
+                            <h5><a target="_blank" href={getLink(this.props.item.link)}>{this.props.item.name}</a> {!this.props.item.height && <span className="pending">pending</span>}  {this.props.showCategory && <span><span className="from-category-prefix">in</span> <a className="from-category" onClick={() => { this.props.changeURL("/category/" + category.txid) }}>{category.name}</a></span>} <span className="time">{timeDifference(timestamp, this.props.item.time * 1000)}</span> {actions}</h5>
 
                             <p className="description">{this.props.item.description}</p>
-                            <p className="url"><a target="_blank" href={this.get_link()}>{this.props.item.link}</a></p>
+                            <p className="url"><a target="_blank" href={getLink(this.props.item.link)}>{this.props.item.link}</a></p>
                             {this.state.action == "editing" && <div className="inline-edit"><EditEntryForm item={this.props.item} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} onSubmit={this.clearForm.bind(this)} /></div>}
                             {this.state.action == "tipping" && <TipchainItem item={this.props.item} items={this.props.items} onSuccessHandler={this.handleSuccessfulTip.bind(this)} onErrorHandler={this.props.onErrorHandler} />}
                             {this.state.action == "deleting"  && <div className="inline-delete"><DeleteItem item={this.props.item} onSuccessHandler={this.handleSuccessfulDelete.bind(this)} onErrorHandler={this.props.onErrorHandler} /></div>}

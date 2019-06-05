@@ -1331,6 +1331,11 @@ form {
     margin-left: 0px;
 }
 
+.deleted {
+    text-align: center;
+    font-weight: bold;
+}
+
 .category-container {
     margin-left: 60px;
     background: rgba(239,239,239,0.2);

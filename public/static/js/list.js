@@ -279,6 +279,7 @@ class SubcategoryList extends BaseList {
 
         return (
             <div>
+            {this.props.category.deleted && <div className="deleted">This category is deleted</div>}
             {heading}
             {categories && categories.length > 0 && 
                     <div className="category-wrapper">
