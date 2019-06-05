@@ -582,38 +582,6 @@ class OpenDirectoryApp extends React.Component {
         } else if (path == "/add-directory") {
             title = "Add directory to " + this.state.title;
             needsupdate = true;
-        } else if (path.indexOf("/link/") == 0) {
-
-            const parts = path.split("/");
-            if (parts.length > 0) {
-                const entry_id = parts[2];
-
-                // Hacky...but will rip this all out when planaria is built
-                if (CACHED_HOMEPAGE) {
-                    const txpool = processOpenDirectoryTransactions(CACHED_HOMEPAGE);
-                    const results = processResults(CACHED_HOMEPAGE, txpool);
-
-                    const entry = findObjectByTX(entry_id, results);
-                    if (entry) {
-                        category = findObjectByTX(entry.category, results);
-                        if (category) {
-                            category = category;
-                            link = entry;
-                        } else {
-                            this.setState({"isError": true, "isLoading": false});
-                            return;
-                        }
-                    } else {
-                        this.setState({"isError": true, "isLoading": false});
-                        return;
-                    }
-                }
-
-
-            } else {
-                this.setState({"isError": true, "isLoading": false});
-                return;
-            }
         } else {
             var category_id;
             if (path == "/") {
@@ -645,7 +613,7 @@ class OpenDirectoryApp extends React.Component {
                 const cachedCategory = findObjectByTX(category_id, this.state.items);
                 if (cachedCategory) {
                     cachedCategory.needsdata = true; // don't know for sure the server hasn't updated since we last cached
-                    title = category.name + " — " + this.state.title;
+                    title = cachedCategory.name + " — " + this.state.title;
                     category = cachedCategory;
                 }
             }
