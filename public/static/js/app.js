@@ -83,8 +83,11 @@ class OpenDirectoryApp extends React.Component {
     }
 
     hideMessage(key) {
-        const messages = this.state.messages.filter(m => {
-            return m.key != key;
+        const messages = this.state.messages.map(m => {
+            if (m.key == key) {
+                m.deleted = true;
+            }
+            return m;
         });
 
         this.setState({ "messages": messages });
@@ -436,7 +439,11 @@ class OpenDirectoryApp extends React.Component {
                           <PoseGroup>
                             {(this.state.messages.length > 0) && <MessageGroup key="message_group" className="messages">
                                 {this.state.messages.map((m) => {
-                                    return <Message key={m.key} className={"message " + m.type}>{m.message}</Message>;
+                                    const classes = ["message", m.type];
+                                    if (m.deleted) {
+                                        classes.push("deleted");
+                                    }
+                                    return <Message key={m.key} className={classes.join(" ")}>{m.message}</Message>;
                                 })}
                               </MessageGroup>}
                           </PoseGroup>

@@ -186,7 +186,7 @@ class ChangeLogItem extends React.Component {
                         </tr>}
                     {(this.props.isExpanded || this.state.isExpanded) && <tr>
                             <td className="undo" colSpan="6" id={"changelog-action-" + this.props.item.txid}>
-                            <a href={"https://whatsonchain.com/tx/" + this.props.item.txid}>{this.props.item.txid}</a>&nbsp;
+                            <a target="_blank" href={"https://whatsonchain.com/tx/" + this.props.item.txid}>{this.props.item.txid}</a>&nbsp;
                         {isUndoable && <a onClick={this.handleClickUndo.bind(this)}>undo</a>}
                             {this.state.isShowingWarning && <div className="notice"><span className="warning">You are undoing this change, are you sure you want to do this?</span><div className="explain"><p>If you undo this change, you'll be permanently undoing it in this directory for everyone else. Please only do this if you think it's in the best interest of the directory. Your Bitcoin key is forever tied to this transaction, so it will always be traced to you.</p><p><strong>Why are you undoing this change?</strong></p>
 

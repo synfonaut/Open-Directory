@@ -532,7 +532,7 @@ class ForkLog extends React.Component {
                                         return (<tr key={i.txid}>
                                             <td className="amount" title={sats}>{amount}</td>
                                             <td className="time">{timeDifference(timestamp, i.time * 1000)}</td>
-                                            <td className="url"><a href={i.fork_url}>{i.fork_url}</a></td>
+                                            <td className="url"><a href={getLink(i.fork_url)}>{i.fork_url}</a></td>
                                         </tr>);
                                     })}
                                     </tbody>

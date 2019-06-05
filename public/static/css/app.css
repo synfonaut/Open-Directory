@@ -998,7 +998,14 @@ form {
 }
 
 .messages {
+    position: fixed;
+    top: 10px;
+
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
 }
+
 .message {
     border-radius: 5px;
     color: white;
@@ -1015,6 +1022,10 @@ form {
 .message a {
     color: white;
     text-decoration: underline;
+}
+
+.message.deleted {
+    display: none;
 }
 
 .error {
