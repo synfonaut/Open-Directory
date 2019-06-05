@@ -31,7 +31,7 @@ class OpenDirectoryApp extends React.Component {
             template_txid: SETTINGS.template_txid,
         };
 
-        this.tag = "alpha";
+        this.tag = "beta";
 
         this.NETWORK_DELAY = 0;
         this._isMounted = false;
