@@ -234,7 +234,7 @@ function fetch_txids_from_network(txids, limit=75, results=[]) {
 function fetch_txids_batch_from_network(txids) {
 
     const query = get_txids_query(txids);
-    var b64 = toBase64(JSON.stringify(query));
+    const encoded_query = toBase64(JSON.stringify(query));
     const api_url = SETTINGS.api_endpoint.replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
     const url = api_url.replace("{query}", encoded_query);
     console.log("fetching", url);
