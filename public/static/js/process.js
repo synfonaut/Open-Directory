@@ -1020,7 +1020,7 @@ function connect_to_bitdb_socket(category_id, callback) {
 
                     const rows = [];
                     for (var i = 0; i < resp.data.length; i++) {
-                        if (resp.data[i] && resp.data[i].data && resp.data[i].data.s1 == OPENDIR_PROTOCOL) {
+                        if (resp.data[i] && resp.data[i].data) {
                             rows.push(resp.data[i]);
                         }
                     }
