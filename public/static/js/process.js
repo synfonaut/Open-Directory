@@ -1261,8 +1261,31 @@ function fetch_raw_txid_results(rows) {
     });
 }
 
+function fetch_raw_protocol_results() {
+    return new Promise((resolve, reject) => {
+        fetch_from_network(null, 0, 10000, [], false).then(rows => {
+            if (rows.lenth == 0) {
+                reject("unable to fetch valid data from network");
+            } else if (rows.length < 100) {
+                reject("unable to fetch enough valid data from network");
+            } else {
+                console.log("successfully fetched from the network");
+                resolve(rows);
+            }
+        }).catch(reject);
+    });
+}
 
-
+function fetch_raw_results() {
+    return new Promise((resolve, reject) => {
+        fetch_raw_protocol_results().then(results => {
+            console.log("found", results.length, "raw protocol results");
+            fetch_raw_txid_results(results).then(resolve);
+        }).catch(e => {
+            console.log("ERROR", e);
+        });
+    });
+}
 
 if (typeof window == "undefined") {
     module.exports = {
@@ -1281,5 +1304,7 @@ if (typeof window == "undefined") {
         "buildItemSliceRepresentationFromCache": buildItemSliceRepresentationFromCache,
         "buildRawSliceRepresentationFromCache": buildRawSliceRepresentationFromCache,
         "fetch_raw_txid_results": fetch_raw_txid_results,
+        "fetch_raw_protocol_results": fetch_raw_protocol_results,
+        "fetch_raw_results": fetch_raw_results,
     };
 }

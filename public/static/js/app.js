@@ -237,8 +237,6 @@ class OpenDirectoryApp extends React.Component {
 
         const items = buildItemSliceRepresentationFromCache(this.state.category.txid, this.state.items);
 
-        console.log("ITEMS LENGTH", items.length);
-
         var body, loading, error;
         var shouldShowAddNewCategoryForm = false,
             shouldShowAddNewEntryForm = false;
@@ -261,7 +259,6 @@ class OpenDirectoryApp extends React.Component {
             } else {
 
                 const changelog = this.buildChangeLog(null);
-                console.log("CHANGELOG LENGTH", changelog.length);
 
                 var category = <a onClick={() => { this.changeURL("/") }}>Open Directory</a>;
                 if (this.state.category.txid) {
@@ -363,7 +360,6 @@ class OpenDirectoryApp extends React.Component {
             }
 
             changelog = this.buildChangeLog(this.state.category.txid);
-            console.log("CHANGELOG LENGTH", changelog.length);
             forks = this.getForks();
 
             if (!this.state.isError) {
