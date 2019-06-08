@@ -8,8 +8,8 @@ if (!SETTINGS) {
 
         // in node, if no settings, set bare minimum
         var SETTINGS = {
-            "api_key": "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z",
-            "api_endpoint": "https://bitomation.com/{api_action}/{api_key}/{query}",
+            "api_key": "1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN",
+            "api_endpoint": "http://54.200.76.53:3000/{api_action}/{api_key}/{query}",
             "tip_addresses": [
                 {"address": "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", "name": "Open Directory", "type": "opendirectory"}
             ],
@@ -49,7 +49,7 @@ function use_local_settings(local_settings) {
     }
 }
 
-var BSV_PRICE = 53.00;
+var BSV_PRICE = 190.00;
 
 if (typeof window == "object") {
     use_local_settings(get_local_settings());
