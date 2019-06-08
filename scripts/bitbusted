@@ -1,0 +1,119 @@
+#!/usr/bin/env node
+
+// A hacky bitbus implementation
+
+require('console.mute');
+const fs = require("fs");
+
+const process = require("../public/static/js/process.js");
+
+const cached_raw_file = __dirname + "/../public/static/js/cached_raw.js";
+const cached_homepage_file = __dirname + "/../public/static/js/cached_homepage.js";
+const cached_items_file = __dirname + "/../public/static/js/cached_items.js";
+
+if (!fs.existsSync(cached_raw_file)) {
+    throw "expected cache file to already exist...what's going on?";
+}
+
+if (!fs.existsSync(cached_items_file)) {
+    throw "expected cache items file to already exist...what's going on?";
+}
+
+if (!fs.existsSync(cached_homepage_file)) {
+    throw "expected cache items file to already exist...what's going on?";
+}
+
+
+function fetch_raw_protocol_results() {
+    return new Promise((resolve, reject) => {
+        process.fetch_from_network(null, 0, 10000, [], false).then(rows => {
+            if (rows.lenth == 0) {
+                reject("unable to fetch valid data from network");
+            } else if (rows.length < 100) {
+                reject("unable to fetch enough valid data from network");
+            } else {
+                console.log("successfully fetched from the network");
+                resolve(rows);
+            }
+        }).catch(reject);
+    });
+}
+
+function fetch_raw_results() {
+    return new Promise((resolve, reject) => {
+        fetch_raw_protocol_results().then(results => {
+            console.log("found", results.length, "raw protocol results");
+            process.fetch_raw_txid_results(results).then(resolve);
+        }).catch(e => {
+            console.log("ERROR", e);
+        });
+    });
+}
+
+function write(rows, results) {
+    const raw_output = JSON.stringify(rows);
+    try {
+        fs.writeFileSync(cached_raw_file, raw_output, "utf8");
+    } catch (e) {
+        console.log("Error writing cached raw file", cached_raw_file);
+        throw e;
+    }
+
+    const homepage_output = "const CACHED_HOMEPAGE = " + JSON.stringify(rows) + ";";
+    try {
+        fs.writeFileSync(cached_homepage_file, homepage_output, "utf8");
+    } catch (e) {
+        console.log("Error writing cached homepage file", cached_homepage_file);
+        throw e;
+    }
+
+    const results_output = JSON.stringify(results);
+    try {
+        fs.writeFileSync(cached_items_file, results_output, "utf8");
+    } catch (e) {
+        console.log("Error writing cached results file", cached_items_file);
+        throw e;
+    }
+
+}
+
+const start_time = (new Date()).getTime();
+fetch_raw_results().then(rows => {
+    console.log("found", rows.length, "total results");
+
+    var txpool = process.processOpenDirectoryTransactions(rows);
+    var results = process.processResults(rows, txpool);
+    if (results.length < 100) {
+        throw "expected processed results to be more";
+    }
+
+    write(rows, results);
+
+    const end_time = (new Date()).getTime();
+    const elapsed_time = (end_time - start_time) / 1000;
+
+    console.log("successfully updated cache file at ", new Date(), "with", rows.length, "raw rows and", results.length, "results — took", elapsed_time, "seconds");
+
+
+    process.connect_to_bitdb_socket(null, (socket_rows) => {
+
+        console.log("got new socket rows", JSON.stringify(socket_rows));
+
+        process.fetch_raw_txid_results(socket_rows).then(new_rows => {
+
+            console.log("got", new_rows.length, "total rows");
+
+            rows = process.addNewRowsToExistingRows(new_rows, rows);
+            txpool = process.processOpenDirectoryTransactions(rows);
+            results = process.processResults(rows, txpool);
+
+            write(rows, results);
+
+            console.log("successfully updated cache file at ", new Date(), "with", rows.length, "raw rows and", results.length);
+        });
+
+    });
+});
+
+
+

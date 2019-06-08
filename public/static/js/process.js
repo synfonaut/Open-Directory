@@ -53,7 +53,7 @@ function toBase64(str) {
     return btoa(str);
 }
 
-function get_bmedia_bitdb_query(txids, cursor=0, limit=100) {
+function get_txids_query(txids, cursor=0, limit=10000) {
     const query = {
         "v": 3,
         "q": {
@@ -68,6 +68,7 @@ function get_bmedia_bitdb_query(txids, cursor=0, limit=100) {
             "sort": {
                 "txid": 1
             },
+
             "aggregate": [
                 { "$match": { "tx.h": { "$in": txids } } },
 
@@ -94,180 +95,24 @@ function get_bmedia_bitdb_query(txids, cursor=0, limit=100) {
     return query;
 }
 
-function get_bitdb_query(category_id=null, cursor=0, limit=1000) {
-
-    if (category_id == null) {
-        category_id = get_root_category_txid();
-    }
-
-    // this is a monster query. if you're thinking of building a query this complex, you might
-    // reconsider and build a Planaria instead—future versions will
+function get_bitdb_query(cursor=0, limit=1000) {
 
     const query = {
         "v": 3,
         "q": {
+            "find": {"out.s1": OPENDIR_PROTOCOL},
 
             // querying both confirmed and unconfirmed transactions
             // mongodb doesn't have a clean way to join on both so nearly every query below is doubled, on for each db
             "db": ["u", "c"],
 
             "limit": limit,
+            "skip": cursor,
 
             // need sort here so cursor is consistent
             "sort": {
                 "txid": 1
-            },
-
-            // aggregate is where most of the magic happens. it's the pipeline where we
-            //  1. filter for Open Directory data
-            //  2. join on related data (links, subcategories, votes)
-            //  3. join on bitcoin media
-            "aggregate": [
-                {
-                    // global filter on the OPENDIR_PROTOCOL
-                    // the other "$and" clause gets dynamically inserted below,
-                    // depending on whether it's a category view or home page view
-                    "$match": {
-                        "$and": [
-                            {"out.s1": OPENDIR_PROTOCOL},
-                        ]
-                    }
-                },
-
-                //
-                // Crawl confirmed children (entries, votes, undos)
-
-                // perform recursive join, connecting s3 to txid
-                { "$graphLookup": { "from": "c", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "confirmed_children" } },
-
-                // mongo doesn't have an easy way to bring sub-documents up to the parent, so it requires a few steps
-                // copy both to surrounding container so they're siblings
-                { "$project": { "confirmed_children": "$confirmed_children", "object": ["$$ROOT"], } },
-                // delete old copy from sibling in main object
-                { "$project": { "object.confirmed_children": 0, } },
-                // add siblings arrays together
-                { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_children", ] } } },
-                // flatten sibling arrays
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                // remove surrounding container
-                { "$replaceRoot": { "newRoot": "$items" } },
-
-                //
-                // Crawl confirmed children (entries, votes, undos)
-                { "$graphLookup": { "from": "u", "startWith": "$tx.h", "connectFromField": "tx.h", "connectToField": "out.s3", "as": "unconfirmed_children" } },
-                { "$project": { "unconfirmed_children": "$unconfirmed_children", "object": ["$$ROOT"], } },
-                { "$project": { "object.unconfirmed_children": 0, } },
-                { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_children", ] } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
-
-
-                //
-                // Crawl confirmed parents (tipchain needs path to root), so recursive join up
-                { "$graphLookup": { "from": "c", "startWith": "$out.s3", "connectFromField": "out.s3", "connectToField": "tx.h", "as": "confirmed_parent" } },
-                { "$project": { "confirmed_parent": "$confirmed_parent", "object": ["$$ROOT"], } },
-                { "$project": { "object.confirmed_parent": 0, } },
-                { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_parent", ] } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
-
-                //
-                // Crawl unconfirmed parents (tipchain needs path to root), so recursive join up
-                { "$graphLookup": { "from": "u", "startWith": "$out.s3", "connectFromField": "out.s3", "connectToField": "tx.h", "as": "unconfirmed_parent" } },
-                { "$project": { "unconfirmed_parent": "$unconfirmed_parent", "object": ["$$ROOT"], } },
-                { "$project": { "object.unconfirmed_parent": 0, } },
-                { "$project": { "items": { "$concatArrays": [ "$object", "$unconfirmed_parent", ] } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
-
-
-
-                // crawl confirmed dir.sv media separately since we want to include the output data
-                {
-                    "$addFields": {
-                       "dirsv_txid": [
-                           { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://dir.sv/category/" ]}, 1 ] } },
-                           { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://dir.sv/link/" ]}, 1 ] } },
-                        ]
-                    }
-                },
-
-                //
-                // Crawl confirmed dir.sv media
-                { "$lookup": { "from": "c", "localField": "dirsv_txid.txid", "foreignField": "tx.h", "as": "confirmed_dirmediatx" } },
-                { "$project": { "confirmed_dirmediatx": "$confirmed_dirmediatx", "object": ["$$ROOT"], } },
-                { "$project": { "object.confirmed_dirmediatx": 0, "object.dirsv_txid": 0} },
-                // including b:// files could make queries very large, so filter out data—we only need metadata
-                {
-                    "$project": {
-                        "confirmed_dirmediatx.tx": 1,
-                        "confirmed_dirmediatx.blk": 1,
-                        "confirmed_dirmediatx.in": 1,
-                        "confirmed_dirmediatx.out": 1,
-                        "object": 1,
-                    }
-                },
-                { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_dirmediatx", ] } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
-
-
-                //
-                // Crawl associated media so we can include author in the tipchain
-                {
-                    "$addFields": {
-                       "b_txid": [
-                           // Split out different versions of b:// and bcat:// txids, works with bit:// general protocol too
-                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "bit://" + B_MEDIA_PROTOCOL + "/" ]}, 1 ] } },
-                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "b://" ]}, 1 ] } },
-
-                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "bit://" + BCAT_MEDIA_PROTOCOL + "/" ]}, 1 ] } },
-                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "bcat://" ]}, 1 ] } },
-
-                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://bico.media/" ]}, 1 ] } },
-                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://www.bitpaste.app/tx/" ]}, 1 ] } },
-                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://memo.sv/post/" ]}, 1 ] } },
-                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://bitstagram.bitdb.network/m/raw/" ]}, 1 ] } },
-                            { "txid": { "$arrayElemAt": [ {"$split": [ {"$arrayElemAt": ["$out.s7", 0]}, "https://www.audiob.app/tx/" ]}, 1 ] } },
-                        ]
-                    }
-                },
-
-                //
-                // Crawl confirmed media
-                { "$lookup": { "from": "c", "localField": "b_txid.txid", "foreignField": "tx.h", "as": "confirmed_bmediatx" } },
-                { "$project": { "confirmed_bmediatx": "$confirmed_bmediatx", "object": ["$$ROOT"], } },
-                { "$project": { "object.confirmed_bmediatx": 0, "object.b_txid": 0} },
-                // including b:// files could make queries very large, so filter out data—we only need metadata
-                {
-                    "$project": {
-                        "confirmed_bmediatx.tx": 1,
-                        "confirmed_bmediatx.blk": 1,
-                        "confirmed_bmediatx.in": 1,
-                        "confirmed_bmediatx.out.s1": 1,
-                        "confirmed_bmediatx.out.e": 1,
-                        "object": 1,
-                    }
-                },
-                { "$project": { "items": { "$concatArrays": [ "$object", "$confirmed_bmediatx", ] } } },
-                { "$unwind": { "path": "$items", "preserveNullAndEmptyArrays": true } },
-                { "$replaceRoot": { "newRoot": "$items" } },
-
-
-
-                //
-                // mongo will dedupe based on exact document rather than id, so unfortunately some duplicates will slip through
-                // this should stop majority of them though—rest will get filtered out on client
-                { "$project": { "_id": 0, } },
-                { "$addFields": { "_id": "$tx.h", } },
-                { "$group": { "_id": null, "items": { "$addToSet": "$$ROOT" } } },
-                { "$unwind": { "path": "$items" } },
-                { "$replaceRoot": { "newRoot": "$items" } },
-
-                //
-                // let users page results
-                { "$skip": cursor },
-            ]
+            }
         },
 
         //
@@ -285,41 +130,6 @@ function get_bitdb_query(category_id=null, cursor=0, limit=1000) {
         }
     };
 
-    //
-    // For an explicit category_id we can filter on the txid itself and anything that references the txid
-    if (category_id) {
-        query["q"]["aggregate"][0]["$match"]["$and"].push({
-            "$or": [
-                {"tx.h": category_id},
-                {"out.s3": category_id},
-            ]
-        });
-
-    //
-    // For the homepage, we grab all categories without parents.
-    // This is a bit less stable as the order of properties aren't set in stone, what we really need is != BITCOIN_TRANSACTION
-    } else {
-        // only select categories that don't have a subcategory id
-        query["q"]["aggregate"][0]["$match"]["$and"].push({
-            "$or": [
-                {
-                    "$and": [
-                        {"out.s2": "fork.soft"},
-                        {"out.s4": null}
-                    ]
-                },
-                {
-                    "$and": [
-                        {"out.s2": "category.create"},
-                        {"out.s3": "name"}
-                    ]
-                }
-            ]
-        });
-    }
-
-    //console.log("QUERY = ", JSON.stringify(query, null, 4));
-
     return query;
 }
 
@@ -331,7 +141,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
     }
 
 
-    const query = get_bitdb_query(category_id, cursor, limit);
+    const query = get_bitdb_query(cursor, limit);
     const encoded_query = toBase64(JSON.stringify(query));
     const api_url = SETTINGS.api_endpoint.replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
     const url = api_url.replace("{query}", encoded_query);
@@ -364,21 +174,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
             console.log("Seems like there's still more... polling for more");
             fetch_from_network(category_id, cursor, limit, results, cache).then(resolve).catch(reject);
         } else {
-
-            const sorted = results.sort(function(a, b) {
-                return (a.height===null)-(b.height===null) || +(a.height>b.height) || -(a.height<b.height);
-            });
-
-            var items = new Map();
-            for (const item of sorted) {
-                const matched_item = items[item.txid];
-                if (!matched_item || (matched_item && !matched_item.height)) {
-                    items.set(item.txid, item)
-                }
-            }
-
-            const values = Array.from(items.values());
-            resolve(values);
+            resolve(results);
         }
     }
 
@@ -415,15 +211,32 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
     });
 }
 
-function fetch_bmedia_from_network(txids, cursor=0, limit=20, results=[]) {
+function fetch_txids_from_network(txids, limit=75, results=[]) {
+    return new Promise((resolve, reject) => {
+        const txid_chunks = chunk(txids, limit);
+        const actions = txid_chunks.map(chunk => {
+            return fetch_txids_batch_from_network(chunk);
+        });
 
-    const query = get_bmedia_bitdb_query(txids, cursor, limit);
-    var b64 = btoa(JSON.stringify(query));
+        Promise.all(actions).then(results => {
+            var all = [];
+            for (const result of results) {
+                all = all.concat(result);
+            }
+
+            resolve(all);
+        });
+    });
+}
+
+function fetch_txids_batch_from_network(txids) {
+
+    const query = get_txids_query(txids);
+    var b64 = toBase64(JSON.stringify(query));
     const url = "https://genesis.bitdb.network/q/1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN/" + b64;
     const header = { headers: { key: "1A4xFjNatCgAK5URARbVwoxo1E3MCMETb6" } };
 
     function handleResponse(resolve, reject, r) {
-
         if (r.errors) {
             reject("error during query " + r.errors);
             return;
@@ -432,43 +245,31 @@ function fetch_bmedia_from_network(txids, cursor=0, limit=20, results=[]) {
         var items = {};
         const rows = r.c.concat(r.u).reverse();
 
-        results = results.concat(rows);
-        cursor += rows.length;
-
-        if (rows.length >= limit) {
-            console.log("Seems like there's still more... polling for more");
-            fetch_bmedia_from_network(txids, cursor, limit, results).then(resolve).catch(reject);
-        } else {
-
-            const sorted = results.sort(function(a, b) {
-                return (a.height===null)-(b.height===null) || +(a.height>b.height) || -(a.height<b.height);
-            });
-
-            var items = new Map();
-            for (const item of sorted) {
-                const matched_item = items[item.txid];
-                if (!matched_item || (matched_item && !matched_item.height)) {
-                    items.set(item.txid, item)
-                }
-            }
-
-            const values = Array.from(items.values());
-            resolve(values);
-        }
+        resolve(rows);
     }
 
     return new Promise((resolve, reject) => {
+        console.log("Making genesis txid HTTP request to server");
+        if (isNode) {
+            axios = require("axios");
+            axios(url, header).then(r => {
+                if (r.status !== 200) {
+                    reject("Error while retrieving response from server " + r.status);
+                    return;
+                }
 
-        console.log("Making genesis HTTP request to server " + cursor + "," + limit);
-        fetch(url, header).then(function(r) {
-            if (r.status !== 200) {
-                reject("Error while retrieving response from server " + r.status);
-                return;
-            }
+                handleResponse(resolve, reject, r.data)
+            }).catch(reject);
+        } else {
+            fetch(url, header).then(function(r) {
+                if (r.status !== 200) {
+                    reject("Error while retrieving response from server " + r.status);
+                    return;
+                }
 
-            return r.json();
-        }).then(r => { handleResponse(resolve, reject, r) }).catch(reject);
-
+                return r.json();
+            }).then(r => { handleResponse(resolve, reject, r) }).catch(reject);
+        }
     });
 }
 function processOpenDirectoryTransactions(results) {
@@ -809,6 +610,19 @@ function processResult(result, existing, undo, rows) {
     }
 }
 
+function parseTXIDFromLink(link) {
+    for (const protocol of SUPPORTED_TIPCHAIN_PROTOCOLS) {
+        const bmedia_parts = link.split(protocol);
+        if (bmedia_parts.length == 2) {
+            const bmedia_txid = bmedia_parts[1];
+            if (bmedia_txid.length == 64) {
+                return bmedia_txid;
+            }
+        }
+    }
+    return null;
+}
+
 
 function parseTipFromEntryMedia(item, media) {
     for (const protocol of SUPPORTED_TIPCHAIN_PROTOCOLS) {
@@ -1014,7 +828,7 @@ function calculateTipPayment(tipchain, amount, currency) {
 function processOpenDirectoryTransaction(result) {
 
     if (!result.txid || !result.data || !result.address) {
-        console.log("MISSING DATA", result);
+        console.log("MISSING DATA", result.txid, result.address, result.data, result);
         return null;
     }
 
@@ -1105,9 +919,23 @@ function processOpenDirectoryTransaction(result) {
         if (item_action == "create") {
             obj.action_id = args.shift();
             obj.change = convertKeyValues(args);
+
+            if (obj.change.link) {
+                const bmedia_txid = parseTXIDFromLink(obj.change.link);
+                if (bmedia_txid) {
+                    obj.bmedia_txid = bmedia_txid;
+                }
+            }
         } else if (item_action == "update") {
             obj.action_id = args.shift();
             obj.change = convertKeyValues(args);
+
+            if (obj.change.link) {
+                const bmedia_txid = parseTXIDFromLink(obj.change.link);
+                if (bmedia_txid) {
+                    obj.bmedia_txid = bmedia_txid;
+                }
+            }
         } else if (item_action == "delete") {
             obj.action_id = args.shift();
 
@@ -1168,7 +996,7 @@ function connect_to_bitdb_socket(category_id, callback) {
 
     const EventSource = require("eventsource");
 
-    const query = get_bitdb_query(category_id);
+    const query = get_bitdb_query();
     const encoded_query = toBase64(JSON.stringify(query));
     const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "s");;
     const url = api_url.replace("{query}", encoded_query);
@@ -1384,12 +1212,64 @@ function buildRawSliceRepresentationFromCache(category_id, changelog=[], cache=[
     return filtered_changelog;
 }
 
+// https://medium.com/@Dragonza/four-ways-to-chunk-an-array-e19c889eac4
+function chunk(array, size) {
+    const chunked_arr = [];
+    let copied = [...array]; // ES6 destructuring
+    const numOfChild = Math.ceil(copied.length / size); // Round up to the nearest integer
+    for (let i = 0; i < numOfChild; i++) {
+        chunked_arr.push(copied.splice(0, size));
+    }
+    return chunked_arr;
+}
+
+// Given results, extend it with bmedia results
+function fetch_raw_txid_results(rows) {
+    const results = processOpenDirectoryTransactions(rows);
+    const already_found = new Set(results.map(r => { return r.txid }));
+    const txids = new Set(results.map(r => {
+        if (r.bmedia_txid) {
+            if (!already_found.has(r.bmedia_txid)) {
+                return r.bmedia_txid;
+            }
+        }
+    }).filter(r => { return r }));
+
+    console.log("fetching", txids.size, "additional bmedia txids");
+
+    return new Promise((resolve, reject) => {
+        fetch_txids_from_network(txids).then(bmedia_rows => {
+            console.log("found", bmedia_rows.length, "bmedia txids");
+
+            const all_rows = rows.concat(bmedia_rows);
+
+            const sorted = all_rows.sort(function(a, b) {
+                return (a.height===null)-(b.height===null) || +(a.height>b.height) || -(a.height<b.height);
+            });
+
+            var items = new Map();
+            for (const item of sorted) {
+                const matched_item = items[item.txid];
+                if (!matched_item || (matched_item && !matched_item.height)) {
+                    items.set(item.txid, item)
+                }
+            }
+
+            const values = Array.from(items.values());
+            resolve(values);
+        });
+    });
+}
+
+
+
 
 if (typeof window == "undefined") {
     module.exports = {
         "OPENDIR_PROTOCOL": OPENDIR_PROTOCOL,
         "OPENDIR_ACTIONS": OPENDIR_ACTIONS,
         "fetch_from_network": fetch_from_network,
+        "fetch_txids_from_network": fetch_txids_from_network,
         "processResults": processResults,
         "processRawResults": processRawResults,
         "processOpenDirectoryTransactions": processOpenDirectoryTransactions,
@@ -1400,5 +1280,6 @@ if (typeof window == "undefined") {
         "addNewRowsToExistingRows": addNewRowsToExistingRows,
         "buildItemSliceRepresentationFromCache": buildItemSliceRepresentationFromCache,
         "buildRawSliceRepresentationFromCache": buildRawSliceRepresentationFromCache,
+        "fetch_raw_txid_results": fetch_raw_txid_results,
     };
 }

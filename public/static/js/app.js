@@ -50,6 +50,7 @@ class OpenDirectoryApp extends React.Component {
         this.didUpdateLocation();
         this.performAdminActionsFetch();
         this.detectTemplateIDFromAddress();
+        this.networkAPIFetch();
 
         updateBitcoinSVPrice();
 
@@ -236,6 +237,8 @@ class OpenDirectoryApp extends React.Component {
 
         const items = buildItemSliceRepresentationFromCache(this.state.category.txid, this.state.items);
 
+        console.log("ITEMS LENGTH", items.length);
+
         var body, loading, error;
         var shouldShowAddNewCategoryForm = false,
             shouldShowAddNewEntryForm = false;
@@ -258,6 +261,7 @@ class OpenDirectoryApp extends React.Component {
             } else {
 
                 const changelog = this.buildChangeLog(null);
+                console.log("CHANGELOG LENGTH", changelog.length);
 
                 var category = <a onClick={() => { this.changeURL("/") }}>Open Directory</a>;
                 if (this.state.category.txid) {
@@ -359,6 +363,7 @@ class OpenDirectoryApp extends React.Component {
             }
 
             changelog = this.buildChangeLog(this.state.category.txid);
+            console.log("CHANGELOG LENGTH", changelog.length);
             forks = this.getForks();
 
             if (!this.state.isError) {
@@ -599,11 +604,13 @@ class OpenDirectoryApp extends React.Component {
                     if (parts[1] == "category") {
                         category_id = parts[2];
                     } else {
+                        console.log("CANT FIND CATEGORY", parts);
                         this.setState({"isError": true, "isLoading": false});
                         return;
                     }
 
                 } else {
+                    console.log("CANT FIND CATEGORY", path);
                     this.setState({"isError": true, "isLoading": false});
                     return;
                 }
@@ -658,11 +665,13 @@ class OpenDirectoryApp extends React.Component {
 
         this.setState(state);
         setTimeout(() => {
+            fetch_from_network().then((rows) => {
 
-            const category_id = (this.state.category ? this.state.category.txid : get_root_category_txid());
-            fetch_from_network(category_id).then((rows) => {
+                if (this.state.changelog.length > 0) {
+                    rows = this.state.changelog;
+                }
+
                 const txpool = processOpenDirectoryTransactions(rows);
-
                 const results = processResults(rows, txpool);
                 const success = this.checkForUpdatedActiveCategory(results);
 
@@ -676,7 +685,6 @@ class OpenDirectoryApp extends React.Component {
                 });
 
                 this.setupNetworkSocket();
-
             }).catch((e) => {
                 console.log("error", e);
                 this.setState({
@@ -699,6 +707,8 @@ class OpenDirectoryApp extends React.Component {
                     return true;
                 }
             }
+
+            console.log("error during checkForUpdatedActiveCategory");
 
             return false;
         }
@@ -739,7 +749,7 @@ class OpenDirectoryApp extends React.Component {
 
             } catch (e) {
                 console.log("error handling network socket data", e.data);
-                throw e;
+                //throw e;
             }
         }
 
@@ -754,27 +764,28 @@ class OpenDirectoryApp extends React.Component {
         }
     }
 
-    insertNewRowsFromNetwork(new_rows) {
-        console.log("Inserting new rows from network", new_rows.length);
+    insertNewRowsFromNetwork(socket_rows) {
+        console.log("Inserting new rows from network", socket_rows.length);
 
-        const category_id = (this.state.category ? this.state.category.txid : get_root_category_txid());
+        fetch_raw_txid_results(socket_rows).then(new_rows => {
+            const rows = addNewRowsToExistingRows(new_rows, this.state.changelog);
+            const txpool = processOpenDirectoryTransactions(rows);
+            const results = processResults(rows, txpool);
 
-        const rows = addNewRowsToExistingRows(new_rows, this.state.changelog);
-        const txpool = processOpenDirectoryTransactions(rows);
-        const results = processResults(rows, txpool);
-        const success = this.checkForUpdatedActiveCategory(results);
+            const success = this.checkForUpdatedActiveCategory(results);
 
-        var category = this.state.category;
-        if (category.txid) {
-            category = findObjectByTX(this.state.category.txid, results);
-        }
+            var category = this.state.category;
+            if (category.txid) {
+                category = findObjectByTX(this.state.category.txid, results);
+            }
 
-        this.setState({
-            "isError": !success,
-            "txpool": txpool,
-            "items": results,
-            "category": category,
-            "changelog": rows
+            this.setState({
+                "isError": !success,
+                "txpool": txpool,
+                "items": results,
+                "category": category,
+                "changelog": rows
+            });
         });
     }
 }
