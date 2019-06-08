@@ -145,7 +145,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
     const encoded_query = toBase64(JSON.stringify(query));
     const api_url = SETTINGS.api_endpoint.replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
     const url = api_url.replace("{query}", encoded_query);
-    console.log("fetching", url);
+    //console.log("fetching", url);
 
     const header = { headers: { key: SETTINGS.api_key } };
 
@@ -237,7 +237,7 @@ function fetch_txids_batch_from_network(txids) {
     const encoded_query = toBase64(JSON.stringify(query));
     const api_url = SETTINGS.api_endpoint.replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
     const url = api_url.replace("{query}", encoded_query);
-    console.log("fetching", url);
+    //console.log("fetching", url);
     const header = { headers: { key: "1A4xFjNatCgAK5URARbVwoxo1E3MCMETb6" } };
 
     function handleResponse(resolve, reject, r) {
