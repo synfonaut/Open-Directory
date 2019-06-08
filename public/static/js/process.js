@@ -1004,7 +1004,7 @@ function connect_to_bitdb_socket(category_id, callback) {
     const encoded_query = toBase64(JSON.stringify(query));
     const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "s");;
     const url = api_url.replace("{query}", encoded_query);
-    console.log("connecting to", url);
+    //console.log("connecting to", url);
 
     function reconnect() {
 
