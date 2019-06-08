@@ -145,6 +145,8 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
     const encoded_query = toBase64(JSON.stringify(query));
     const api_url = SETTINGS.api_endpoint.replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
     const url = api_url.replace("{query}", encoded_query);
+    console.log("fetching", url);
+
     const header = { headers: { key: SETTINGS.api_key } };
 
     function handleResponse(resolve, reject, r) {
@@ -233,7 +235,9 @@ function fetch_txids_batch_from_network(txids) {
 
     const query = get_txids_query(txids);
     var b64 = toBase64(JSON.stringify(query));
-    const url = "https://genesis.bitdb.network/q/1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN/" + b64;
+    const api_url = SETTINGS.api_endpoint.replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
+    const url = api_url.replace("{query}", encoded_query);
+    console.log("fetching", url);
     const header = { headers: { key: "1A4xFjNatCgAK5URARbVwoxo1E3MCMETb6" } };
 
     function handleResponse(resolve, reject, r) {
@@ -1000,6 +1004,7 @@ function connect_to_bitdb_socket(category_id, callback) {
     const encoded_query = toBase64(JSON.stringify(query));
     const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "s");;
     const url = api_url.replace("{query}", encoded_query);
+    console.log("connecting to", url);
 
     function reconnect() {
 
