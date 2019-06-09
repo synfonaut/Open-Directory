@@ -88,7 +88,7 @@ function get_txids_query(txids, cursor=0, limit=10000) {
                 \"address\": .in[0].e.a,    \
                 \"outputs\": [.out[] | {\"address\": .e.a, \"sats\": .e.v}], \
                 \"txid\": .tx.h,            \
-                \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}]"
+                \"data\": .out[0] | with_entries( select(  (((.key | startswith(\"s\")) or (.key | startswith(\"ls\"))) and (.key != \"str\"))  )  )}]"
         }
     }
 
@@ -126,7 +126,7 @@ function get_bitdb_query(cursor=0, limit=1000) {
                 \"address\": .in[0].e.a,    \
                 \"outputs\": [.out[] | {\"address\": .e.a, \"sats\": .e.v}], \
                 \"txid\": .tx.h,            \
-                \"data\": .out[0] | with_entries(select(((.key | startswith(\"s\")) and (.key != \"str\"))))}]"
+                \"data\": .out[0] | with_entries( select(  (((.key | startswith(\"s\")) or (.key | startswith(\"ls\"))) and (.key != \"str\"))  )  )}]"
         }
     };
 
@@ -991,7 +991,6 @@ function processOpenDirectoryTransaction(result) {
     } else {
         console.log("unknown item type", result);
     }
-
 
     return obj;
 }
