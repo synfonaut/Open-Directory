@@ -1,4 +1,4 @@
-var databutton = {
+export default {
   lastModified: function() { return databutton._lastModified }, 
   lastModifiedDate: function() { return databutton._lastModifiedDate },
   name: function() { return databutton._name },

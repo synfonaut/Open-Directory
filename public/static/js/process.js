@@ -1,14 +1,16 @@
+import { toBase64, findObjectByTX } from "./helpers";
+import SETTINGS from "./settings";
+
 var isNode = (typeof window == "undefined");
 
 if (isNode) {
-    axios = require("axios");
-    SETTINGS = require("./settings.js");
-    CACHED_HOMEPAGE = [];
+    var axios = require("axios");
+    var CACHED_HOMEPAGE = [];
 }
 
-const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
-const BCAT_MEDIA_PROTOCOL = "15DHFxWZJT58f9nhyGnsRBqrgwK4W6h4Up";
-const SUPPORTED_TIPCHAIN_PROTOCOLS = [
+export const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
+export const BCAT_MEDIA_PROTOCOL = "15DHFxWZJT58f9nhyGnsRBqrgwK4W6h4Up";
+export const SUPPORTED_TIPCHAIN_PROTOCOLS = [
     "bit://" + B_MEDIA_PROTOCOL + "/",
     "b://",
     "bit://" + BCAT_MEDIA_PROTOCOL + "/",
@@ -22,10 +24,10 @@ const SUPPORTED_TIPCHAIN_PROTOCOLS = [
 ];
 
 // Open Directory Bitcom Protocol
-const OPENDIR_PROTOCOL = "1dirzgocAsru3SdhetQkEJraQgYTf5xQm";
+export const OPENDIR_PROTOCOL = "1dirzgocAsru3SdhetQkEJraQgYTf5xQm";
 
 // Allowed actions
-const OPENDIR_ACTIONS = [
+export const OPENDIR_ACTIONS = [
     "category.create",
     "category.update",
     "category.delete",
@@ -37,7 +39,7 @@ const OPENDIR_ACTIONS = [
     "fork.soft",
 ];
 
-function get_root_category_txid() {
+export function get_root_category_txid() {
     if (SETTINGS.category) {
         return SETTINGS.category;
     }
@@ -45,15 +47,7 @@ function get_root_category_txid() {
     return null;
 }
 
-function toBase64(str) {
-    if (isNode) {
-        return Buffer.from(str).toString('base64');
-    }
-
-    return btoa(str);
-}
-
-function get_txids_query(txids, cursor=0, limit=10000) {
+export function get_txids_query(txids, cursor=0, limit=10000) {
     const query = {
         "v": 3,
         "q": {
@@ -95,7 +89,7 @@ function get_txids_query(txids, cursor=0, limit=10000) {
     return query;
 }
 
-function get_bitdb_query(cursor=0, limit=1000) {
+export function get_bitdb_query(cursor=0, limit=1000) {
 
     const query = {
         "v": 3,
@@ -134,7 +128,7 @@ function get_bitdb_query(cursor=0, limit=1000) {
 }
 
 
-function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], cache=true) {
+export function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], cache=true) {
 
     if (category_id == null) {
         category_id = get_root_category_txid();
@@ -183,8 +177,13 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
     return new Promise((resolve, reject) => {
 
         if (cache) {
-            resolve(CACHED_HOMEPAGE);
-            return;
+            if (typeof window.CACHED_HOMEPAGE !== "undefined") {
+                resolve(window.CACHED_HOMEPAGE);
+                return;
+            } else {
+                resolve([]);
+                return;
+            }
         }
 
 
@@ -213,7 +212,7 @@ function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], 
     });
 }
 
-function fetch_txids_from_network(txids, limit=75, results=[]) {
+export function fetch_txids_from_network(txids, limit=75, results=[]) {
     return new Promise((resolve, reject) => {
         const txid_chunks = chunk(txids, limit);
         const actions = txid_chunks.map(chunk => {
@@ -231,7 +230,7 @@ function fetch_txids_from_network(txids, limit=75, results=[]) {
     });
 }
 
-function fetch_txids_batch_from_network(txids) {
+export function fetch_txids_batch_from_network(txids) {
 
     const query = get_txids_query(txids);
     const encoded_query = toBase64(JSON.stringify(query));
@@ -276,12 +275,12 @@ function fetch_txids_batch_from_network(txids) {
         }
     });
 }
-function processOpenDirectoryTransactions(results) {
+export function processOpenDirectoryTransactions(results) {
     return results.map(processOpenDirectoryTransaction).filter(r => { return r });
 }
 
 // find all children of an object that perform an action on it
-function findChildrenByActionID(obj, results=[]) {
+export function findChildrenByActionID(obj, results=[]) {
 
     var children = [];
     for (const result of results) {
@@ -335,12 +334,12 @@ function processUndos(results) {
     return Array.from(unique_ids);
 }
 
-function processRawResults(rows) {
+export function processRawResults(rows) {
     const txpool = processOpenDirectoryTransactions(rows);
     return processResults(rows, txpool);
 }
 
-function processResults(rows, txpool) {
+export function processResults(rows, txpool) {
     var processing = [];
 
     const undo_txids = processUndos(txpool);
@@ -716,7 +715,7 @@ function countObjectsUnderObject(obj, items) {
     return count;
 }
 
-function expandTipchainInformation(tipchain, tipAmount=0, results=[]) {
+export function expandTipchainInformation(tipchain, tipAmount=0, results=[]) {
     const tips = tipchain.slice(0).reverse();
     const tipchain_addresses = tips.map(t => { return t.address; });
     const splits = calculateTipchainSplits(tips).reverse();
@@ -774,7 +773,7 @@ function convertKeyValues(orig_args) {
     return keyvalues;
 }
 
-function calculateTipchainSplits(tipchain) {
+export function calculateTipchainSplits(tipchain) {
 
     if (tipchain.length == 0) {
         return [];
@@ -793,7 +792,7 @@ function calculateTipchainSplits(tipchain) {
     return splits;
 }
 
-function calculateTipPayment(tipchain, amount, currency) {
+export function calculateTipPayment(tipchain, amount, currency) {
 
     if (!amount) {
         console.log("error while calculating tip payment, invalid amount");
@@ -995,7 +994,7 @@ function processOpenDirectoryTransaction(result) {
     return obj;
 }
 
-function connect_to_bitdb_socket(category_id, callback) {
+export function connect_to_bitdb_socket(category_id, callback) {
 
     const EventSource = require("eventsource");
 
@@ -1064,15 +1063,6 @@ function convertOutputs(outputs, address_space=[]) {
     return satoshis;
 }
 
-function findObjectByTX(txid, results=[]) {
-    for (const result of results) {
-        if (result.txid == txid) {
-            return result;
-        }
-    }
-    return null;
-}
-
 function findRootActionID(result, results=[]) {
     if (!result.action_id) {
         return null;
@@ -1101,7 +1091,7 @@ function findParentCategoryChain(parent_txid, results=[]) {
     return [];
 }
 
-function findChildrenOfParentCategory(parent_txid, results=[]) {
+export function findChildrenOfParentCategory(parent_txid, results=[]) {
     if (parent_txid) {
         return results.filter(r => {
             return (r.category == parent_txid) || (r.action_id == parent_txid) || (r.reference_id == parent_txid);
@@ -1111,7 +1101,7 @@ function findChildrenOfParentCategory(parent_txid, results=[]) {
     }
 }
 
-function addNewRowsToExistingRows(new_rows, existing_rows) {
+export function addNewRowsToExistingRows(new_rows, existing_rows) {
     const rows = new Map();
     for (const row of existing_rows) {
         rows.set(row.txid, row);
@@ -1124,7 +1114,7 @@ function addNewRowsToExistingRows(new_rows, existing_rows) {
     return Array.from(rows.values());
 }
 
-function buildItemSliceRepresentationFromCache(category_id, cache=[]) {
+export function buildItemSliceRepresentationFromCache(category_id, cache=[]) {
 
     if (!category_id) {
         return cache;
@@ -1176,7 +1166,7 @@ function buildItemSliceRepresentationFromCache(category_id, cache=[]) {
     return Array.from(items.values());
 }
 
-function buildRawSliceRepresentationFromCache(category_id, changelog=[], cache=[]) {
+export function buildRawSliceRepresentationFromCache(category_id, changelog=[], cache=[]) {
 
     // So hacky..trying to hang on and scale... All of this needs to be rewritten 
 
@@ -1228,7 +1218,7 @@ function chunk(array, size) {
 }
 
 // Given results, extend it with bmedia results
-function fetch_raw_txid_results(rows) {
+export function fetch_raw_txid_results(rows) {
     const results = processOpenDirectoryTransactions(rows);
     const already_found = new Set(results.map(r => { return r.txid }));
     const txids = new Set(results.map(r => {
@@ -1265,7 +1255,7 @@ function fetch_raw_txid_results(rows) {
     });
 }
 
-function fetch_raw_protocol_results() {
+export function fetch_raw_protocol_results() {
     return new Promise((resolve, reject) => {
         fetch_from_network(null, 0, 10000, [], false).then(rows => {
             if (rows.lenth == 0) {
@@ -1280,7 +1270,7 @@ function fetch_raw_protocol_results() {
     });
 }
 
-function fetch_raw_results() {
+export function fetch_raw_results() {
     return new Promise((resolve, reject) => {
         fetch_raw_protocol_results().then(results => {
             console.log("found", results.length, "raw protocol results");
@@ -1291,24 +1281,3 @@ function fetch_raw_results() {
     });
 }
 
-if (typeof window == "undefined") {
-    module.exports = {
-        "OPENDIR_PROTOCOL": OPENDIR_PROTOCOL,
-        "OPENDIR_ACTIONS": OPENDIR_ACTIONS,
-        "fetch_from_network": fetch_from_network,
-        "fetch_txids_from_network": fetch_txids_from_network,
-        "processResults": processResults,
-        "processRawResults": processRawResults,
-        "processOpenDirectoryTransactions": processOpenDirectoryTransactions,
-        "calculateTipchainSplits": calculateTipchainSplits,
-        "calculateTipPayment": calculateTipPayment,
-        "findObjectByTX": findObjectByTX,
-        "connect_to_bitdb_socket": connect_to_bitdb_socket,
-        "addNewRowsToExistingRows": addNewRowsToExistingRows,
-        "buildItemSliceRepresentationFromCache": buildItemSliceRepresentationFromCache,
-        "buildRawSliceRepresentationFromCache": buildRawSliceRepresentationFromCache,
-        "fetch_raw_txid_results": fetch_raw_txid_results,
-        "fetch_raw_protocol_results": fetch_raw_protocol_results,
-        "fetch_raw_results": fetch_raw_results,
-    };
-}

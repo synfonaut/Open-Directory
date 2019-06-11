@@ -1,8 +1,13 @@
-class EntryItem extends Item {
+import { Item } from "./item";
+import { TipchainItem } from "./tipchain"
+import { findObjectByTX, pluralize, satoshisToDollars, timeDifference, getLink } from "./helpers"
+import databutton from "./databutton-0.0.4"
+
+export class EntryItem extends Item {
 
     render() {
         const timestamp = (new Date()).getTime();
-        const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE, true);
+        const price = satoshisToDollars(this.props.item.satoshis, window.BSV_PRICE, true);
 
         const category = findObjectByTX(this.props.item.category, this.props.items);
 
@@ -39,7 +44,7 @@ class EntryItem extends Item {
     }
 }
 
-class AddEntryForm extends React.Component {
+export class AddEntryForm extends React.Component {
 
     render() {
         return (
@@ -216,7 +221,7 @@ class AddEntryForm extends React.Component {
 
 }
 
-class EditEntryForm extends React.Component {
+export class EditEntryForm extends React.Component {
 
     constructor(props) {
         super(props);

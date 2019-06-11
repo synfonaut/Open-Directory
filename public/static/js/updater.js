@@ -1,4 +1,7 @@
-function getLatestUpdate() {
+import SETTINGS from "./settings";
+import { toBase64 } from "./helpers";
+
+export function getLatestUpdate() {
     return new Promise((resolve, reject) => {
         getUpdates().then(updates => {
             if (updates.length > 0) {
@@ -12,7 +15,7 @@ function getLatestUpdate() {
 
 
 
-function getUpdates() {
+export function getUpdates() {
     return new Promise((resolve, reject) => {
         fetchUpdates().then(response => {
             const responses = response.c.concat(response.u);

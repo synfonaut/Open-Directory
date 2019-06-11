@@ -1,4 +1,10 @@
-class TipchainItem extends React.Component {
+import SETTINGS from "./settings";
+import { OPENDIR_PROTOCOL, expandTipchainInformation, calculateTipPayment } from "./process"
+import { pluralize } from "./helpers"
+import databutton from "./databutton-0.0.4"
+import { get_local_settings } from "./settings";
+
+export class TipchainItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

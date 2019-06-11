@@ -1,4 +1,7 @@
-class SearchPage extends React.Component {
+import { getLink, findObjectByTX, pluralize, satoshisToDollars, timeDifference } from "./helpers"
+
+export class SearchPage extends React.Component {
+
 
     constructor(props) {
         super(props);
@@ -20,7 +23,7 @@ class SearchPage extends React.Component {
     }
 }
 
-class SearchForm extends React.Component {
+export class SearchForm extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
@@ -56,7 +59,7 @@ class SearchForm extends React.Component {
     }
 }
 
-class SearchResults extends React.Component {
+export class SearchResults extends React.Component {
 
     constructor(props) {
         super(props);

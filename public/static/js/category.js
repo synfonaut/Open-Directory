@@ -1,7 +1,12 @@
-class CategoryItem extends Item {
+import { Item } from "./item"
+import { TipchainItem } from "./tipchain"
+import { satoshisToDollars, pluralize } from "./helpers"
+import databutton from "./databutton-0.0.4"
+
+export class CategoryItem extends Item {
 
     render() {
-        const price = satoshisToDollars(this.props.item.satoshis, BSV_PRICE, true);
+        const price = satoshisToDollars(this.props.item.satoshis, window.BSV_PRICE, true);
 
         return (
             <li id={this.props.item.txid} className="category">
@@ -25,7 +30,7 @@ class CategoryItem extends Item {
 }
 
 
-class AddCategoryForm extends React.Component {
+export class AddCategoryForm extends React.Component {
 
     constructor(props) {
         super(props);
@@ -187,7 +192,7 @@ class AddCategoryForm extends React.Component {
 
 }
 
-class EditCategoryForm extends React.Component {
+export class EditCategoryForm extends React.Component {
 
     constructor(props) {
         super(props);
@@ -359,7 +364,7 @@ class EditCategoryForm extends React.Component {
     }
 }
 
-class AddDirectoryPage extends React.Component {
+export class AddDirectoryPage extends React.Component {
     render() {
         return <div>
             <br />

@@ -1,3 +1,7 @@
+import { pluralize, satoshisToDollars } from "./helpers"
+import { EntryItem } from "./entry"
+import { CategoryItem } from "./category"
+
 class BaseList extends React.Component {
 
     constructor(props) {
@@ -161,7 +165,7 @@ class BaseList extends React.Component {
 
 }
 
-class SubcategoryList extends BaseList {
+export class SubcategoryList extends BaseList {
 
     handleClickShowAllSubcategories() {
         this.setState({"category_limit": -1});
@@ -178,7 +182,7 @@ class SubcategoryList extends BaseList {
         }
 
         const entries = this.getEntries();
-        const price = satoshisToDollars(this.props.category.satoshis, BSV_PRICE, true);
+        const price = satoshisToDollars(this.props.category.satoshis, window.BSV_PRICE, true);
 
         var slice = entries.slice(this.state.cursor, this.state.cursor + this.state.limit);
 
@@ -314,7 +318,7 @@ class SubcategoryList extends BaseList {
 
 }
 
-class HomepageEntries extends BaseList {
+export class HomepageEntries extends BaseList {
 
     handleChangeEntryLimit(num) {
         this.setState({"limit": num, "cursor": 0});
@@ -437,7 +441,7 @@ class HomepageEntries extends BaseList {
 
 }
 
-class HomepageList extends BaseList {
+export class HomepageList extends BaseList {
 
     scrollToTop() {
         const top = document.querySelector(".homepage-categories .top")
@@ -484,7 +488,7 @@ class HomepageList extends BaseList {
     render() {
         const categories = this.getCategories();
 
-        const price = satoshisToDollars(this.props.category.satoshis, BSV_PRICE, true);
+        const price = satoshisToDollars(this.props.category.satoshis, window.BSV_PRICE, true);
 
         var slice = categories.slice(this.state.cursor, this.state.cursor + this.state.category_limit);
 
