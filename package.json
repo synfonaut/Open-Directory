@@ -5,6 +5,7 @@
   "main": "scripts/debug.js",
   "dependencies": {
     "babel-core": "^6.26.3",
+    "babel-polyfill": "^6.26.0",
     "console.mute": "^0.3.0",
     "eventsource": "^1.0.7",
     "express": "^4.17.1",

@@ -1,5 +1,8 @@
+require("babel-polyfill");
+
 module.exports = {
     entry: [
+        "babel-polyfill",
         './public/static/js/app.js'
     ],
     module: {
