@@ -2,7 +2,7 @@ const express = require("express");
 const mustacheExpress = require("mustache-express");
 const removeMd = require('remove-markdown');
 
-const process = require("./public/static/js/process.js");
+const helpers = require("./public/static/js/helpers.js");
 const fs = require("fs");
 
 const cached_items_file = __dirname + "/public/static/js/cached_items.js";
@@ -32,7 +32,7 @@ app.get('/category/:category_id', function (req, res) {
         let cached_items = fs.readFileSync(cached_items_file);
         let items = JSON.parse(cached_items);
 
-        const category = process.findObjectByTX(category_id, items);
+        const category = helpers.findObjectByTX(category_id, items);
         if (category) {
             const title = category.name + " — Open Directory";
             const description = removeMd(category.description).replace(/\n/g, " ");

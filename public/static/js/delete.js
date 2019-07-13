@@ -1,4 +1,6 @@
-class DeleteItem extends React.Component {
+import databutton from "./databutton-0.0.4"
+
+export class DeleteItem extends React.Component {
 
     constructor(props) {
         super(props);

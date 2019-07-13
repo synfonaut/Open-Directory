@@ -1,10 +1,13 @@
+import SETTINGS from "./settings";
+import { toBase64 } from "./helpers";
+
 const ALLOWED_ACTIONS = [
     "uri",
     "attach",
     "detach",
 ];
 
-function fetchAdminActions(admin_address) {
+export function fetchAdminActions(admin_address) {
 
     const query = {
         "v": 3,
@@ -60,7 +63,7 @@ function fetchAdminActions(admin_address) {
     });
 }
 
-function getCachedAdminActions(cache_mins=60) {
+export function getCachedAdminActions(cache_mins=60) {
     return new Promise((resolve, reject) => {
         const now = (new Date()).getTime();
 
@@ -107,7 +110,7 @@ function processAdminResult(result) {
     return object;
 }
 
-function processAdminResults(results) {
+export function processAdminResults(results) {
     return results.map(processAdminResult).filter(r => { return r });
 }
 

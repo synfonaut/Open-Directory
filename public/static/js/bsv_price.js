@@ -1,4 +1,4 @@
-function updateBitcoinSVPrice() {
+export function updateBitcoinSVPrice() {
     // check if we have a cached version
 
     const storage = window.localStorage;
@@ -14,7 +14,7 @@ function updateBitcoinSVPrice() {
                 const diff = now - date;
                 const MAX_CACHE_SECONDS = 60 * 60 * 12; // update every 12 hours
 
-                BSV_PRICE = price; // set cached price—better than nothing
+                window.BSV_PRICE = price; // set cached price—better than nothing
 
                 if (diff < MAX_CACHE_SECONDS * 1000) {
                     console.log("Using cached Bitcoin SV price of", price);
@@ -30,8 +30,8 @@ function updateBitcoinSVPrice() {
 
     getLatestBitcoinSVPrice().then(price => {
         if (price > 0) {
-            console.log("Updating BSV price from", BSV_PRICE, "to", price);
-            BSV_PRICE = price;
+            console.log("Updating BSV price from", window.BSV_PRICE, "to", price);
+            window.BSV_PRICE = price;
             storage["bsv_price_cache"] = JSON.stringify({
                 "price": price,
                 "date": (new Date()).getTime()

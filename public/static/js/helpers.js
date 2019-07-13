@@ -1,5 +1,5 @@
 
-function satoshisToDollars(satoshis, bitcoin_price=BSV_PRICE, show_zero=false) {
+export function satoshisToDollars(satoshis, bitcoin_price=window.BSV_PRICE, show_zero=false) {
     if (satoshis > 0) {
         var val = ((satoshis / 100000000.0) * bitcoin_price).toLocaleString(undefined, {'minimumFractionDigits':2, 'maximumFractionDigits':2});
 
@@ -19,7 +19,7 @@ function satoshisToDollars(satoshis, bitcoin_price=BSV_PRICE, show_zero=false) {
     }
 }
 
-function numberFormat(number, length=3) {
+export function numberFormat(number, length=3) {
     if (number > 0) {
         const val = number.toLocaleString(undefined, {'minimumFractionDigits':2, 'maximumFractionDigits':length});
 
@@ -34,7 +34,7 @@ function numberFormat(number, length=3) {
 
 
 // https://stackoverflow.com/a/6109105
-function timeDifference(current, previous) {
+export function timeDifference(current, previous) {
 
     if (!current || !previous) {
         return "just now";
@@ -73,22 +73,22 @@ function timeDifference(current, previous) {
     }
 }
 
-function pluralize(val, singular, plural) {
+export function pluralize(val, singular, plural) {
     if (val == 1) {
         return val + " " + singular;
     }
     return val + " " + plural;
 }
 
-function isBottle() {
+export function isBottle() {
     return navigator.userAgent.indexOf("Bottle") !== -1;
 }
 
-function getBitLinkForBMediaTXID(txid) {
+export function getBitLinkForBMediaTXID(txid) {
     return "bit://" + B_MEDIA_PROTOCOL + "/" + txid;
 }
 
-function getBMediaURLForTXID(url) {
+export function getBMediaURLForTXID(url) {
     if (isBottle()) {
         return url;
     } else {
@@ -96,7 +96,7 @@ function getBMediaURLForTXID(url) {
     }
 }
 
-function getLink(url) {
+export function getLink(url) {
     if (url.indexOf("http") == 0) {
         return url;
     }
@@ -106,6 +106,24 @@ function getLink(url) {
     } else {
         return "https://bico.media/" + url;
     }
+}
+
+var isNode = (typeof window == "undefined");
+export function toBase64(str) {
+    if (isNode) {
+        return Buffer.from(str).toString('base64');
+    }
+
+    return btoa(str);
+}
+
+export function findObjectByTX(txid, results=[]) {
+    for (const result of results) {
+        if (result.txid == txid) {
+            return result;
+        }
+    }
+    return null;
 }
 
 

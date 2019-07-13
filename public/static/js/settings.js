@@ -1,19 +1,17 @@
-if (!SETTINGS) {
 
-    // always expect global settings in browser...if not throw error so we don't accidentally let users continue using the app with a broken tipchain (for example)
-    if (typeof window == "object") {
+var SETTINGS = {
+    "api_key": "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z",
+    "api_endpoint": "https://bitomation.com/{api_action}/{api_key}/{query}",
+    "tip_addresses": [
+        {"address": "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", "name": "Open Directory", "type": "opendirectory"}
+    ],
+};
+
+if (typeof window == "object") {
+    if (typeof window.SETTINGS == "undefined") {
         throw "Error reading global settings...";
-
     } else {
-
-        // in node, if no settings, set bare minimum
-        var SETTINGS = {
-            "api_key": "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z",
-            "api_endpoint": "https://bitomation.com/{api_action}/{api_key}/{query}",
-            "tip_addresses": [
-                {"address": "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", "name": "Open Directory", "type": "opendirectory"}
-            ],
-        };
+        SETTINGS = window.SETTINGS;
     }
 }
 
@@ -54,5 +52,6 @@ var BSV_PRICE = 190.00;
 if (typeof window == "object") {
     use_local_settings(get_local_settings());
 } else {
-    module.exports = SETTINGS;
 }
+
+module.exports = SETTINGS;

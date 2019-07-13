@@ -33,7 +33,7 @@ function write(rows, results) {
         throw e;
     }
 
-    const homepage_output = "const CACHED_HOMEPAGE = " + JSON.stringify(rows) + ";";
+    const homepage_output = "window.CACHED_HOMEPAGE = " + JSON.stringify(rows) + ";";
     try {
         fs.writeFileSync(cached_homepage_file, homepage_output, "utf8");
     } catch (e) {

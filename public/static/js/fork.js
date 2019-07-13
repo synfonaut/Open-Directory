@@ -1,4 +1,9 @@
-class Fork extends React.Component {
+import SETTINGS from "./settings";
+import { toBase64, getLink, satoshisToDollars, timeDifference, numberFormat } from "./helpers"
+import { calculateTipchainSplits, B_MEDIA_PROTOCOL } from "./process"
+import databutton from "./databutton-0.0.4"
+
+export class Fork extends React.Component {
 
     constructor(props) {
         super(props);
@@ -448,7 +453,7 @@ class Fork extends React.Component {
 }
 
 
-class AddTipchainAddressForm extends React.Component {
+export class AddTipchainAddressForm extends React.Component {
 
     constructor(props) {
         super(props);
@@ -505,7 +510,7 @@ class AddTipchainAddressForm extends React.Component {
 }
 
 
-class ForkLog extends React.Component {
+export class ForkLog extends React.Component {
 
     render() {
         const timestamp = (new Date()).getTime();
@@ -524,7 +529,7 @@ class ForkLog extends React.Component {
                                 <table>
                                     <tbody>
                                     {slice.map(i => {
-                                        var amount = satoshisToDollars(i.satoshis, BSV_PRICE);
+                                        var amount = satoshisToDollars(i.satoshis, window.BSV_PRICE);
                                         if (!amount) {
                                             amount = "$0.00";
                                         }

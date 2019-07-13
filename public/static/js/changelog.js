@@ -1,4 +1,9 @@
-class ChangeLog extends React.Component {
+import SETTINGS from "./settings";
+import { OPENDIR_PROTOCOL } from "./process"
+import { findObjectByTX, satoshisToDollars, timeDifference } from "./helpers"
+import databutton from "./databutton-0.0.4"
+
+export class ChangeLog extends React.Component {
 
     constructor(props) {
         super(props);
