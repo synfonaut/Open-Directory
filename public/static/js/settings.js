@@ -1,7 +1,7 @@
 
 var SETTINGS = {
-    "api_key": "1D23Q8m3GgPFH15cwseLFZVVGSNg3ypP2z",
-    "api_endpoint": "https://bitomation.com/{api_action}/{api_key}/{query}",
+    "api_key": "1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN",
+    "api_endpoint": "https://genesis.bitdb.network/{api_action}/{api_key}/{query}",
     "tip_addresses": [
         {"address": "1LPe8CGxypahVkoBbYyoHMUAHuPb4S2JKL", "name": "Open Directory", "type": "opendirectory"}
     ],
