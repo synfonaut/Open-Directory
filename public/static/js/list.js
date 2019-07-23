@@ -1,6 +1,7 @@
 import { pluralize, satoshisToDollars } from "./helpers"
 import { EntryItem } from "./entry"
 import { CategoryItem } from "./category"
+import { get_root_category_txid } from "./process";
 
 class BaseList extends React.Component {
 

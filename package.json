@@ -38,8 +38,10 @@
     "webpack-cli": "^3.3.3"
   },
   "scripts": {
+    "watch": "./node_modules/.bin/webpack --mode development --watch",
     "build:dev": "./node_modules/.bin/webpack --mode development",
     "build": "./node_modules/.bin/webpack --mode production",
+    "serve": "node --require esm server.js",
     "test": "node node_modules/mocha/bin/mocha --require esm"
   },
   "repository": {
