@@ -41,9 +41,14 @@ class OpenDirectoryApp extends React.Component {
             location: [""],
             messages: [],
 
-            changelog: [],    // response from network
-            txpool: [],       // semi-processed results from network
-            items: [],        // current items
+            changelog: [],           // response from network
+            txpool: [],              // semi-processed results from network
+            items: [],               // current items
+            homepageEntries: [],     // homepage entries (scaling fix)
+            homepageCategories: [],  // homepage categories (scaling fix)
+
+            homepageEntriesSort: "hot",
+            homepageCategoriesSort: "hot",
 
             admin_actions: [],
 
@@ -204,6 +209,22 @@ class OpenDirectoryApp extends React.Component {
         this.didUpdateLocation();
     }
 
+    handleChangeHomepageEntriesSortOrder(order) {
+        if (order == "time") {
+            this.setState({"homepageEntriesSort": "time"});
+        } else if (order == "votes") {
+            this.setState({"homepageEntriesSort": "votes"});
+        } else if (order =="money") {
+            this.setState({"homepageEntriesSort": "money"});
+        } else if (order =="submissions") {
+            this.setState({"homepageEntriesSort": "submissions"});
+        } else {
+            this.setState({"homepageEntriesSort": "hot"});
+        }
+
+        this.networkAPIFetch();
+    }
+
     render() {
         const path = this.getLocation();
 
@@ -276,11 +297,13 @@ class OpenDirectoryApp extends React.Component {
                     list_class_name = "subcategories";
                 } else {
                     list = <div>
-                        <HomepageEntries items={filtered_items} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} limit={15} show_category={true} changeURL={this.changeURL} />
+                        <HomepageEntries items={this.state.homepageEntries} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} limit={15} show_category={true} changeURL={this.changeURL} sort={this.state.homepageEntriesSort} handleChangeSortOrder={this.handleChangeHomepageEntriesSortOrder.bind(this)} />
                         <div className="clearfix"></div>
-                        <HomepageList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} changeURL={this.changeURL} />
                     </div>;
                     list_class_name = "homepage";
+                        /*
+                        <HomepageList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} changeURL={this.changeURL} />
+                        */
                 }
 
                 body = <div className={list_class_name + " list-wrapper"}>{list}</div>;
@@ -582,13 +605,11 @@ class OpenDirectoryApp extends React.Component {
     }
 
     networkAPIFetchHomepage() {
-        fetch_homepage_from_network().then((results) => {
-            const success = this.checkForUpdatedActiveCategory(results);
+        fetch_homepage_from_network("links", this.state.homepageEntriesSort).then((results) => {
             this.setState({
                 "networkActive": false,
                 "isLoading": false,
-                "isError": !success,
-                "items": results,
+                "homepageEntries": results,
             });
 
         }).catch((e) => {
@@ -642,54 +663,6 @@ class OpenDirectoryApp extends React.Component {
     }
 
     setupNetworkSocket() {
-        /*
-        if (this.socket) {
-            return;
-        }
-
-        console.log("setting up new network socket");
-
-        const query = get_bitdb_query(this.state.category ? this.state.category.txid : get_root_category_txid());
-        const encoded_query = toBase64(JSON.stringify(query));
-        const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "s");;
-        const url = api_url.replace("{query}", encoded_query);
-
-        this.socket = new EventSource(url);
-        this.socket.onmessage = (e) => {
-            try {
-                const resp = JSON.parse(e.data);
-                if ((resp.type == "c" || resp.type == "u") && (resp.data.length > 0)) {
-
-                    const rows = [];
-                    for (var i = 0; i < resp.data.length; i++) {
-                        if (resp.data[i] && resp.data[i].data && resp.data[i].data.s1 == OPENDIR_PROTOCOL) {
-                            rows.push(resp.data[i]);
-                        }
-                    }
-
-                    if (rows.length > 0) {
-                        console.log("handled new message", resp);
-                        this.insertNewRowsFromNetwork(rows);
-                    }
-                }
-
-
-            } catch (e) {
-                console.log("error handling network socket data", e.data);
-                //throw e;
-            }
-        }
-
-        this.socket.onerror = (e) => {
-            console.log("socket error", e);
-            if (this.socket) {
-                this.socket.close();
-                this.socket = null;
-            }
-
-            this.setupNetworkSocket();
-        }
-        */
     }
 
     insertNewRowsFromNetwork(socket_rows) {

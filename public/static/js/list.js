@@ -55,6 +55,10 @@ class BaseList extends React.Component {
         } else {
             this.setState({"sort": "hot", "cursor": 0});
         }
+
+        if (this.props.handleChangeSortOrder) {
+            this.props.handleChangeSortOrder(order);
+        }
     }
 
     handlePageChange(page) {
@@ -254,10 +258,10 @@ export class SubcategoryList extends BaseList {
                     <div className="sort">
                         <span className="label">sort by</span>
                         <ul>
-                        <li><i class="fab fa-hotjar"></i> <a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.state.sort == "hot" ? "active" : ""}>hot</a></li>
-                        <li><i class="fas fa-dollar-sign"></i> <a onClick={() => { this.handleChangeSortOrder("money") }} className={this.state.sort == "money" ? "active" : ""}>money</a></li>
-                        <li><i class="fas fa-poll"></i> <a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.state.sort == "votes" ? "active" : ""}>votes</a></li>
-                        <li><i class="fas fa-plus"></i> <a onClick={() => { this.handleChangeSortOrder("time") }} className={this.state.sort == "time" ? "active" : ""}>new</a></li>
+                        <li><i class="fab fa-hotjar"></i> <a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.props.sort == "hot" ? "active" : ""}>hot</a></li>
+                        <li><i class="fas fa-dollar-sign"></i> <a onClick={() => { this.handleChangeSortOrder("money") }} className={this.props.sort == "money" ? "active" : ""}>money</a></li>
+                        <li><i class="fas fa-poll"></i> <a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.props.sort == "votes" ? "active" : ""}>votes</a></li>
+                        <li><i class="fas fa-plus"></i> <a onClick={() => { this.handleChangeSortOrder("time") }} className={this.props.sort == "time" ? "active" : ""}>new</a></li>
                         </ul>
                         <div className="clearfix"></div>
                     </div>
@@ -325,13 +329,6 @@ export class HomepageEntries extends BaseList {
         this.setState({"limit": num, "cursor": 0});
     }
 
-    getHomepageEntries() {
-        const entries = this.props.items.filter(i => { return !i.deleted && i.type == "entry" });
-        return entries.sort((a, b) => {
-            return this.sortCompare(a, b);
-        });
-    }
-
     setCursorWithBoundsCheck(cursor) {
         const entries = this.getTopHomepageEntries();
         const numPages = Math.ceil(entries.length / this.state.limit);
@@ -363,12 +360,8 @@ export class HomepageEntries extends BaseList {
         this.scrollToTop();
     }
 
-    getTopHomepageEntries(max_entries_on_homepage=88) {
-        return this.getHomepageEntries().slice(0, max_entries_on_homepage);
-    }
-
     render() {
-        const entries = this.getTopHomepageEntries();
+        const entries = this.getUnsortedEntries();
 
         var slice = entries.slice(this.state.cursor, this.state.cursor + this.state.limit);
 
@@ -389,8 +382,6 @@ export class HomepageEntries extends BaseList {
             </ul>
             <div className="clearfix"></div>
             </div>);
-
-
 
         if (this.state.cursor > 0) {
             pages.unshift(<a key="page-previous" onClick={() => { this.handlePreviousPageChange() }}><i className="fas fa-angle-double-left"></i></a>);
@@ -415,10 +406,10 @@ export class HomepageEntries extends BaseList {
                         <span className="sort-wrapper">
                         <span className="label">sort by</span>
                         <ul>
-                        <li><i class="fab fa-hotjar"></i> <a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.state.sort == "hot" ? "active" : ""}>hot</a></li>
-                        <li><i class="fas fa-dollar-sign"></i> <a onClick={() => { this.handleChangeSortOrder("money") }} className={this.state.sort == "money" ? "active" : ""}>money</a></li>
-                        <li><i class="fas fa-poll"></i> <a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.state.sort == "votes" ? "active" : ""}>votes</a></li>
-                        <li><i class="fas fa-plus"></i> <a onClick={() => { this.handleChangeSortOrder("time") }} className={this.state.sort == "time" ? "active" : ""}>new</a></li>
+                        <li><i class="fab fa-hotjar"></i> <a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.props.sort == "hot" ? "active" : ""}>hot</a></li>
+                        <li><i class="fas fa-dollar-sign"></i> <a onClick={() => { this.handleChangeSortOrder("money") }} className={this.props.sort == "money" ? "active" : ""}>money</a></li>
+                        <li><i class="fas fa-poll"></i> <a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.props.sort == "votes" ? "active" : ""}>votes</a></li>
+                        <li><i class="fas fa-plus"></i> <a onClick={() => { this.handleChangeSortOrder("time") }} className={this.props.sort == "time" ? "active" : ""}>new</a></li>
                         </ul>
                         </span>
                     </div>
@@ -549,11 +540,11 @@ export class HomepageList extends BaseList {
                 <div className="sort">
                 <span className="label">sort by</span>
                 <ul>
-                <li><i className="fab fa-hotjar"></i> <a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.state.sort == "hot" ? "active" : ""}>hot</a></li>
-                <li><i className="fas fa-dollar-sign"></i> <a onClick={() => { this.handleChangeSortOrder("money") }} className={this.state.sort == "money" ? "active" : ""}>money</a></li>
-                <li><i class="fas fa-poll"></i> <a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.state.sort == "votes" ? "active" : ""}>votes</a></li>
-                <li><i class="fas fa-link"></i> <a onClick={() => { this.handleChangeSortOrder("submissions") }} className={this.state.sort == "submisions" ? "active" : ""}>links</a></li>
-                <li><i class="fas fa-plus"></i> <a onClick={() => { this.handleChangeSortOrder("time") }} className={this.state.sort == "time" ? "active" : ""}>new</a></li>
+                <li><i className="fab fa-hotjar"></i> <a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.props.sort == "hot" ? "active" : ""}>hot</a></li>
+                <li><i className="fas fa-dollar-sign"></i> <a onClick={() => { this.handleChangeSortOrder("money") }} className={this.props.sort == "money" ? "active" : ""}>money</a></li>
+                <li><i class="fas fa-poll"></i> <a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.props.sort == "votes" ? "active" : ""}>votes</a></li>
+                <li><i class="fas fa-link"></i> <a onClick={() => { this.handleChangeSortOrder("submissions") }} className={this.props.sort == "submisions" ? "active" : ""}>links</a></li>
+                <li><i class="fas fa-plus"></i> <a onClick={() => { this.handleChangeSortOrder("time") }} className={this.props.sort == "time" ? "active" : ""}>new</a></li>
                 </ul>
                 <div className="clearfix"></div>
                 </div></div>);

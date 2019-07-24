@@ -17,7 +17,8 @@ var cached_raw = [];
 function get_cached_items() {
     const old_items = cached_items;
     try {
-        const new_items = require(__dirname + "/public/static/js/cached_items.json");
+        let data = fs.readFileSync(__dirname + "/public/static/js/cached_items.json");
+        let new_items = JSON.parse(data);
         cached_items = new_items;
         return cached_items;
     } catch (e) {
@@ -29,9 +30,11 @@ function get_cached_raw() {
 
     const old_raw = cached_raw;
     try {
-        const new_raw = require(__dirname + "/public/static/js/cached_raw.json").filter(i => {
+        let data = fs.readFileSync(__dirname + "/public/static/js/cached_raw.json");
+        let new_raw = JSON.parse(data).filter(i => {
             return i.data.s1 == OPENDIR_PROTOCOL;
         });
+
         cached_raw = new_raw;
         return cached_raw;
     } catch (e) {
@@ -64,7 +67,7 @@ function getHomepageItems(cache, type="links", sort="hot", limit=200) {
             return item.type == "category";
         }
     }).sort(function(a, b) {
-        if (sort == "new") {
+        if (sort == "time") {
             if (!a.height) { return -1; }
             if (a.height < b.height) { return 1; }
             if (a.height > b.height) { return -1; }
@@ -121,24 +124,24 @@ function getHomepageItems(cache, type="links", sort="hot", limit=200) {
 
 app.get('/api/homepage', function (req, res) {
     var sort = req.query.sort;
-    const allowedSorts = ["hot", "money", "votes", "new", "links"];
+    const allowedSorts = ["hot", "money", "votes", "time", "links"];
     if (allowedSorts.indexOf(sort) == -1) { sort = "hot" }
 
-    var itemType = req.query.item;
+    var itemType = req.query.type;
     const allowedItemTypes = ["links", "categories"];
     if (allowedItemTypes.indexOf(itemType) == -1) { itemType = "links" }
 
-    console.log("SORT", sort);
-    console.log("ITEM", itemType);
+    //console.log("SORT", sort);
+    //console.log("ITEM", itemType);
 
     try {
         const items = get_cached_items();
         const raw = get_cached_raw();
-        console.log("RAW", raw.length);
-        console.log("ITEMS", items.length);
+        //console.log("RAW", raw.length);
+        //console.log("ITEMS", items.length);
 
         const slice = getHomepageItems(items, itemType, sort);
-        console.log("SLICE", slice.length);
+        console.log("SLICE", itemType, sort, slice.length);
 
         const changelog = process.buildRawSliceRepresentationFromCache(null, raw, items);
         const sortedChangelog = changelog.sort(function(a, b) {

@@ -1309,7 +1309,7 @@ export function fetch_raw_txid_results(rows) {
 
 export function fetch_raw_protocol_results() {
     return new Promise((resolve, reject) => {
-        fetch_from_network(null, 0, 10000, [], false).then(rows => {
+        fetch_from_bitdb_network(null, 0, 10000, [], false).then(rows => {
             if (rows.lenth == 0) {
                 reject("unable to fetch valid data from network");
             } else if (rows.length < 100) {
@@ -1333,3 +1333,85 @@ export function fetch_raw_results() {
     });
 }
 
+export function fetch_from_bitdb_network(category_id=null, cursor=0, limit=1000, results=[], cache=true) {
+
+    if (category_id == null) {
+        category_id = get_root_category_txid();
+    }
+
+    const query = get_bitdb_query(cursor, limit);
+    const encoded_query = toBase64(JSON.stringify(query));
+    const api_url = SETTINGS.api_endpoint.replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
+    const url = api_url.replace("{query}", encoded_query);
+    //console.log("fetching", url);
+
+    const header = { headers: { key: SETTINGS.api_key } };
+
+    function handleResponse(resolve, reject, r) {
+
+        if (r.errors) {
+            reject("error during query " + r.errors);
+            return;
+        }
+
+        var items = {};
+        const rows = r.c.concat(r.u).reverse();
+
+        /*
+
+        for (const row of rows) {
+            console.log("ROW", JSON.stringify(row, null, 4));
+        }
+        console.log("ROWS", rows.length);
+        console.log("ROW JSON", JSON.stringify(rows, null, 4));
+        throw "E";
+        */
+
+        results = results.concat(rows);
+        cursor += rows.length;
+
+        if (rows.length >= limit) {
+            console.log("Seems like there's still more... polling for more");
+            fetch_from_network(category_id, cursor, limit, results, cache).then(resolve).catch(reject);
+        } else {
+            resolve(results);
+        }
+    }
+
+    return new Promise((resolve, reject) => {
+
+        if (cache) {
+            if (typeof window.CACHED_HOMEPAGE !== "undefined") {
+                resolve(window.CACHED_HOMEPAGE);
+                return;
+            } else {
+                resolve([]);
+                return;
+            }
+        }
+
+
+        console.log("Making HTTP request to server " + cursor + "," + limit);
+        if (isNode) {
+            axios = require("axios");
+            axios(url, header).then(r => {
+                if (r.status !== 200) {
+                    reject("Error while retrieving response from server " + r.status);
+                    return;
+                }
+
+                handleResponse(resolve, reject, r.data)
+            }).catch(reject);
+        } else {
+            fetch(url, header).then(function(r) {
+                if (r.status !== 200) {
+                    reject("Error while retrieving response from server " + r.status);
+                    return;
+                }
+
+                return r.json();
+            }).then(r => { handleResponse(resolve, reject, r) }).catch(reject);
+        }
+
+    });
+}
