@@ -14,6 +14,7 @@ import {
     processOpenDirectoryTransactions,
     processResults,
     OPENDIR_ACTIONS,
+    OPENDIR_PROTOCOL,
 } from "./process";
 import { processAdminResults, getCachedAdminActions } from "./admin";
 import { HomepageEntries, HomepageList, SubcategoryList } from "./list";
@@ -615,6 +616,9 @@ class OpenDirectoryApp extends React.Component {
             } else {
                 this.networkAPIFetchCategory();
             }
+
+            //this.setupNetworkSocket();
+
         }, this.NETWORK_DELAY);
     }
 
@@ -682,6 +686,7 @@ class OpenDirectoryApp extends React.Component {
                 "items": results,
                 "changelog":changelog 
             });
+
         }).catch((e) => {
             console.log("error", e);
             this.setState({
@@ -710,32 +715,54 @@ class OpenDirectoryApp extends React.Component {
     }
 
     setupNetworkSocket() {
-    }
+        if (this.socket) {
+            return;
+        }
 
-    insertNewRowsFromNetwork(socket_rows) {
-        console.log("Inserting new rows from network", socket_rows.length);
+        console.log("setting up new network socket");
 
-        fetch_raw_txid_results(socket_rows).then(new_rows => {
-            const rows = addNewRowsToExistingRows(new_rows, this.state.changelog);
-            const txpool = processOpenDirectoryTransactions(rows);
-            const results = processResults(rows, txpool);
+        const query = get_bitdb_query(this.state.category ? this.state.category.txid : get_root_category_txid());
+        const encoded_query = toBase64(JSON.stringify(query));
+        const api_url = SETTINGS["api_endpoint"].replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "s");;
+        const url = api_url.replace("{query}", encoded_query);
 
-            const success = this.checkForUpdatedActiveCategory(results);
+        this.socket = new EventSource(url);
+        this.socket.onmessage = (e) => {
+            try {
+                const resp = JSON.parse(e.data);
+                if ((resp.type == "c" || resp.type == "u") && (resp.data.length > 0)) {
 
-            var category = this.state.category;
-            if (category.txid) {
-                category = findObjectByTX(this.state.category.txid, results);
+                    const rows = [];
+                    for (var i = 0; i < resp.data.length; i++) {
+                        if (resp.data[i] && resp.data[i].data && resp.data[i].data.s1 == OPENDIR_PROTOCOL) {
+                            rows.push(resp.data[i]);
+                        }
+                    }
+
+                    if (rows.length > 0) {
+                        console.log("handled new message", resp);
+                        this.networkAPIFetch();
+                    }
+                }
+
+
+            } catch (e) {
+                console.log("error handling network socket data", e.data);
+                throw e;
+            }
+        }
+
+        this.socket.onerror = (e) => {
+            console.log("socket error", e);
+            if (this.socket) {
+                this.socket.close();
+                this.socket = null;
             }
 
-            this.setState({
-                "isError": !success,
-                "txpool": txpool,
-                "items": results,
-                "category": category,
-                "changelog": rows
-            });
-        });
+            this.setupNetworkSocket();
+        }
     }
+
 }
 
 const MessageGroup = posed.div({

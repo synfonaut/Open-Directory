@@ -47,11 +47,13 @@ function use_local_settings(local_settings) {
     }
 }
 
-var BSV_PRICE = 190.00;
+var BSV_PRICE = 165.00;
 
 if (typeof window == "object") {
     use_local_settings(get_local_settings());
-} else {
+    window.use_local_settings = use_local_settings;
+    window.get_local_settings = get_local_settings;
+    window.save_local_settings = save_local_settings;
 }
 
 module.exports = SETTINGS;

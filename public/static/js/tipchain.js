@@ -89,10 +89,10 @@ export class TipchainItem extends React.Component {
                 $pay: { to: payments, },
                 onPayment: (msg) => {
                     console.log(msg);
-                    const local_settings = get_local_settings();
+                    const local_settings = window.get_local_settings();
                     local_settings["tip_amount"] = amount;
-                    use_local_settings(local_settings);
-                    save_local_settings(local_settings);
+                    window.use_local_settings(local_settings);
+                    window.save_local_settings(local_settings);
 
                     setTimeout(() => {
                         this.clearMoneyButton();
