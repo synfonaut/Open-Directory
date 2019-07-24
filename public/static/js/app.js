@@ -52,6 +52,7 @@ class OpenDirectoryApp extends React.Component {
 
             admin_actions: [],
 
+            path: "",
 
             taches: [], // attach and detaches
 
@@ -422,7 +423,7 @@ class OpenDirectoryApp extends React.Component {
                                    </div> : null}
                           </div>
                           {(shouldShowAddNewEntryForm || shouldShowAddNewCategoryForm) && <hr />}
-                            {!this.state.isLoading && <ChangeLog changelog={this.state.changelog} category={this.state.category} showMoreChangeLogs={this.checkForMoreChangeLogs.bind(this)} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
+                          {((this.state.path == "/" || this.state.path.indexOf("/category") == 0) && !this.state.isLoading) && <ChangeLog changelog={this.state.changelog} category={this.state.category} showMoreChangeLogs={this.checkForMoreChangeLogs.bind(this)} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
                       </div>
 
                 </div>
@@ -587,6 +588,7 @@ class OpenDirectoryApp extends React.Component {
             "category": category,
             "link": link,
             "items": items,
+            "path": path,
             "isExpandingAddCategoryForm": false,
             "isExpandingAddEntryForm": false,
         }, () => {
