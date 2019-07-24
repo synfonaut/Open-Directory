@@ -263,7 +263,7 @@ class OpenDirectoryApp extends React.Component {
                 <p>Stats will be coming back soon!</p>
                 </div>);
         } else if (path == "/search") {
-            body = <SearchPage title={this.state.title} items={items} category={this.state.category} changeURL={this.changeURL} />
+            body = <SearchPage title={this.state.title} category={this.state.category} changeURL={this.changeURL} />
         } else if (path == "/add-directory") {
             body = <AddDirectoryPage category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />
         } else if (this.state.link) {

@@ -27,7 +27,6 @@ function get_cached_items() {
 }
 
 function get_cached_raw() {
-
     const old_raw = cached_raw;
     try {
         let data = fs.readFileSync(__dirname + "/public/static/js/cached_raw.json");
@@ -58,6 +57,18 @@ app.get('/', function (req, res) {
         "twitter_image": "https://dir.sv/static/img/twitter_large_card.png"
     });
 });
+
+function fillOutItemsWithCategories(items, cache) {
+    const categories = new Map();
+    for (const item of items) {
+        if (item.category) {
+            const category = helpers.findObjectByTX(item.category, cache);
+            categories.set(category.txid, category);
+        }
+    }
+
+    return items.concat(Array.from(categories.values()));
+}
 
 function getHomepageItems(cache, type="links", sort="hot", limit=200) {
     const items = cache.filter(function(item) {
@@ -108,19 +119,72 @@ function getHomepageItems(cache, type="links", sort="hot", limit=200) {
 
     // links need their categories too
     if (type == "links") {
-        const categories = new Map();
-        for (const item of items) {
-            if (item.category) {
-                const category = helpers.findObjectByTX(item.category, cache);
-                categories.set(category.txid, category);
-            }
-        }
-
-        return items.concat(Array.from(categories.values()));
+        return fillOutItemsWithCategories(items, cache);
     } else {
         return items;
     }
 }
+
+app.get('/api/search', function (req, res) {
+    const query = req.query.query.toLowerCase();
+    var category_id = req.params.category_id;
+    if (category_id == "null") { // hacky
+        category_id = null;
+    }
+    //console.log("QUERY", query);
+    //console.log("CATEGORY_ID", category_id);
+
+    try {
+
+        const items = get_cached_items();
+        //console.log("ITEMS", items.length);
+
+        const slice = process.buildItemSliceRepresentationFromCache(category_id, items);
+        //console.log("SLICE", slice.length);
+
+        const results = slice.filter(item => {
+            if (item.deleted) { return false }
+            if (item.name && item.name.toLowerCase().indexOf(query) !== -1) { return true }
+            if (item.description && item.description.toLowerCase().indexOf(query) !== -1) { return true }
+            if (item.txid && item.txid.toLowerCase().indexOf(query) !== -1) { return true }
+            if (item.address && item.address.toLowerCase().indexOf(query) !== -1) { return true }
+            if (item.link && item.link.toLowerCase().indexOf(query) !== -1) { return true }
+
+            for (const tipchain of item.tipchain) {
+                if (tipchain.address.toLowerCase().indexOf(query) !== -1) { return true }
+            }
+
+            return false;
+        });
+
+        const sorted = results.sort((a, b) => {
+                if (a.hottness < b.hottness) { return 1; }
+                if (a.hottness > b.hottness) { return -1; }
+                if (a.satoshis < b.satoshis) { return 1; }
+                if (a.satoshis > b.satoshis) { return -1; }
+                if (a.votes < b.votes) { return 1; }
+                if (a.votes > b.votes) { return -1; }
+                if (a.height < b.height) { return 1; }
+                if (a.height > b.height) { return -1; }
+                return 0;
+        });
+
+        const shortResults = sorted.slice(0, 200);
+        const filled = fillOutItemsWithCategories(shortResults, items);
+
+        return res.json({
+            "results": filled
+        });
+
+    } catch (e) {
+        console.log("ERR", e);
+    }
+
+    return res.status(400).send({
+        message: "error searching"
+    });
+});
+
 
 app.get('/api/homepage', function (req, res) {
     var sort = req.query.sort;
@@ -208,7 +272,7 @@ app.get('/api/category/:category_id', function (req, res) {
 
 app.get('/api/changelog/:category_id', function (req, res) {
     var category_id = req.params.category_id;
-    if (category_id == "null") {
+    if (category_id == "null") { // hacky
         category_id = null;
     }
     //console.log("CATEGORY_ID", category_id);

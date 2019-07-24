@@ -260,6 +260,51 @@ export function fetch_changelog_from_network(category_id=null, cursor) {
     });
 }
 
+export function fetch_search_from_network(search, category_id=null) {
+
+    if (category_id == null) {
+        category_id = get_root_category_txid();
+    }
+
+    const url = API_URL + "/search/?query=" + encodeURI(search) + "&category_id=" + category_id;
+    const header = { };
+    console.log("URL", url);
+
+    function handleResponse(resolve, reject, r) {
+        if (r.results && r.results.length > 0) {
+            resolve(r.results);
+        } else {
+            resolve([]);
+        }
+    }
+
+    return new Promise((resolve, reject) => {
+
+        console.log("Making HTTP request to server");
+        if (isNode) {
+            axios = require("axios");
+            axios(url, header).then(r => {
+                if (r.status !== 200) {
+                    reject("Error while retrieving response from server " + r.status);
+                    return;
+                }
+
+                handleResponse(resolve, reject, r.data)
+            }).catch(reject);
+        } else {
+            fetch(url, header).then(function(r) {
+                if (r.status !== 200) {
+                    reject("Error while retrieving response from server " + r.status);
+                    return;
+                }
+
+                return r.json();
+            }).then(r => { handleResponse(resolve, reject, r) }).catch(reject);
+        }
+
+    });
+}
+
 export function fetch_txids_from_network(txids, limit=75, results=[]) {
     return new Promise((resolve, reject) => {
         const txid_chunks = chunk(txids, limit);
