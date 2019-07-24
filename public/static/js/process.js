@@ -9,6 +9,9 @@ if (isNode) {
 
 export const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
 export const BCAT_MEDIA_PROTOCOL = "15DHFxWZJT58f9nhyGnsRBqrgwK4W6h4Up";
+
+const API_URL = "http://localhost:3000/api";
+
 export const SUPPORTED_TIPCHAIN_PROTOCOLS = [
     "bit://" + B_MEDIA_PROTOCOL + "/",
     "b://",
@@ -133,14 +136,55 @@ export function fetch_from_network(category_id=null) {
         category_id = get_root_category_txid();
     }
 
-    const url = "http://localhost:3000/api/category/" + category_id;
+    const url = API_URL + "/category/" + category_id;
+    const header = { };
+
+    function handleResponse(resolve, reject, r) {
+        console.log("RESPONSE", r);
+        if (r.slice && r.slice.length > 0) {
+            resolve(r);
+        } else {
+            resolve([]);
+        }
+    }
+
+    return new Promise((resolve, reject) => {
+
+        console.log("Making HTTP request to server");
+        if (isNode) {
+            axios = require("axios");
+            axios(url, header).then(r => {
+                if (r.status !== 200) {
+                    reject("Error while retrieving response from server " + r.status);
+                    return;
+                }
+
+                handleResponse(resolve, reject, r.data)
+            }).catch(reject);
+        } else {
+            fetch(url, header).then(function(r) {
+                if (r.status !== 200) {
+                    reject("Error while retrieving response from server " + r.status);
+                    return;
+                }
+
+                return r.json();
+            }).then(r => { handleResponse(resolve, reject, r) }).catch(reject);
+        }
+
+    });
+}
+
+export function fetch_homepage_from_network(type="links", sort="hot") {
+
+    const url = API_URL + "/homepage/?type=" + type + "&sort=" + sort;
     const header = { };
     console.log("URL", url);
 
     function handleResponse(resolve, reject, r) {
         console.log("RESPONSE", r);
         if (r.slice && r.slice.length > 0) {
-            resolve(r);
+            resolve(r.slice);
         } else {
             resolve([]);
         }
@@ -179,7 +223,7 @@ export function fetch_changelog_from_network(category_id=null, cursor) {
         category_id = get_root_category_txid();
     }
 
-    const url = "http://localhost:3000/api/changelog/" + category_id + "/?cursor=" + cursor;
+    const url = API_URL + "/changelog/" + category_id + "/?cursor=" + cursor;
     const header = { };
     console.log("URL", url);
 

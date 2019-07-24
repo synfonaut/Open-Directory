@@ -56,6 +56,111 @@ app.get('/', function (req, res) {
     });
 });
 
+function getHomepageItems(cache, type="links", sort="hot", limit=200) {
+    const items = cache.filter(function(item) {
+        if (type == "links") {
+            return item.type == "entry";
+        } else if (type == "categories") {
+            return item.type == "category";
+        }
+    }).sort(function(a, b) {
+        if (sort == "new") {
+            if (!a.height) { return -1; }
+            if (a.height < b.height) { return 1; }
+            if (a.height > b.height) { return -1; }
+        } else if (sort == "votes") {
+            if (a.votes < b.votes) { return 1; }
+            if (a.votes > b.votes) { return -1; }
+            if (a.height < b.height) { return 1; }
+            if (a.height > b.height) { return -1; }
+        } else if (sort == "money") {
+            if (a.satoshis < b.satoshis) { return 1; }
+            if (a.satoshis > b.satoshis) { return -1; }
+            if (a.votes < b.votes) { return 1; }
+            if (a.votes > b.votes) { return -1; }
+            if (a.height < b.height) { return 1; }
+            if (a.height > b.height) { return -1; }
+        } else if (sort == "links") {
+            if (a.entries < b.entries) { return 1; }
+            if (a.entries > b.entries) { return -1; }
+            if (a.satoshis < b.satoshis) { return 1; }
+            if (a.satoshis > b.satoshis) { return -1; }
+            if (a.votes < b.votes) { return 1; }
+            if (a.votes > b.votes) { return -1; }
+            if (a.height < b.height) { return 1; }
+            if (a.height > b.height) { return -1; }
+        } else { // hot
+            if (a.hottness < b.hottness) { return 1; }
+            if (a.hottness > b.hottness) { return -1; }
+            if (a.satoshis < b.satoshis) { return 1; }
+            if (a.satoshis > b.satoshis) { return -1; }
+            if (a.votes < b.votes) { return 1; }
+            if (a.votes > b.votes) { return -1; }
+            if (a.height < b.height) { return 1; }
+            if (a.height > b.height) { return -1; }
+        }
+        return 0;
+    }).slice(0, limit);
+
+
+    // links need their categories too
+    if (type == "links") {
+        const categories = new Map();
+        for (const item of items) {
+            if (item.category) {
+                const category = helpers.findObjectByTX(item.category, cache);
+                categories.set(category.txid, category);
+            }
+        }
+
+        return items.concat(Array.from(categories.values()));
+    } else {
+        return items;
+    }
+}
+
+app.get('/api/homepage', function (req, res) {
+    var sort = req.query.sort;
+    const allowedSorts = ["hot", "money", "votes", "new", "links"];
+    if (allowedSorts.indexOf(sort) == -1) { sort = "hot" }
+
+    var itemType = req.query.item;
+    const allowedItemTypes = ["links", "categories"];
+    if (allowedItemTypes.indexOf(itemType) == -1) { itemType = "links" }
+
+    console.log("SORT", sort);
+    console.log("ITEM", itemType);
+
+    try {
+        const items = get_cached_items();
+        const raw = get_cached_raw();
+        console.log("RAW", raw.length);
+        console.log("ITEMS", items.length);
+
+        const slice = getHomepageItems(items, itemType, sort);
+        console.log("SLICE", slice.length);
+
+        const changelog = process.buildRawSliceRepresentationFromCache(null, raw, items);
+        const sortedChangelog = changelog.sort(function(a, b) {
+            return (a.height===null)-(b.height===null) || +(a.height>b.height) || -(a.height<b.height);
+        }).reverse();
+
+        const shortChangelog = sortedChangelog.slice(0, DEFAULT_INITIAL_CHANGELOG);
+
+        return res.json({
+            "slice": slice,
+            "changelog": shortChangelog,
+        });
+
+    } catch (e) {
+        console.log("ERR", e);
+    }
+
+    return res.status(400).send({
+        message: "error loading homepage"
+    });
+});
+
 app.get('/api/category/:category_id', function (req, res) {
     const category_id = req.params.category_id;
 
@@ -81,11 +186,10 @@ app.get('/api/category/:category_id', function (req, res) {
 
             const shortChangelog = sortedChangelog.slice(0, DEFAULT_INITIAL_CHANGELOG);
 
-            res.json({
+            return res.json({
                 "slice": slice,
                 "changelog": shortChangelog,
             });
-            return;
         }
 
     } catch (e) {

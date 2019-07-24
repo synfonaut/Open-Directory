@@ -1,12 +1,12 @@
 let { MoneyButtonClient } = require('@moneybutton/api-client')
 
 const moneyButtonClient = new MoneyButtonClient("abcd")
-console.log("MONEY", moneyButtonClient);
 
 import SETTINGS from "./settings";
 import {
     fetch_from_network,
     fetch_changelog_from_network,
+    fetch_homepage_from_network,
     get_root_category_txid,
     get_bitdb_query,
     buildItemSliceRepresentationFromCache,
@@ -573,29 +573,55 @@ class OpenDirectoryApp extends React.Component {
 
         this.setState(state);
         setTimeout(() => {
-            fetch_from_network(this.state.category.txid).then((data) => {
-                const results = data.slice;
-                const changelog = data.changelog;
+            if (this.state.category.txid == null) {
+                this.networkAPIFetchHomepage();
+            } else {
+                this.networkAPIFetchHomepage();
+            }
+        }, this.NETWORK_DELAY);
+    }
 
-                const success = this.checkForUpdatedActiveCategory(results);
-                this.setState({
-                    "networkActive": false,
-                    "isLoading": false,
-                    "isError": !success,
-                    "items": results,
-                    "changelog":changelog 
-                });
-            }).catch((e) => {
-                console.log("error", e);
-                this.setState({
-                    "isLoading": false,
-                    "networkActive": false,
-                    "isError": true,
-                });
+    networkAPIFetchHomepage() {
+        fetch_homepage_from_network().then((results) => {
+            const success = this.checkForUpdatedActiveCategory(results);
+            this.setState({
+                "networkActive": false,
+                "isLoading": false,
+                "isError": !success,
+                "items": results,
             });
 
+        }).catch((e) => {
+            console.log("error", e);
+            this.setState({
+                "isLoading": false,
+                "networkActive": false,
+                "isError": true,
+            });
+        });
+    }
 
-        }, this.NETWORK_DELAY);
+    networkAPIFetchCategory() {
+        fetch_from_network(this.state.category.txid).then((data) => {
+            const results = data.slice;
+            const changelog = data.changelog;
+
+            const success = this.checkForUpdatedActiveCategory(results);
+            this.setState({
+                "networkActive": false,
+                "isLoading": false,
+                "isError": !success,
+                "items": results,
+                "changelog":changelog 
+            });
+        }).catch((e) => {
+            console.log("error", e);
+            this.setState({
+                "isLoading": false,
+                "networkActive": false,
+                "isError": true,
+            });
+        });
     }
 
     checkForUpdatedActiveCategory(results) {
