@@ -7,9 +7,9 @@ const fs = require("fs");
 
 const process = require("../public/static/js/process.js");
 
-const cached_raw_file = __dirname + "/../public/static/js/cached_raw.js";
+const cached_raw_file = __dirname + "/../public/static/js/cached_raw.json";
 const cached_homepage_file = __dirname + "/../public/static/js/cached_homepage.js";
-const cached_items_file = __dirname + "/../public/static/js/cached_items.js";
+const cached_items_file = __dirname + "/../public/static/js/cached_items.json";
 
 if (!fs.existsSync(cached_raw_file)) {
     throw "expected cache file to already exist...what's going on?";

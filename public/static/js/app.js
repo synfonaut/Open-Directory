@@ -6,6 +6,7 @@ console.log("MONEY", moneyButtonClient);
 import SETTINGS from "./settings";
 import {
     fetch_from_network,
+    fetch_changelog_from_network,
     get_root_category_txid,
     get_bitdb_query,
     buildItemSliceRepresentationFromCache,
@@ -184,44 +185,6 @@ class OpenDirectoryApp extends React.Component {
         this.setState({"theme": theme});
     }
 
-    buildChangeLog(txid) {
-        const admin_changelog = processAdminResults(this.state.admin_actions).filter(r => {
-            // show homepage redirects
-            if (!txid && r.type == "uri") { return true }
-
-            // if action_id references this txid
-            if (r.action_id == txid) { return true }
-
-            // check if action_id references
-            if (r.action_id) {
-                const obj = findObjectByTX(r.action_id, this.state.items);
-                if (obj && obj.type == "category" && (!obj.category_id || obj.txid == r.action_id)) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
-
-        var changelog = buildRawSliceRepresentationFromCache(this.state.category.txid, this.state.changelog, this.state.items);
-
-        if (!changelog) {
-            changelog = [];
-        }
-
-        changelog = changelog.filter(r => {
-            return OPENDIR_ACTIONS.indexOf(r.data.s2) !== -1;
-        });
-
-        const combined = changelog.concat(admin_changelog);
-
-        const sorted = combined.sort(function(a, b) {
-            return (a.height===null)-(b.height===null) || +(a.height>b.height) || -(a.height<b.height);
-        });
-
-        return sorted;
-    }
-
     handleChangeCategory(txid) {
         SETTINGS.category = txid;
         this.didUpdateLocation();
@@ -257,75 +220,12 @@ class OpenDirectoryApp extends React.Component {
                     <ReactMarkdown source={this.state.faq_markdown} />
                 </div>
         } else if (path == "/stats") {
-
             // TODO: Refactor into StatsPage
             // TODO: This looks like duplicate
-            if (items.length == 0) {
-                body = (<div className="stats">
-                    <h2>Statistics</h2>
-                    <p>Please visit the homepage first, let it load then return. This will be fixed soon!</p>
-                    </div>);
-            } else {
-
-                const changelog = this.buildChangeLog(null);
-
-                var category = <a onClick={() => { this.changeURL("/") }}>Open Directory</a>;
-                if (this.state.category.txid) {
-                    category = <a onClick={() => { this.changeURL("/category/" + this.state.category.txid) }}>{this.state.category.name}</a>;
-                }
-
-                var numCategories = 0;
-                var numEntries = 0;
-                var numSatoshis = 0;
-                var numVotes = 0;
-                var biggestTip = 0;
-                var biggestTipAddress = null;
-
-                for (const log of changelog) {
-                    if (log.data.s2.indexOf("entry") == 0) {
-                        numEntries += 1;
-                        if (log.satoshis > 0) {
-                            numSatoshis += log.satoshis
-                            if (log.satoshis > biggestTip) {
-                                biggestTip = log.satoshis;
-                                biggestTipAddress = log.address;
-                            }
-                        }
-                    } else if (log.data.s2.indexOf("category") == 0) {
-                        numCategories += 1;
-                        if (log.satoshis > 0) {
-                            numSatoshis += log.satoshis
-                            if (log.satoshis > biggestTip) {
-                                biggestTip = log.satoshis;
-                                biggestTipAddress = log.address;
-                            }
-                        }
-                    } else if (log.data.s2 == "vote") {
-                        numVotes += 1;
-                        if (log.satoshis > 0) {
-                            numSatoshis += log.satoshis
-                            if (log.satoshis > biggestTip) {
-                                biggestTip = log.satoshis;
-                                biggestTipAddress = log.address;
-                            }
-                        }
-                    }
-                }
-
-
-                body = (<div className="stats">
-                    <h2>Statistics for {category}</h2>
-                    <ul>
-                        <li>Actions: {changelog.length}</li>
-                        <li>Categories: {numCategories}</li>
-                        <li>Links: {numEntries}</li>
-                        <li>Upvotes: {numVotes}</li>
-                        {biggestTip && <li>Biggest tip: {satoshisToDollars(biggestTip)} by {biggestTipAddress}</li>}
-                        <li>{numberFormat(numSatoshis / 100000000)} BSV / {satoshisToDollars(numSatoshis, BSV_PRICE)} spent</li>
-                        <li>BSV Price: ${BSV_PRICE}</li>
-                    </ul>
-                    </div>);
-            }
+            body = (<div className="stats">
+                <h2>Statistics</h2>
+                <p>Stats will be coming back soon!</p>
+                </div>);
         } else if (path == "/search") {
             body = <SearchPage title={this.state.title} items={items} category={this.state.category} changeURL={this.changeURL} />
         } else if (path == "/add-directory") {
@@ -367,8 +267,6 @@ class OpenDirectoryApp extends React.Component {
                     shouldShowAddNewEntryForm = true;
                 }
             }
-
-            changelog = this.buildChangeLog(this.state.category.txid);
 
             if (!this.state.isError) {
                 const filtered_items = this.filterOutDetaches(items);
@@ -489,13 +387,20 @@ class OpenDirectoryApp extends React.Component {
                                    </div> : null}
                           </div>
                           {(shouldShowAddNewEntryForm || shouldShowAddNewCategoryForm) && <hr />}
-                            {!this.state.isLoading && <ChangeLog changelog={changelog} txpool={this.state.txpool} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
+                            {!this.state.isLoading && <ChangeLog changelog={this.state.changelog} category={this.state.category} showMoreChangeLogs={this.checkForMoreChangeLogs.bind(this)} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
                       </div>
 
                 </div>
             </div>
         );
 
+    }
+
+    checkForMoreChangeLogs() {
+        const cursor = this.state.changelog.length;
+        fetch_changelog_from_network(this.state.category.txid, cursor).then((changelogs) => {
+            this.setState({"changelog": this.state.changelog.concat(changelogs)});
+        });
     }
 
     performAdminActionsFetch() {
@@ -668,39 +573,18 @@ class OpenDirectoryApp extends React.Component {
 
         this.setState(state);
         setTimeout(() => {
-            fetch_from_network(this.state.category.txid).then((results) => {
+            fetch_from_network(this.state.category.txid).then((data) => {
+                const results = data.slice;
+                const changelog = data.changelog;
 
-                console.log("RESULTS", results);
                 const success = this.checkForUpdatedActiveCategory(results);
                 this.setState({
                     "networkActive": false,
                     "isLoading": false,
                     "isError": !success,
-                    //"txpool": txpool,
                     "items": results,
-                    //"changelog": rows
+                    "changelog":changelog 
                 });
-
-                /*
-                if (this.state.changelog.length > 0) {
-                    rows = this.state.changelog;
-                }
-
-                const txpool = processOpenDirectoryTransactions(rows);
-                const results = processResults(rows, txpool);
-                const success = this.checkForUpdatedActiveCategory(results);
-
-                this.setState({
-                    "networkActive": false,
-                    "isLoading": false,
-                    "isError": !success,
-                    "txpool": txpool,
-                    "items": results,
-                    "changelog": rows
-                });
-
-                this.setupNetworkSocket();
-                */
             }).catch((e) => {
                 console.log("error", e);
                 this.setState({
@@ -732,6 +616,7 @@ class OpenDirectoryApp extends React.Component {
     }
 
     setupNetworkSocket() {
+        /*
         if (this.socket) {
             return;
         }
@@ -778,6 +663,7 @@ class OpenDirectoryApp extends React.Component {
 
             this.setupNetworkSocket();
         }
+        */
     }
 
     insertNewRowsFromNetwork(socket_rows) {

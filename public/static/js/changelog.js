@@ -10,7 +10,6 @@ export class ChangeLog extends React.Component {
 
         this.state = {
             "isExpanded": false,
-            "isShowAll": false,
         };
     }
 
@@ -21,12 +20,6 @@ export class ChangeLog extends React.Component {
         });
     }
 
-    handleToggleShowAll(e) {
-        this.setState({
-            "isShowAll": !this.state.isShowAll
-        });
-    }
-
     render() {
 
         var idx = 0;
@@ -34,7 +27,7 @@ export class ChangeLog extends React.Component {
 
         // For now only show open directory protocol changes in changelog—in future may want to
         // pull in related bitcoin media
-        const changelog = (this.props.changelog ? this.props.changelog.slice(0).reverse() : []).filter(i => {
+        const changelog = (this.props.changelog ? this.props.changelog : []).filter(i => {
             return i.data.s1 == OPENDIR_PROTOCOL || i.data.s1 == SETTINGS.admin_address;
         });
 
@@ -46,17 +39,15 @@ export class ChangeLog extends React.Component {
                             <table>
                                 <tbody>
                                 {changelog.map(i => {
-                                    if ((idx++ <= max) || this.state.isShowAll) {
-                                        return <ChangeLogItem item={i} txpool={this.props.txpool} key={"changelog-" + i.txid} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} isExpanded={this.state.isExpanded} />;
-                                    }
+                                    return <ChangeLogItem item={i} txpool={this.props.txpool} key={"changelog-" + i.txid} onSuccessHandler={this.props.onSuccessHandler} onErrorHandler={this.props.onErrorHandler} isExpanded={this.state.isExpanded} />;
                                 })}
                                 </tbody>
-                                {(!this.state.isShowingWarning && changelog.length > max) && <tbody><tr>
+                                <tbody><tr>
                                     <td colSpan="6" className="expand">
-                                        <a onClick={this.handleToggleShowAll.bind(this)}>{this.state.isShowAll ? "Hide" : "Show"} all {changelog.length} changes from changelog</a>
-                                        &nbsp;<a onClick={this.handleToggleExpand.bind(this)}>expanded</a>
+                                        <a onClick={this.props.showMoreChangeLogs.bind(this)}>Show More</a>
+                                        &nbsp;&nbsp; <a onClick={this.handleToggleExpand.bind(this)}>Expand All</a>
                                     </td>
-                                 </tr></tbody>}
+                                 </tr></tbody>
                             </table>
                         </div>
                       </div>
