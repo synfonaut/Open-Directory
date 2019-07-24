@@ -137,7 +137,7 @@ export function fetch_from_network(category_id=null) {
     }
 
     const url = API_URL + "/category/" + category_id;
-    const header = { };
+    const header = {};
 
     function handleResponse(resolve, reject, r) {
         if (r.slice && r.slice.length > 0) {
@@ -178,7 +178,7 @@ export function fetch_homepage_from_network(type="links", sort="hot") {
 
     const url = API_URL + "/homepage/?type=" + type + "&sort=" + sort;
     const header = { };
-    console.log("URL", url);
+    //console.log("URL", url);
 
     function handleResponse(resolve, reject, r) {
         if (r.slice && r.slice.length > 0) {
@@ -222,8 +222,8 @@ export function fetch_changelog_from_network(category_id=null, cursor) {
     }
 
     const url = API_URL + "/changelog/" + category_id + "/?cursor=" + cursor;
-    const header = { };
-    console.log("URL", url);
+    const header = {};
+    //console.log("URL", url);
 
     function handleResponse(resolve, reject, r) {
         if (r.changelog && r.changelog.length > 0) {
@@ -267,8 +267,8 @@ export function fetch_search_from_network(search, category_id=null) {
     }
 
     const url = API_URL + "/search/?query=" + encodeURI(search) + "&category_id=" + category_id;
-    const header = { };
-    console.log("URL", url);
+    const header = {};
+    //console.log("URL", url);
 
     function handleResponse(resolve, reject, r) {
         if (r.results && r.results.length > 0) {
