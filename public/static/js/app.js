@@ -617,34 +617,52 @@ class OpenDirectoryApp extends React.Component {
     }
 
     networkAPIFetchHomepage() {
-        fetch_homepage_from_network("links", this.state.homepageEntriesSort).then((results) => {
-            this.setState({
-                "networkActive": false,
-                "isLoading": false,
-                "homepageEntries": results,
-            });
-        }).catch((e) => {
-            console.log("error loading homepage links", e);
-            this.setState({
-                "isLoading": false,
-                "networkActive": false,
-                "isError": true,
-            });
-        });
+        this.setState({
+            "changelog": [],
+            "items": [],
+            "isLoading": true,
+            "networkActive": true,
+            "homepageEntries": [],
+            "homepageCategories": [],
+        }, function() {
 
-        fetch_homepage_from_network("categories", this.state.homepageCategoriesSort).then((results) => {
-            this.setState({
-                "networkActive": false,
-                "isLoading": false,
-                "homepageCategories": results,
+            fetch_homepage_from_network("links", this.state.homepageEntriesSort).then((results) => {
+                this.setState({
+                    "networkActive": false,
+                    "isLoading": false,
+                    "homepageEntries": results,
+                });
+            }).catch((e) => {
+                console.log("error loading homepage links", e);
+                this.setState({
+                    "isLoading": false,
+                    "networkActive": false,
+                    "isError": true,
+                });
             });
-        }).catch((e) => {
-            console.log("error loading homepage categories", e);
-            this.setState({
-                "isLoading": false,
-                "networkActive": false,
-                "isError": true,
-            });
+
+            setTimeout(() => {
+                fetch_homepage_from_network("categories", this.state.homepageCategoriesSort).then((results) => {
+                    this.setState({
+                        "networkActive": false,
+                        "isLoading": false,
+                        "homepageCategories": results,
+                    });
+                }).catch((e) => {
+                    console.log("error loading homepage categories", e);
+                    this.setState({
+                        "isLoading": false,
+                        "networkActive": false,
+                        "isError": true,
+                    });
+                });
+            }, 50);
+
+            setTimeout(() => {
+                fetch_changelog_from_network(this.state.category.txid, 0).then((changelogs) => {
+                    this.setState({"changelog": changelogs.slice(0, 5)});
+                });
+            }, 100);
         });
 
     }

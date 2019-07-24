@@ -141,7 +141,7 @@ app.get('/api/homepage', function (req, res) {
         //console.log("ITEMS", items.length);
 
         const slice = getHomepageItems(items, itemType, sort);
-        console.log("SLICE", itemType, sort, slice.length);
+        //console.log("SLICE", itemType, sort, slice.length);
 
         const changelog = process.buildRawSliceRepresentationFromCache(null, raw, items);
         const sortedChangelog = changelog.sort(function(a, b) {
@@ -207,7 +207,11 @@ app.get('/api/category/:category_id', function (req, res) {
 });
 
 app.get('/api/changelog/:category_id', function (req, res) {
-    const category_id = req.params.category_id;
+    var category_id = req.params.category_id;
+    if (category_id == "null") {
+        category_id = null;
+    }
+    //console.log("CATEGORY_ID", category_id);
     const cursor = Number(req.query.cursor || 0);
 
     try {
@@ -216,10 +220,26 @@ app.get('/api/changelog/:category_id', function (req, res) {
 
         //console.log("RAW", raw.length);
 
-        const category = helpers.findObjectByTX(category_id, items);
-        if (category) {
+        if (category_id) {
+            const category = helpers.findObjectByTX(category_id, items);
+            if (category) {
 
-            const changelog = process.buildRawSliceRepresentationFromCache(category.txid, raw, items);
+                const changelog = process.buildRawSliceRepresentationFromCache(category.txid, raw, items);
+                const sortedChangelog = changelog.sort(function(a, b) {
+                    return (a.height===null)-(b.height===null) || +(a.height>b.height) || -(a.height<b.height);
+                }).reverse();
+
+                const shortChangelog = sortedChangelog.slice(cursor, cursor + DEFAULT_UPDATE_CHANGELOG);
+                //console.log("CHANGELOG", changelog.length);
+                //console.log("SHORT CHANGELOG", shortChangelog.length);
+
+                return res.json({
+                    "idx": cursor,
+                    "changelog": shortChangelog,
+                });
+            }
+        } else {
+            const changelog = raw;
             const sortedChangelog = changelog.sort(function(a, b) {
                 return (a.height===null)-(b.height===null) || +(a.height>b.height) || -(a.height<b.height);
             }).reverse();
@@ -228,11 +248,10 @@ app.get('/api/changelog/:category_id', function (req, res) {
             //console.log("CHANGELOG", changelog.length);
             //console.log("SHORT CHANGELOG", shortChangelog.length);
 
-            res.json({
+            return res.json({
                 "idx": cursor,
                 "changelog": shortChangelog,
             });
-            return;
         }
 
     } catch (e) {
