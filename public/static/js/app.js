@@ -41,8 +41,8 @@ class OpenDirectoryApp extends React.Component {
             messages: [],
 
             changelog: [],    // response from network
-            txpool: [], // semi-processed results from network
-            items: [],  // current items
+            txpool: [],       // semi-processed results from network
+            items: [],        // current items
 
             admin_actions: [],
 
@@ -78,7 +78,6 @@ class OpenDirectoryApp extends React.Component {
         this.didUpdateLocation();
         this.performAdminActionsFetch();
         this.detectTemplateIDFromAddress();
-        this.networkAPIFetch();
 
         updateBitcoinSVPrice();
 
@@ -228,24 +227,6 @@ class OpenDirectoryApp extends React.Component {
         this.didUpdateLocation();
     }
 
-    getForks() {
-        const txid = this.state.category.txid;
-
-        // TODO: Need to update forks too
-
-        const forks = this.state.txpool.filter(i => {
-            return i.type == "fork";
-        });
-
-        const sorted = forks.sort(function(a, b) {
-            if (a.satoshis < b.satoshis) { return 1; }
-            if (a.satoshis > b.satoshis) { return -1; }
-            return 0;
-        });
-
-        return sorted;
-    }
-
     handleExpandAddCategoryForm() {
         this.setState({"isExpandingAddCategoryForm": true});
     }
@@ -388,7 +369,6 @@ class OpenDirectoryApp extends React.Component {
             }
 
             changelog = this.buildChangeLog(this.state.category.txid);
-            forks = this.getForks();
 
             if (!this.state.isError) {
                 const filtered_items = this.filterOutDetaches(items);
@@ -509,7 +489,6 @@ class OpenDirectoryApp extends React.Component {
                                    </div> : null}
                           </div>
                           {(shouldShowAddNewEntryForm || shouldShowAddNewCategoryForm) && <hr />}
-                            {!this.state.isLoading && <ForkLog forks={forks} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
                             {!this.state.isLoading && <ChangeLog changelog={changelog} txpool={this.state.txpool} category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
                       </div>
 
@@ -689,8 +668,20 @@ class OpenDirectoryApp extends React.Component {
 
         this.setState(state);
         setTimeout(() => {
-            fetch_from_network().then((rows) => {
+            fetch_from_network(this.state.category.txid).then((results) => {
 
+                console.log("RESULTS", results);
+                const success = this.checkForUpdatedActiveCategory(results);
+                this.setState({
+                    "networkActive": false,
+                    "isLoading": false,
+                    "isError": !success,
+                    //"txpool": txpool,
+                    "items": results,
+                    //"changelog": rows
+                });
+
+                /*
                 if (this.state.changelog.length > 0) {
                     rows = this.state.changelog;
                 }
@@ -709,6 +700,7 @@ class OpenDirectoryApp extends React.Component {
                 });
 
                 this.setupNetworkSocket();
+                */
             }).catch((e) => {
                 console.log("error", e);
                 this.setState({

@@ -22,7 +22,7 @@ app.get('/', function (req, res) {
     });
 });
 
-app.get('/category/:category_id', function (req, res) {
+app.get('/api/category/:category_id', function (req, res) {
     const category_id = req.params.category_id;
     const cache = req.params.category
 
@@ -37,13 +37,41 @@ app.get('/category/:category_id', function (req, res) {
 
             const slice = process.buildItemSliceRepresentationFromCache(category.txid, items);
             console.log("SLICE ITEMS", slice.length);
+            res.json({
+                "category": category,
+                "slice": slice,
+            });
+            return;
+        }
+
+    } catch (e) {
+        console.log("Error", e);
+    }
+
+    return res.status(400).send({
+        message: "can't find category_id"
+    });
+
+    
+});
+
+
+app.get('/category/:category_id', function (req, res) {
+    const category_id = req.params.category_id;
+    const cache = req.params.category
+
+    try {
+        let cached_items = fs.readFileSync(cached_items_file);
+        let items = JSON.parse(cached_items);
+
+        const category = helpers.findObjectByTX(category_id, items);
+        if (category) {
 
             const title = category.name + " — Open Directory";
             const description = removeMd(category.description).replace(/\n/g, " ");
             res.render('index', {
                 "description": description,
-                "title": title,
-                "slice": slice,
+                "title": title
             });
             return;
         }

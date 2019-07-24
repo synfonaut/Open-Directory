@@ -127,53 +127,28 @@ export function get_bitdb_query(cursor=0, limit=1000) {
 }
 
 
-export function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[]) {
+export function fetch_from_network(category_id=null) {
 
     if (category_id == null) {
         category_id = get_root_category_txid();
     }
 
-
-    const query = get_bitdb_query(cursor, limit);
-    const encoded_query = toBase64(JSON.stringify(query));
-    const api_url = SETTINGS.api_endpoint.replace("{api_key}", SETTINGS.api_key).replace("{api_action}", "q");;
-    const url = api_url.replace("{query}", encoded_query);
-    //console.log("fetching", url);
-
-    const header = { headers: { key: SETTINGS.api_key } };
+    const url = "http://localhost:3000/api/category/" + category_id;
+    const header = { };
+    console.log("URL", url);
 
     function handleResponse(resolve, reject, r) {
-
-        if (r.errors) {
-            reject("error during query " + r.errors);
-            return;
-        }
-
-        var items = {};
-        const rows = r.c.concat(r.u).reverse();
-
-
-        for (const row of rows) {
-            console.log("ROW", JSON.stringify(row, null, 4));
-        }
-        console.log("ROWS", rows.length);
-        console.log("ROW JSON", JSON.stringify(rows, null, 4));
-        throw "E";
-
-        results = results.concat(rows);
-        cursor += rows.length;
-
-        if (rows.length >= limit) {
-            console.log("Seems like there's still more... polling for more");
-            fetch_from_network(category_id, cursor, limit, results).then(resolve).catch(reject);
+        console.log("RESPONSE", r);
+        if (r.slice && r.slice.length > 0) {
+            resolve(r.slice);
         } else {
-            resolve(results);
+            resolve([]);
         }
     }
 
     return new Promise((resolve, reject) => {
 
-        console.log("Making HTTP request to server " + cursor + "," + limit);
+        console.log("Making HTTP request to server");
         if (isNode) {
             axios = require("axios");
             axios(url, header).then(r => {
