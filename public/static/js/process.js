@@ -10,8 +10,8 @@ if (isNode) {
 export const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
 export const BCAT_MEDIA_PROTOCOL = "15DHFxWZJT58f9nhyGnsRBqrgwK4W6h4Up";
 
-//const API_URL = "https://dir.sv/api";
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://dir.sv/api";
+//const API_URL = "http://localhost:3000/api";
 
 export const SUPPORTED_TIPCHAIN_PROTOCOLS = [
     "bit://" + B_MEDIA_PROTOCOL + "/",
