@@ -5,7 +5,6 @@ var isNode = (typeof window == "undefined");
 
 if (isNode) {
     var axios = require("axios");
-    var CACHED_HOMEPAGE = [];
 }
 
 export const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
@@ -128,7 +127,7 @@ export function get_bitdb_query(cursor=0, limit=1000) {
 }
 
 
-export function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[], cache=true) {
+export function fetch_from_network(category_id=null, cursor=0, limit=1000, results=[]) {
 
     if (category_id == null) {
         category_id = get_root_category_txid();
@@ -153,7 +152,6 @@ export function fetch_from_network(category_id=null, cursor=0, limit=1000, resul
         var items = {};
         const rows = r.c.concat(r.u).reverse();
 
-        /*
 
         for (const row of rows) {
             console.log("ROW", JSON.stringify(row, null, 4));
@@ -161,31 +159,19 @@ export function fetch_from_network(category_id=null, cursor=0, limit=1000, resul
         console.log("ROWS", rows.length);
         console.log("ROW JSON", JSON.stringify(rows, null, 4));
         throw "E";
-        */
 
         results = results.concat(rows);
         cursor += rows.length;
 
         if (rows.length >= limit) {
             console.log("Seems like there's still more... polling for more");
-            fetch_from_network(category_id, cursor, limit, results, cache).then(resolve).catch(reject);
+            fetch_from_network(category_id, cursor, limit, results).then(resolve).catch(reject);
         } else {
             resolve(results);
         }
     }
 
     return new Promise((resolve, reject) => {
-
-        if (cache) {
-            if (typeof window.CACHED_HOMEPAGE !== "undefined") {
-                resolve(window.CACHED_HOMEPAGE);
-                return;
-            } else {
-                resolve([]);
-                return;
-            }
-        }
-
 
         console.log("Making HTTP request to server " + cursor + "," + limit);
         if (isNode) {
@@ -285,7 +271,8 @@ export function findChildrenByActionID(obj, results=[]) {
     var children = [];
     for (const result of results) {
         if (result.action_id == obj.txid) {
-            const subchildren = findChildrenByActionID(result, results); children = children.concat([result], subchildren);
+            const subchildren = findChildrenByActionID(result, results);
+            children = children.concat([result], subchildren);
         }
 
     }
