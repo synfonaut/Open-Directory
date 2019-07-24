@@ -42,6 +42,7 @@
     "watch": "./node_modules/.bin/webpack --mode development --watch",
     "build:dev": "./node_modules/.bin/webpack --mode development",
     "build": "./node_modules/.bin/webpack --mode production",
+    "build:css": "./node_modules/.bin/gulp",
     "serve": "node --require esm server.js",
     "test": "node node_modules/mocha/bin/mocha --require esm"
   },
