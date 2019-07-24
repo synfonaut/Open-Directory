@@ -45,7 +45,7 @@ export class ChangeLog extends React.Component {
                                 <tbody><tr>
                                     <td colSpan="6" className="expand">
                                         <a onClick={this.props.showMoreChangeLogs.bind(this)}>Show More</a>
-                                        &nbsp;&nbsp; <a onClick={this.handleToggleExpand.bind(this)}>Expand All</a>
+                                        &nbsp;&nbsp; <a onClick={this.handleToggleExpand.bind(this)}>{this.state.isExpanded ? "Close All" : "Expand All"}</a>
                                     </td>
                                  </tr></tbody>
                             </table>
