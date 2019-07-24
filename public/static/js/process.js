@@ -10,7 +10,7 @@ if (isNode) {
 export const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
 export const BCAT_MEDIA_PROTOCOL = "15DHFxWZJT58f9nhyGnsRBqrgwK4W6h4Up";
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://e0d8ec0a.ngrok.io/api";
 
 export const SUPPORTED_TIPCHAIN_PROTOCOLS = [
     "bit://" + B_MEDIA_PROTOCOL + "/",
@@ -140,7 +140,6 @@ export function fetch_from_network(category_id=null) {
     const header = { };
 
     function handleResponse(resolve, reject, r) {
-        console.log("RESPONSE", r);
         if (r.slice && r.slice.length > 0) {
             resolve(r);
         } else {
@@ -182,7 +181,6 @@ export function fetch_homepage_from_network(type="links", sort="hot") {
     console.log("URL", url);
 
     function handleResponse(resolve, reject, r) {
-        console.log("RESPONSE", r);
         if (r.slice && r.slice.length > 0) {
             resolve(r.slice);
         } else {
@@ -228,7 +226,6 @@ export function fetch_changelog_from_network(category_id=null, cursor) {
     console.log("URL", url);
 
     function handleResponse(resolve, reject, r) {
-        console.log("RESPONSE", r);
         if (r.changelog && r.changelog.length > 0) {
             resolve(r.changelog);
         } else {

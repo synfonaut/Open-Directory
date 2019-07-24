@@ -258,10 +258,10 @@ export class SubcategoryList extends BaseList {
                     <div className="sort">
                         <span className="label">sort by</span>
                         <ul>
-                        <li><i class="fab fa-hotjar"></i> <a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.props.sort == "hot" ? "active" : ""}>hot</a></li>
-                        <li><i class="fas fa-dollar-sign"></i> <a onClick={() => { this.handleChangeSortOrder("money") }} className={this.props.sort == "money" ? "active" : ""}>money</a></li>
-                        <li><i class="fas fa-poll"></i> <a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.props.sort == "votes" ? "active" : ""}>votes</a></li>
-                        <li><i class="fas fa-plus"></i> <a onClick={() => { this.handleChangeSortOrder("time") }} className={this.props.sort == "time" ? "active" : ""}>new</a></li>
+                        <li><i class="fab fa-hotjar"></i> <a onClick={() => { this.handleChangeSortOrder("hot") }} className={this.state.sort == "hot" ? "active" : ""}>hot</a></li>
+                        <li><i class="fas fa-dollar-sign"></i> <a onClick={() => { this.handleChangeSortOrder("money") }} className={this.state.sort == "money" ? "active" : ""}>money</a></li>
+                        <li><i class="fas fa-poll"></i> <a onClick={() => { this.handleChangeSortOrder("votes") }} className={this.state.sort == "votes" ? "active" : ""}>votes</a></li>
+                        <li><i class="fas fa-plus"></i> <a onClick={() => { this.handleChangeSortOrder("time") }} className={this.state.sort == "time" ? "active" : ""}>new</a></li>
                         </ul>
                         <div className="clearfix"></div>
                     </div>
@@ -382,6 +382,8 @@ export class HomepageEntries extends BaseList {
             </ul>
             <div className="clearfix"></div>
             </div>);
+
+
 
         if (this.state.cursor > 0) {
             pages.unshift(<a key="page-previous" onClick={() => { this.handlePreviousPageChange() }}><i className="fas fa-angle-double-left"></i></a>);

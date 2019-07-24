@@ -216,10 +216,24 @@ class OpenDirectoryApp extends React.Component {
             this.setState({"homepageEntriesSort": "votes"});
         } else if (order =="money") {
             this.setState({"homepageEntriesSort": "money"});
-        } else if (order =="submissions") {
-            this.setState({"homepageEntriesSort": "submissions"});
         } else {
             this.setState({"homepageEntriesSort": "hot"});
+        }
+
+        this.networkAPIFetch();
+    }
+
+    handleChangeHomepageCategoriesSortOrder(order) {
+        if (order == "time") {
+            this.setState({"homepageCategoriesSort": "time"});
+        } else if (order == "votes") {
+            this.setState({"homepageCategoriesSort": "votes"});
+        } else if (order =="money") {
+            this.setState({"homepageCategoriesSort": "money"});
+        } else if (order =="submissions") {
+            this.setState({"homepageCategoriesSort": "submissions"});
+        } else {
+            this.setState({"homepageCategoriesSort": "hot"});
         }
 
         this.networkAPIFetch();
@@ -298,12 +312,10 @@ class OpenDirectoryApp extends React.Component {
                 } else {
                     list = <div>
                         <HomepageEntries items={this.state.homepageEntries} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} limit={15} show_category={true} changeURL={this.changeURL} sort={this.state.homepageEntriesSort} handleChangeSortOrder={this.handleChangeHomepageEntriesSortOrder.bind(this)} />
+                        <HomepageList items={this.state.homepageCategories} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} changeURL={this.changeURL} sort={this.state.homepageCategoriesSort} handleChangeSortOrder={this.handleChangeHomepageCategoriesSortOrder.bind(this)} />
                         <div className="clearfix"></div>
                     </div>;
                     list_class_name = "homepage";
-                        /*
-                        <HomepageList items={filtered_items} category={this.state.category} isError={this.state.isError} isLoading={this.state.isLoading} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} changeURL={this.changeURL} />
-                        */
                 }
 
                 body = <div className={list_class_name + " list-wrapper"}>{list}</div>;
@@ -599,7 +611,7 @@ class OpenDirectoryApp extends React.Component {
             if (this.state.category.txid == null) {
                 this.networkAPIFetchHomepage();
             } else {
-                this.networkAPIFetchHomepage();
+                this.networkAPIFetchCategory();
             }
         }, this.NETWORK_DELAY);
     }
@@ -611,15 +623,30 @@ class OpenDirectoryApp extends React.Component {
                 "isLoading": false,
                 "homepageEntries": results,
             });
-
         }).catch((e) => {
-            console.log("error", e);
+            console.log("error loading homepage links", e);
             this.setState({
                 "isLoading": false,
                 "networkActive": false,
                 "isError": true,
             });
         });
+
+        fetch_homepage_from_network("categories", this.state.homepageCategoriesSort).then((results) => {
+            this.setState({
+                "networkActive": false,
+                "isLoading": false,
+                "homepageCategories": results,
+            });
+        }).catch((e) => {
+            console.log("error loading homepage categories", e);
+            this.setState({
+                "isLoading": false,
+                "networkActive": false,
+                "isError": true,
+            });
+        });
+
     }
 
     networkAPIFetchCategory() {
