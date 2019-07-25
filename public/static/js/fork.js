@@ -1,4 +1,5 @@
 import SETTINGS from "./settings";
+import { OPENDIR_PROTOCOL } from "./process"
 import { toBase64, getLink, satoshisToDollars, timeDifference, numberFormat } from "./helpers"
 import { calculateTipchainSplits, B_MEDIA_PROTOCOL } from "./process"
 import databutton from "./databutton-0.0.4"

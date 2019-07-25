@@ -1,6 +1,7 @@
 import { Item } from "./item";
 import { TipchainItem } from "./tipchain"
 import { findObjectByTX, pluralize, satoshisToDollars, timeDifference, getLink } from "./helpers"
+import { OPENDIR_PROTOCOL } from "./process"
 import databutton from "./databutton-0.0.4"
 
 export class EntryItem extends Item {
