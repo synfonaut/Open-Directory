@@ -401,7 +401,7 @@ class OpenDirectoryApp extends React.Component {
                               {(shouldShowAddNewEntryForm) ? <div className="column">
                                   {!this.state.isExpandingAddEntryForm && <div className="add-entry-callout">
                                     <a onClick={this.handleExpandAddEntryForm.bind(this)}><i class="fas fa-link"></i> Submit a new link</a>
-                                    <p>Earn <i className="fab fa-bitcoin"></i> Bitcoin (SV) by submitting valuable content—when it gets upvoted you'll receive a portion of the tip!</p>
+                                    <p>Earn Bitcoin (SV) by submitting valuable content—when it gets upvoted you'll receive a portion of the tip!</p>
                                   </div>}
                                   {this.state.isExpandingAddEntryForm && <AddEntryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
                                    </div> : null}
@@ -410,7 +410,7 @@ class OpenDirectoryApp extends React.Component {
                               {(shouldShowAddNewCategoryForm && !shouldShowAddNewEntryForm) ? <div className="row"><div className="column">
                                   {!this.state.isExpandingAddCategoryForm && <div className="add-directory-callout">
                                         <a onClick={this.handleExpandAddCategoryForm.bind(this)}><i class="fas fa-folder"></i> Create a new directory</a>
-                                        <p>Earn <i className="fab fa-bitcoin"></i> Bitcoin (SV) by creating a new directory—when someone submits content and it gets upvoted you'll receive a portion of the tip! </p>
+                                        <p>Earn Bitcoin (SV) by creating a new directory—when someone submits content and it gets upvoted you'll receive a portion of the tip! </p>
                                       </div>}
                                   {this.state.isExpandingAddCategoryForm && <AddCategoryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
                                    </div><div className="column"></div></div> : null}
@@ -418,7 +418,7 @@ class OpenDirectoryApp extends React.Component {
                               {(shouldShowAddNewCategoryForm && shouldShowAddNewEntryForm) ? <div className="column">
                                   {!this.state.isExpandingAddCategoryForm && <div className="add-category-callout">
                                         <a onClick={this.handleExpandAddCategoryForm.bind(this)}><i class="fas fa-folder"></i> Create a new subcategory </a>
-                                        <p>Earn <i className="fab fa-bitcoin"></i> Bitcoin (SV) by creating a new subcategory—when someone submits content and it gets upvoted you'll receive a portion of the tip! </p>
+                                        <p>Earn Bitcoin (SV) by creating a new subcategory—when someone submits content and it gets upvoted you'll receive a portion of the tip! </p>
                                       </div>}
                                   {this.state.isExpandingAddCategoryForm && <AddCategoryForm category={this.state.category} onSuccessHandler={this.addSuccessMessage} onErrorHandler={this.addErrorMessage} />}
                                    </div> : null}
