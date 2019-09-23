@@ -1,4 +1,5 @@
 import { Item } from "./item";
+import { DeleteItem } from "./delete"
 import { TipchainItem } from "./tipchain"
 import { findObjectByTX, pluralize, satoshisToDollars, timeDifference, getLink } from "./helpers"
 import { OPENDIR_PROTOCOL } from "./process"

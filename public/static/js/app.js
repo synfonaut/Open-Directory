@@ -1,7 +1,5 @@
 let { MoneyButtonClient } = require('@moneybutton/api-client')
 
-const moneyButtonClient = new MoneyButtonClient("abcd")
-
 import SETTINGS from "./settings";
 import {
     fetch_from_network,
