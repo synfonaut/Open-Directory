@@ -50,7 +50,7 @@ export function get_root_category_txid() {
     return null;
 }
 
-export function get_txids_query(txids, cursor=0, limit=10000) {
+export function get_txids_query(txids, cursor=0, limit=5000) {
     const query = {
         "v": 3,
         "q": {
@@ -1352,7 +1352,7 @@ export function fetch_raw_txid_results(rows) {
 
 export function fetch_raw_protocol_results() {
     return new Promise((resolve, reject) => {
-        fetch_from_bitdb_network(null, 0, 10000, [], false).then(rows => {
+        fetch_from_bitdb_network(null, 0, 5000, [], false).then(rows => {
             if (rows.lenth == 0) {
                 reject("unable to fetch valid data from network");
             } else if (rows.length < 100) {
@@ -1415,7 +1415,7 @@ export function fetch_from_bitdb_network(category_id=null, cursor=0, limit=1000,
 
         if (rows.length >= limit) {
             console.log("Seems like there's still more... polling for more");
-            fetch_from_network(category_id, cursor, limit, results, cache).then(resolve).catch(reject);
+            fetch_from_bitdb_network(category_id, cursor, limit, results, cache).then(resolve).catch(reject);
         } else {
             resolve(results);
         }
