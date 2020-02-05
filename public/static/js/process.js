@@ -10,8 +10,8 @@ if (isNode) {
 export const B_MEDIA_PROTOCOL = "19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut";
 export const BCAT_MEDIA_PROTOCOL = "15DHFxWZJT58f9nhyGnsRBqrgwK4W6h4Up";
 
-const API_URL = "https://dir.sv/api";
-//const API_URL = "http://localhost:3000/api";
+//const API_URL = "https://dir.sv/api";
+const API_URL = "http://localhost:3000/api";
 
 export const SUPPORTED_TIPCHAIN_PROTOCOLS = [
     "bit://" + B_MEDIA_PROTOCOL + "/",
@@ -97,7 +97,12 @@ export function get_bitdb_query(cursor=0, limit=1000) {
     const query = {
         "v": 3,
         "q": {
-            "find": {"out.s1": OPENDIR_PROTOCOL},
+            "find": {
+                "$or": [
+                    {"out.s1": OPENDIR_PROTOCOL},
+                    {"out.s2": OPENDIR_PROTOCOL},
+                ],
+            },
 
             // querying both confirmed and unconfirmed transactions
             // mongodb doesn't have a clean way to join on both so nearly every query below is doubled, on for each db
@@ -470,6 +475,8 @@ export function processResults(rows, txpool) {
         processing = fn(processing);
     }
 
+    console.log("PROCESSING", processing.length);
+
     return processing;
 }
 
@@ -636,6 +643,7 @@ function processEntryResult(result, existing, undo, rows) {
 function processVoteResult(result, existing, undo, rows) {
 
     const obj = findObjectByTX(result.action_id, existing);
+
     if (obj) {
 
         const tipchain_addresses = obj.tipchain.map(o => { return o.address });
@@ -658,6 +666,7 @@ function processVoteResult(result, existing, undo, rows) {
     } else {
         console.log("couldn't find object for vote", obj, result);
     }
+
     return existing;
 }
 
@@ -1290,9 +1299,10 @@ export function buildRawSliceRepresentationFromCache(category_id, changelog=[], 
 
     const txids = items.map(i => { return i.txid }).filter(i => { return i });
     for (const log of changelog) {
+        const txid = (log.data.s1 ? log.data.s3 : log.data.s4);
         if (txids.indexOf(log.txid) !== -1) {
             filtered_changelog.push(log);
-        } else if (txids.indexOf(log.data.s3) !== -1) {
+        } else if (txids.indexOf(txid) !== -1) {
             filtered_changelog.push(log);
         }
     }

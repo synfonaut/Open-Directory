@@ -31,7 +31,7 @@ function get_cached_raw() {
     try {
         let data = fs.readFileSync(__dirname + "/public/static/js/cached_raw.json");
         let new_raw = JSON.parse(data).filter(i => {
-            return i.data.s1 == OPENDIR_PROTOCOL;
+            return (i.data.s1 == OPENDIR_PROTOCOL || i.data.s2 == OPENDIR_PROTOCOL);
         });
 
         cached_raw = new_raw;

@@ -28,7 +28,7 @@ export class ChangeLog extends React.Component {
         // For now only show open directory protocol changes in changelog—in future may want to
         // pull in related bitcoin media
         const changelog = (this.props.changelog ? this.props.changelog : []).filter(i => {
-            return i.data.s1 == OPENDIR_PROTOCOL || i.data.s1 == SETTINGS.admin_address;
+            return i.data.s1 == OPENDIR_PROTOCOL || i.data.s2 == OPENDIR_PROTOCOL || i.data.s1 == SETTINGS.admin_address;
         });
 
         return (changelog && changelog.length > 0 && 
@@ -156,7 +156,7 @@ class ChangeLogItem extends React.Component {
         if (this.props.item.type == "admin") {
             action = this.props.item.type + "." + this.props.item.action;
         } else {
-            action = this.props.item.data.s2;
+            action = (this.props.item.data.s1 ? this.props.item.data.s2 : this.props.item.data.s3);
         }
 
         var isUndoable = true;

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+ps aux | grep "node -r esm /home/ubuntu/Open-Directory/scripts/bitbusted" | grep -v grep | awk '{print $2}' | xargs kill -9
+
+node -r esm /home/ubuntu/Open-Directory/scripts/bitbusted &

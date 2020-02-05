@@ -732,7 +732,7 @@ class OpenDirectoryApp extends React.Component {
 
                     const rows = [];
                     for (var i = 0; i < resp.data.length; i++) {
-                        if (resp.data[i] && resp.data[i].data && resp.data[i].data.s1 == OPENDIR_PROTOCOL) {
+                        if (resp.data[i] && resp.data[i].data && (resp.data[i].data.s1 == OPENDIR_PROTOCOL || resp.data[i].data.s2 == OPENDIR_PROTOCOL)) {
                             rows.push(resp.data[i]);
                         }
                     }

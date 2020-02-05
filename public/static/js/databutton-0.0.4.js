@@ -6,6 +6,7 @@ export default {
   type: function() { return databutton._type },
   file: function() { return databutton._file },
   build: function(o) {
+    let options = {safe: true};
     if (o.file) {
       var buttonEl = (o.button.$el instanceof Element ? o.button.$el : document.querySelector(o.button.$el))
       var fileEl = (o.file.$el instanceof Element ? o.file.$el : document.querySelector(o.file.$el))
@@ -22,7 +23,8 @@ export default {
             if (typeof item === 'function') { d[index] = item() }
             else if (item === null) { d[index] = "" }
           })
-          datapay.build({ "data": d }, function(err, tx) {
+          options.data = d;
+          datapay.build(options, function(err, tx) {
             var s = tx.outputs[0]._script.toASM();
             o.button.outputs = [{ script: s, amount: 0, currency: 'BSV' }];
             if (o.button && o.button.$pay && o.button.$pay.to) {
@@ -38,7 +40,8 @@ export default {
         reader.readAsArrayBuffer(e.target.files[0]);
       }
     } else if (o.data) {
-      datapay.build({ "data": o.data }, function(err, tx) {
+      options.data = o.data;
+      datapay.build(options, function(err, tx) {
         var s = tx.outputs[0]._script.toASM();
         var el = o.button.$el;
         var config = o.button;

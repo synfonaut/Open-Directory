@@ -84,7 +84,7 @@ export function getCachedAdminActions(cache_mins=60) {
 }
 
 function processAdminResult(result) {
-    const action = result.data.s2;
+    const action = (result.data.s1 ? result.data.s2 : result.data.s3);
 
     if (ALLOWED_ACTIONS.indexOf(action) == -1) {
         return null;
