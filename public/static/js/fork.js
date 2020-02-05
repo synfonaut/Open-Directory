@@ -177,6 +177,7 @@ export class Fork extends React.Component {
                 const el = document.querySelector(".fork-money-button");
 
                 databutton.build({
+                    safe: true,
                     data: OP_RETURN,
                     button: {
                         $el: el,

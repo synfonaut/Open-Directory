@@ -120,6 +120,7 @@ class ChangeLogItem extends React.Component {
 
         const el = document.getElementById("changelog-action-" + this.props.item.txid).querySelector(".undo-money-button");
         databutton.build({
+            safe: true,
             data: OP_RETURN,
             button: {
                 $el: el,

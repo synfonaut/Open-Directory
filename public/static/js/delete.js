@@ -61,6 +61,7 @@ export class DeleteItem extends React.Component {
 
         const button = document.getElementById(this.props.item.txid).querySelector(".delete-money-button")
         databutton.build({
+            safe: true,
             data: OP_RETURN,
             button: {
                 $el: button,

@@ -106,6 +106,7 @@ export class AddEntryForm extends React.Component {
         const el = document.querySelector(".add-entry-money-button");
 
         databutton.build({
+            safe: true,
             data: OP_RETURN,
             button: {
                 $el: el,
@@ -384,6 +385,7 @@ export class EditEntryForm extends React.Component {
         this.setState({"isShowingWarning": true}, () => {
             const el = document.getElementById(this.props.item.txid).querySelector(".change-entry-money-button");
             databutton.build({
+                safe: true,
                 data: OP_RETURN,
                 button: {
                     $el: el,

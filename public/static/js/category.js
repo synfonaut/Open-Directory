@@ -117,6 +117,7 @@ export class AddCategoryForm extends React.Component {
 
         const el = document.querySelector(".add-category-money-button");
         databutton.build({
+            safe: true,
             data: OP_RETURN,
             button: {
                 $el: el,
@@ -281,6 +282,7 @@ export class EditCategoryForm extends React.Component {
 
             const el = document.getElementById(this.getCategoryID()).querySelector(".change-category-money-button");
             databutton.build({
+                safe: true,
                 data: OP_RETURN,
                 button: {
                     $el: el,

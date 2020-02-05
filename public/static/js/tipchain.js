@@ -82,6 +82,7 @@ export class TipchainItem extends React.Component {
         const button = document.getElementById(this.state.rand).querySelector(".tip-money-button");
 
         databutton.build({
+            safe: true,
             data: OP_RETURN,
             button: {
                 $el: button,
