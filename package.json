@@ -10,7 +10,7 @@
     "compression": "^1.7.4",
     "console.mute": "^0.3.0",
     "eventsource": "^1.0.7",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "mustache": "^3.0.1",
     "mustache-express": "^1.2.8",
     "remove-markdown": "^0.3.0"
